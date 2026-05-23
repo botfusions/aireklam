@@ -68,13 +68,17 @@ Claude ADS/
 *.wav
 !assets/*.mp3
 
-# Gorseller (PNG buyuk — GitHub LFS veya CDN kullan)
+# Gorseller (buyuk dosyalar haric tutulur)
 *.png
 *.webp
 *.jpg
 *.jpeg
 *.gif
 *.svg
+# Istisnalar: maskotlar, logo, GEO infografikler
+!02-gorseller/maskotlar/*.png
+!02-gorseller/botfusions-logo-*.png
+!02-gorseller/geo-gorseller/*.png
 !04-araclar/hyperframes/*/assets/*.png
 
 # Uretilen ciktilar
