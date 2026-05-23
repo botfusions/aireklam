@@ -19,7 +19,20 @@
       "PowerShell($root = \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\"; Remove-Item \"$root\\\\_COP_KLASORU_SILME_ONCESI_KONTROL\" -Recurse -Force; \"3. _COP_KLASORU silindi\")",
       "Bash(python -c \"import py_compile; py_compile.compile\\('gsc_api_server.py', doraise=True\\); print\\('OK'\\)\")",
       "Bash(python -c ' *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(npx playwright *)",
+      "Bash(python \"medya-gelistirme\\\\01-veri-toplama\\\\gunluk_agent.py\")",
+      "Bash(python -c \"import py_compile; py_compile.compile\\('medya-gelistirme/01-veri-toplama/gunluk_agent.py', doraise=True\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import requests; r=requests.get\\('http://localhost:8765/api/health', timeout=5\\); print\\(r.status_code, r.text\\)\")",
+      "Bash(cat .mcp.json)",
+      "Bash(cat __TRACKED_VAR__/.claude/mcp.json)",
+      "Bash(grep -E \"^[A-Z]|\\\\\\\\|\")",
+      "Bash(timeout 15 python -m ads_mcp.server)",
+      "Bash(curl --ssl-no-revoke -s -X POST \"https://api.omnisocials.com/v1/posts/create-and-publish\" -H \"Authorization: Bearer omsk_live_b71e9623551d4bb563807472214053a38f55c1b6c5d9e13d\" -H \"Content-Type: application/json\" -d \"{\\\\\"content\\\\\":{\\\\\"default\\\\\":\\\\\"Musteriniz ChatGPT'ye sordu. Rakibiniz onerildi. Peki sizi goruyor muyuz?\\\\n\\\\nAI artik 1-3 kaynak oneriyor. GEO ile markanizi AI aramalarda one cikarin.\\\\n\\\\nUcretsiz GEO Analizi: botfusions.com/geo-hizmet\\\\\"},\\\\\"accounts\\\\\":[\\\\\"881407_youtube\\\\\"],\\\\\"media_ids\\\\\":[\\\\\"26219\\\\\"],\\\\\"post_type\\\\\":\\\\\"reel\\\\\"}\")",
+      "Bash(curl --ssl-no-revoke -s -X POST \"https://api.omnisocials.com/v1/posts/create-and-publish\" -H \"Authorization: Bearer omsk_live_b71e9623551d4bb563807472214053a38f55c1b6c5d9e13d\" -H \"Content-Type: application/json\" -d \"{\\\\\"content\\\\\":{\\\\\"default\\\\\":\\\\\"Musteriniz ChatGPT'ye sordu. Rakibiniz onerildi. AI artik 1-3 kaynak oneriyor. GEO ile markanizi AI aramalarda one cikarin. botfusions.com/geo-hizmet\\\\\"},\\\\\"accounts\\\\\":[\\\\\"881407_youtube\\\\\"],\\\\\"media_ids\\\\\":[\\\\\"26219\\\\\"],\\\\\"post_type\\\\\":\\\\\"reel\\\\\",\\\\\"youtube_title\\\\\":\\\\\"Musteriniz ChatGPT'ye Sordu | Botfusions GEO\\\\\"}\")",
+      "Bash(ffmpeg -version)",
+      "Bash(npx hyperframes *)",
+      "Bash(curl --ssl-no-revoke -sL \"https://cdn.jsdelivr.net/npm/gsap@3.12/gsap.min.js\" -o lib/gsap.min.js)"
     ]
   }
 }

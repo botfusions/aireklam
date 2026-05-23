@@ -532,6 +532,8 @@
         <div class="tab" data-tab="kontrol">Kontroller</div>
         <div class="tab" data-tab="gadv">Google Ads</div>
         <div class="tab" data-tab="sosyal">Sosyal Medya</div>
+        <div class="tab" data-tab="pipeline">Pipeline</div>
+        <div class="tab" data-tab="analitik">Analitik</div>
       </div>
 
       <!-- Sağlık Tab -->
@@ -1135,6 +1137,104 @@
         </div>
 
       </div><!-- /tab-sosyal -->
+
+      <!-- ── PIPELINE SEKMESİ ────────────────────────── -->
+      <div class="tab-content" id="tab-pipeline">
+        <div class="banner" id="pipeline-banner" style="background:var(--accent);padding:10px 14px;border-radius:8px;margin-bottom:16px">
+          <span id="pipeline-banner-text" style="color:#fff;font-weight:600">Medya Geliştirme Pipeline</span>
+        </div>
+
+        <!-- İstatistik kartları -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Taslak</div><div class="kpi-value" id="pipe-draft">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Onaylı</div><div class="kpi-value" id="pipe-approved">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Yayınlanmış</div><div class="kpi-value" id="pipe-published">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">Başarısız</div><div class="kpi-value" id="pipe-failed">0</div></div>
+        </div>
+
+        <!-- Paket tablosu -->
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border)">
+                <th style="text-align:left;padding:8px">ID</th>
+                <th style="text-align:left;padding:8px">Tarih</th>
+                <th style="text-align:left;padding:8px">Niche</th>
+                <th style="text-align:left;padding:8px">Hook</th>
+                <th style="text-align:left;padding:8px">Durum</th>
+                <th style="text-align:left;padding:8px">Platformlar</th>
+                <th style="text-align:left;padding:8px">Aksiyon</th>
+              </tr>
+            </thead>
+            <tbody id="pipeline-table-body">
+              <tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted)">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Detay paneli -->
+        <div id="pipeline-detail" style="display:none;margin-top:20px;padding:16px;background:var(--card);border-radius:8px;border:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h3 style="margin:0">Paket Detay <span id="pipe-detail-id"></span></h3>
+            <button onclick="document.getElementById('pipeline-detail').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">&times;</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><strong>Hook:</strong> <span id="pipe-detail-hook"></span></div>
+            <div><strong>Niche:</strong> <span id="pipe-detail-niche"></span></div>
+          </div>
+          <div style="margin-top:12px">
+            <strong>Caption (varsayılan):</strong>
+            <pre id="pipe-detail-caption" style="background:var(--bg);padding:10px;border-radius:6px;white-space:pre-wrap;font-size:12px;margin-top:6px"></pre>
+          </div>
+          <div id="pipe-detail-platforms" style="margin-top:12px"></div>
+        </div>
+      </div><!-- /tab-pipeline -->
+
+      <!-- ── ANALİTİK TAB ── -->
+      <div class="tab-content" id="tab-analitik">
+        <div class="banner" style="background:var(--blue);padding:10px 14px;border-radius:8px;margin-bottom:16px">
+          <span style="color:#fff;font-weight:600">Performans Analitik</span>
+          <button onclick="loadAnalitik()" style="float:right;background:rgba(255,255,255,0.2);color:#fff;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:11px">Yenile</button>
+        </div>
+
+        <!-- Genel istatistikler -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Toplam İçerik</div><div class="kpi-value" id="ana-total">0</div></div>
+          <div class="kpi-card"><div class="kpi-label">En İyi Hook</div><div class="kpi-value" id="ana-best-hook" style="font-size:14px">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">En İyi Niche</div><div class="kpi-value" id="ana-best-niche" style="font-size:14px">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Yayın Oranı</div><div class="kpi-value" id="ana-publish-rate">0%</div></div>
+        </div>
+
+        <!-- Hook Tipi Performans -->
+        <div style="background:var(--card);border-radius:8px;padding:16px;border:1px solid var(--border);margin-bottom:16px">
+          <h4 style="margin:0 0 12px">Hook Tipi Dağılımı</h4>
+          <div id="ana-hook-bars">
+            <div style="color:var(--muted);text-align:center;padding:20px">Yükleniyor...</div>
+          </div>
+        </div>
+
+        <!-- Niche Performans -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div style="background:var(--card);border-radius:8px;padding:16px;border:1px solid var(--border)">
+            <h4 style="margin:0 0 12px">Niche Dağılımı</h4>
+            <div id="ana-niche-bars">
+              <div style="color:var(--muted);text-align:center;padding:20px">Yükleniyor...</div>
+            </div>
+          </div>
+          <div style="background:var(--card);border-radius:8px;padding:16px;border:1px solid var(--border)">
+            <h4 style="margin:0 0 12px">Format Dağılımı</h4>
+            <div id="ana-format-bars">
+              <div style="color:var(--muted);text-align:center;padding:20px">Yükleniyor...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Son Performans Raporu -->
+        <div style="background:var(--card);border-radius:8px;padding:16px;border:1px solid var(--border)">
+          <h4 style="margin:0 0 12px">Son Rapor</h4>
+          <pre id="ana-last-report" style="background:var(--bg);padding:10px;border-radius:6px;white-space:pre-wrap;font-size:11px;max-height:300px;overflow-y:auto;color:var(--muted)">Rapor yok. performans_topla.py çalıştırın.</pre>
+        </div>
+      </div><!-- /tab-analitik -->
 
     </div>
 
@@ -1949,12 +2049,16 @@
     loadGoogleAds();
     // GA4 verisini yükle
     loadGA4();
+    // Pipeline verisini yükle
+    loadPipeline();
     // Tab geçişlerinde ilgili veriyi yükle
     document.querySelectorAll('.tab').forEach(t => {
       t.addEventListener('click', () => {
         if (t.dataset.tab === 'aigeo') loadGeoHistory();
         if (t.dataset.tab === 'gadv') loadGoogleAds();
         if (t.dataset.tab === 'baglanti') loadGA4();
+        if (t.dataset.tab === 'pipeline') loadPipeline();
+        if (t.dataset.tab === 'analitik') loadAnalitik();
       });
     });
   });
@@ -2166,7 +2270,172 @@
     }
   }
 
-  // ── Google Ads ──────────────────────────────
+  // ── Pipeline ────────────────────────────────
+  async function loadPipeline() {
+    try {
+      const [statsRes, pkgsRes] = await Promise.all([
+        fetch(API + '/pipeline/stats'),
+        fetch(API + '/pipeline/packages?limit=50')
+      ]);
+      const stats = await statsRes.json();
+      const pkgs = await pkgsRes.json();
+
+      // İstatistik kartları
+      const byStatus = stats.by_status || {};
+      document.getElementById('pipe-draft').textContent = (byStatus.draft || 0) + (byStatus.content_approved || 0) + (byStatus.producing_visual || 0) + (byStatus.visual_approved || 0);
+      document.getElementById('pipe-approved').textContent = byStatus.visual_approved || 0;
+      document.getElementById('pipe-published').textContent = byStatus.published || 0;
+      document.getElementById('pipe-failed').textContent = byStatus.failed || 0;
+
+      // Tablo
+      const tbody = document.getElementById('pipeline-table-body');
+      if (!pkgs.packages || pkgs.packages.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted)">Henüz paket yok. <code>icerik_uret.py</code> ile oluşturun.</td></tr>';
+        return;
+      }
+
+      const statusColors = {
+        draft: 'var(--muted)', content_approved: 'var(--blue)',
+        producing_visual: 'var(--purple)', visual_approved: 'var(--green)',
+        scheduled: 'var(--blue)', published: 'var(--green)', failed: 'var(--red)'
+      };
+      const statusLabels = {
+        draft: 'Taslak', content_approved: 'İçerik Onaylı',
+        producing_visual: 'Görsel Üretiliyor', visual_approved: 'Yayına Hazır',
+        scheduled: 'Planlı', published: 'Yayınlanmış', failed: 'Başarısız'
+      };
+
+      tbody.innerHTML = pkgs.packages.map(p => {
+        const dt = p.created_at ? new Date(p.created_at).toLocaleDateString('tr-TR') : '-';
+        const sc = statusColors[p.status] || 'var(--muted)';
+        const sl = statusLabels[p.status] || p.status;
+        const plats = (p.platforms || []).length;
+        let actions = `<button onclick="pipelineAction(${p.id},'view')" style="background:var(--accent);color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px">Detay</button> `;
+        if (p.status === 'draft') actions += `<button onclick="pipelineAction(${p.id},'approve')" style="background:var(--green);color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px">Onayla</button>`;
+        if (p.status === 'visual_approved') actions += `<button onclick="pipelineAction(${p.id},'publish')" style="background:var(--blue);color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px">Yayınla</button>`;
+        return `<tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:8px">${p.id}</td>
+          <td style="padding:8px">${dt}</td>
+          <td style="padding:8px"><span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px">${p.niche}</span></td>
+          <td style="padding:8px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(p.hook_text||'').substring(0,50)}</td>
+          <td style="padding:8px"><span style="color:${sc};font-weight:600">${sl}</span></td>
+          <td style="padding:8px">${plats} platform</td>
+          <td style="padding:8px">${actions}</td>
+        </tr>`;
+      }).join('');
+
+    } catch (e) {
+      console.error('Pipeline yukleme hatasi:', e);
+      document.getElementById('pipeline-banner-text').textContent = 'Pipeline yüklenemedi — Flask API çalışıyor mu?';
+    }
+  }
+
+  async function pipelineAction(id, action) {
+    if (action === 'view') {
+      try {
+        const r = await fetch(API + '/pipeline/packages/' + id);
+        const d = await r.json();
+        const p = d.package;
+        if (!p) return;
+        document.getElementById('pipeline-detail').style.display = 'block';
+        document.getElementById('pipe-detail-id').textContent = '#' + p.id;
+        document.getElementById('pipe-detail-hook').textContent = p.hook_text || '-';
+        document.getElementById('pipe-detail-niche').textContent = p.niche || '-';
+        document.getElementById('pipe-detail-caption').textContent = p.caption_default || '-';
+        const platDiv = document.getElementById('pipe-detail-platforms');
+        platDiv.innerHTML = '<strong>Platform captionları:</strong>';
+        for (const [k, v] of Object.entries(p)) {
+          if (k.startsWith('caption_') && k !== 'caption_default' && v) {
+            platDiv.innerHTML += `<div style="margin-top:8px"><code>${k}</code><pre style="background:var(--bg);padding:8px;border-radius:4px;font-size:11px;white-space:pre-wrap;margin-top:4px">${v}</pre></div>`;
+          }
+        }
+      } catch (e) { console.error(e); }
+    } else if (action === 'approve') {
+      await fetch(API + '/pipeline/packages/' + id + '/approve', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({approved_by:'cmo'})});
+      loadPipeline();
+    } else if (action === 'publish') {
+      await fetch(API + '/pipeline/packages/' + id + '/publish', {method:'POST', headers:{'Content-Type':'application/json'}});
+      loadPipeline();
+    }
+  }
+
+  // ══════════════════════════════════════════════════
+  // ANALİTİK — Performans geri besleme
+  // ══════════════════════════════════════════════════
+  async function loadAnalitik() {
+    try {
+      const [statsRes, pkgsRes] = await Promise.all([
+        fetch(API + '/pipeline/stats').then(r => r.json()),
+        fetch(API + '/pipeline/packages?limit=200').then(r => r.json())
+      ]);
+
+      // Genel istatistikler
+      const total = statsRes.total || 0;
+      document.getElementById('ana-total').textContent = total;
+
+      const byStatus = statsRes.by_status || {};
+      const published = byStatus.published || 0;
+      const rate = total > 0 ? Math.round((published / total) * 100) : 0;
+      document.getElementById('ana-publish-rate').textContent = rate + '%';
+
+      // Paket analiz
+      const pkgs = pkgsRes.packages || [];
+      const hookMap = {}, nicheMap = {}, formatMap = {};
+
+      pkgs.forEach(p => {
+        const h = p.hook_type || 'unknown';
+        const n = p.niche || 'unknown';
+        const f = p.post_type || 'unknown';
+        hookMap[h] = (hookMap[h] || 0) + 1;
+        nicheMap[n] = (nicheMap[n] || 0) + 1;
+        formatMap[f] = (formatMap[f] || 0) + 1;
+      });
+
+      // En iyi hook / niche
+      const bestHook = Object.entries(hookMap).sort((a,b) => b[1]-a[1])[0];
+      const bestNiche = Object.entries(nicheMap).sort((a,b) => b[1]-a[1])[0];
+      document.getElementById('ana-best-hook').textContent = bestHook ? bestHook[0] + ' (' + bestHook[1] + ')' : '—';
+      document.getElementById('ana-best-niche').textContent = bestNiche ? bestNiche[0] + ' (' + bestNiche[1] + ')' : '—';
+
+      // Bar grafik (CSS)
+      const maxVal = Math.max(...Object.values(hookMap), 1);
+      const colors = ['#A855F7', '#3B82F6', '#F97316', '#10B981', '#EF4444'];
+
+      document.getElementById('ana-hook-bars').innerHTML = Object.entries(hookMap)
+        .sort((a,b) => b[1]-a[1])
+        .map(([k,v], i) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="width:100px;font-size:12px;color:var(--muted)">${k}</span>
+          <div style="flex:1;background:var(--bg);border-radius:4px;height:24px;overflow:hidden">
+            <div style="width:${(v/maxVal*100)}%;height:100%;background:${colors[i%colors.length]};border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;color:#fff;font-weight:600">${v}</div>
+          </div>
+        </div>`).join('');
+
+      const maxNiche = Math.max(...Object.values(nicheMap), 1);
+      document.getElementById('ana-niche-bars').innerHTML = Object.entries(nicheMap)
+        .sort((a,b) => b[1]-a[1])
+        .map(([k,v], i) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="width:80px;font-size:12px;color:var(--muted)">${k}</span>
+          <div style="flex:1;background:var(--bg);border-radius:4px;height:24px;overflow:hidden">
+            <div style="width:${(v/maxNiche*100)}%;height:100%;background:${colors[i%colors.length]};border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;color:#fff;font-weight:600">${v}</div>
+          </div>
+        </div>`).join('') || '<div style="color:var(--muted);text-align:center;padding:20px">Veri yok</div>';
+
+      const maxFormat = Math.max(...Object.values(formatMap), 1);
+      document.getElementById('ana-format-bars').innerHTML = Object.entries(formatMap)
+        .sort((a,b) => b[1]-a[1])
+        .map(([k,v], i) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="width:80px;font-size:12px;color:var(--muted)">${k}</span>
+          <div style="flex:1;background:var(--bg);border-radius:4px;height:24px;overflow:hidden">
+            <div style="width:${(v/maxFormat*100)}%;height:100%;background:${colors[i%colors.length]};border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;color:#fff;font-weight:600">${v}</div>
+          </div>
+        </div>`).join('') || '<div style="color:var(--muted);text-align:center;padding:20px">Veri yok</div>';
+
+    } catch (e) {
+      document.getElementById('ana-total').textContent = '?';
+      console.error('Analitik yukleme hatasi:', e);
+    }
+  }
+
   async function loadGoogleAds() {
     const banner = document.getElementById('gadv-banner');
     const bannerText = document.getElementById('gadv-banner-text');

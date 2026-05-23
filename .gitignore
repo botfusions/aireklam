@@ -68,6 +68,17 @@ Claude ADS/
 *.wav
 !assets/*.mp3
 
-# Binary gorseller (sadece ornekler commitlenir)
-02-gorseller/openai_*.png
-02-gorseller/free-tools_*.webp
+# Gorseller (PNG buyuk — GitHub LFS veya CDN kullan)
+*.png
+*.webp
+*.jpg
+*.jpeg
+*.gif
+*.svg
+!04-araclar/hyperframes/*/assets/*.png
+
+# Uretilen ciktilar
+out/
+
+# Gereksiz config dosyalari
+claude_desktop_config_guncellendi.json

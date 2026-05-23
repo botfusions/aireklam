@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Botfusions — Marka & İletişim Brief</title>
+<style>
+  :root {
+    --purple: #A855F7;
+    --dark-purple: #7C3AED;
+    --blue: #3B82F6;
+    --orange: #F97316;
+    --yellow: #FDE047;
+    --bg: #0A0A0A;
+    --surface: #111118;
+    --surface2: #1a1a2e;
+    --text: #F1F5F9;
+    --muted: #94A3B8;
+    --border: #1e293b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a0a2e 100%);
+    border-bottom: 1px solid var(--dark-purple);
+    padding: 48px 64px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(168,85,247,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .logo-mark {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--purple), var(--dark-purple));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 900; color: white;
+    letter-spacing: -1px;
+    box-shadow: 0 0 24px rgba(168,85,247,.4);
+  }
+  .logo-text { display: flex; flex-direction: column; }
+  .logo-name { font-size: 26px; font-weight: 800; color: white; letter-spacing: -0.5px; }
+  .logo-tag { font-size: 12px; color: var(--purple); font-weight: 500; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { font-size: 36px; font-weight: 800; color: white; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .subtitle { font-size: 16px; color: var(--muted); }
+  .badge-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .badge {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .badge-purple { background: rgba(168,85,247,.15); border-color: var(--purple); color: var(--purple); }
+  .badge-orange { background: rgba(249,115,22,.15); border-color: var(--orange); color: var(--orange); }
+  .badge-blue { background: rgba(59,130,246,.15); border-color: var(--blue); color: var(--blue); }
+
+  /* ── LAYOUT ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; }
+
+  section { margin-bottom: 56px; }
+  section > h2 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--purple);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 8px; }
+  .card-body { font-size: 14px; color: var(--muted); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ── COLOR SWATCHES ── */
+  .swatch-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .swatch {
+    border-radius: 10px;
+    padding: 14px 20px;
+    min-width: 160px;
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .swatch-name { font-size: 13px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .swatch-hex { font-size: 12px; font-family: monospace; opacity: .7; }
+  .swatch-use { font-size: 11px; opacity: .6; margin-top: 6px; }
+
+  /* ── SERVICE TIERS ── */
+  .tier { border-radius: 12px; padding: 20px 24px; margin-bottom: 12px; border-left: 4px solid; }
+  .tier-s { background: rgba(168,85,247,.08); border-color: var(--purple); }
+  .tier-a { background: rgba(59,130,246,.08); border-color: var(--blue); }
+  .tier-b { background: rgba(249,115,22,.08); border-color: var(--orange); }
+  .tier-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .tier-s .tier-label { color: var(--purple); }
+  .tier-a .tier-label { color: var(--blue); }
+  .tier-b .tier-label { color: var(--orange); }
+  .tier-items { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .tier-item { background: rgba(255,255,255,.06); border-radius: 6px; padding: 4px 12px; font-size: 12px; color: var(--text); }
+
+  /* ── VOICE TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; padding: 12px 16px; background: var(--surface2); color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .do { color: #4ade80; font-weight: 600; }
+  .dont { color: #f87171; font-weight: 600; }
+
+  /* ── HOOKS ── */
+  .hook-card {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--purple);
+  }
+  .hook-label { font-size: 10px; color: var(--purple); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .hook-text { font-size: 15px; color: white; font-style: italic; line-height: 1.5; }
+
+  /* ── PROOF POINT ── */
+  .proof {
+    background: linear-gradient(135deg, rgba(168,85,247,.12), rgba(124,58,237,.08));
+    border: 1px solid var(--dark-purple);
+    border-radius: 12px;
+    padding: 28px 32px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .proof-number { font-size: 64px; font-weight: 900; color: var(--purple); line-height: 1; }
+  .proof-label { font-size: 14px; color: var(--muted); margin-top: 8px; }
+
+  /* ── AUDIENCE ── */
+  .audience-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .audience-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .audience-segment { font-size: 13px; font-weight: 700; color: white; margin-bottom: 6px; }
+  .audience-channel { font-size: 11px; color: var(--blue); margin-bottom: 4px; }
+  .audience-tone { font-size: 11px; color: var(--muted); }
+
+  /* ── PLATFORMS ── */
+  .platform-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .platform-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .platform-name { font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .platform-handle { font-size: 12px; color: var(--purple); margin-bottom: 4px; }
+  .platform-format { font-size: 11px; color: var(--muted); }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; }
+  .checklist li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check { color: #4ade80; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .cross { color: #f87171; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── QUOTE ── */
+  .pitch-box {
+    background: linear-gradient(135deg, rgba(168,85,247,.1), rgba(59,130,246,.06));
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 28px 32px;
+  }
+  .pitch-label { font-size: 11px; color: var(--purple); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .pitch-text { font-size: 20px; font-weight: 700; color: white; line-height: 1.5; }
+
+  /* ── STATUS ── */
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .green { background: #4ade80; }
+  .yellow { background: #fbbf24; }
+  .red { background: #f87171; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 28px 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer .left { font-size: 13px; color: var(--muted); }
+  footer .right { font-size: 13px; color: var(--muted); text-align: right; }
+  footer strong { color: var(--text); }
+
+  /* ── CONFIRM BOX ── */
+  .confirm-box {
+    background: linear-gradient(135deg, #0d1a0d, #0d1a1a);
+    border: 2px solid #4ade80;
+    border-radius: 16px;
+    padding: 36px 40px;
+    margin-top: 48px;
+    text-align: center;
+  }
+  .confirm-icon { font-size: 48px; margin-bottom: 16px; }
+  .confirm-title { font-size: 24px; font-weight: 800; color: #4ade80; margin-bottom: 12px; }
+  .confirm-text { font-size: 15px; color: var(--muted); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+
+  @media (max-width: 768px) {
+    header { padding: 32px 24px; }
+    main { padding: 32px 16px; }
+    .grid-2, .grid-3, .audience-row, .platform-grid { grid-template-columns: 1fr; }
+    .swatch-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ HEADER ═══ -->
+<header>
+  <div class="header-top">
+    <div class="logo-mark">Bf</div>
+    <div class="logo-text">
+      <div class="logo-name">Botfusions</div>
+      <div class="logo-tag">AI Reklam Ajansı</div>
+    </div>
+  </div>
+  <h1>Marka & Kurumsal İletişim Brief</h1>
+  <p class="subtitle">Bu belge; Botfusions'ın kim olduğunu, ne yaptığını, nasıl iletişim kurduğunu ve yazım tarzını kapsar.</p>
+  <div class="badge-row">
+    <span class="badge badge-purple">GEO • Türkiye'nin Öncüsü</span>
+    <span class="badge badge-orange">Agentic AI Sistemler</span>
+    <span class="badge badge-blue">%527 Organik Trafik Artışı</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════ MAIN ═══ -->
+<main>
+
+  <!-- ── 1. ŞİRKET KİMLİĞİ ── -->
+  <section>
+    <h2>01 — Şirket Kimliği</h2>
+    <div class="pitch-box">
+      <div class="pitch-label">Elevator Pitch</div>
+      <div class="pitch-text">"Botfusions, markanızın ChatGPT, Claude, Gemini ve Perplexity'de görünmesini sağlayan Türkiye'nin öncü GEO ajansıdır."</div>
+    </div>
+
+    <div style="margin-top: 16px;" class="grid-3">
+      <div class="card">
+        <div class="card-title">🌐 Web</div>
+        <div class="card-body">botfusions.com<br>botfusions.com/geo-hizmet</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📧 İletişim</div>
+        <div class="card-body">info@botfusions.com<br>+90 850 302 74 60</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📍 Konum</div>
+        <div class="card-body">Türkiye<br>Tüm ölçekte hizmet</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2. HİZMETLER ── -->
+  <section>
+    <h2>02 — Hizmet Portföyü</h2>
+    <div class="tier tier-s">
+      <div class="tier-label">S-Tier — En Yüksek Potansiyel</div>
+      <strong style="color: white;">AI Agent Geliştirme · AI Danışmanlığı · AI Lead Generation · AI Siber Güvenlik</strong>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 6px;">Kurulum: 5K–50K USD · Retainer: 2K–10K USD/ay</p>
+      <div class="tier-items">
+        <span class="tier-item">Claude SDK</span>
+        <span class="tier-item">MCP Entegrasyon</span>
+        <span class="tier-item">Otonom Workflow</span>
+        <span class="tier-item">7/24 Aktif Ajan</span>
+      </div>
+    </div>
+
+    <div class="tier tier-a">
+      <div class="tier-label">A-Tier — Yüksek Kazançlı</div>
+      <strong style="color: white;">Sesli AI Ajanlar · AI Chat Botlar · Web Satış & Destek Sistemleri</strong>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 6px;">Aylık 500–2.000 USD retainer</p>
+      <div class="tier-items">
+        <span class="tier-item">Voice Agent</span>
+        <span class="tier-item">Chatbot</span>
+        <span class="tier-item">E-ticaret Botu</span>
+        <span class="tier-item">Destek Otomasyonu</span>
+      </div>
+    </div>
+
+    <div class="tier tier-b">
+      <div class="tier-label">GEO — Öncü Hizmet</div>
+      <strong style="color: white;">Generative Engine Optimization (GEO)</strong>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 6px;">Tanışma Paketi: $500 · Aylık danışmanlık (müşteriye özel)</p>
+      <div class="tier-items">
+        <span class="tier-item">ChatGPT Görünürlük</span>
+        <span class="tier-item">Claude Optimizasyon</span>
+        <span class="tier-item">Gemini Konum</span>
+        <span class="tier-item">Schema Markup</span>
+        <span class="tier-item">AI Görünürlük Raporu</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. ANA KANIT ── -->
+  <section>
+    <h2>03 — Ana Kanıt Noktası</h2>
+    <div class="grid-2" style="align-items: start;">
+      <div class="proof">
+        <div class="proof-number">%527</div>
+        <div class="proof-label">Organik Trafik Artışı — Gerçek Müşteri Vakası, 90 Günde</div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Neden Önemli?</div>
+          <div class="card-body">Bu rakam, her kopyada, her reklamda, her sosyal medya gönderisinde ana kanıt olarak kullanılır. Soyut vaatler değil, somut veri.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Nasıl Kullanılır?</div>
+          <div class="card-body">Hook olarak: <em>"%527. Bir müşterimizin 90 günde aldığı organik trafik artışı."</em><br><br>Sosyal kanıt olarak: <em>"ChatGPT bizi hukuk danışmanlığı arayanlar için aktif olarak öneriyor. Trafiğimiz 3 ayda %400 arttı."</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. HEDEF KİTLE ── -->
+  <section>
+    <h2>04 — Hedef Kitle & Mesaj Tonu</h2>
+    <div class="audience-row">
+      <div class="audience-card">
+        <div class="audience-segment">KOBİ Sahipleri</div>
+        <div class="audience-channel">Instagram · Facebook</div>
+        <div class="audience-tone">Basit, somut fayda, rakam odaklı</div>
+      </div>
+      <div class="audience-card">
+        <div class="audience-segment">Dijital Pazarlamacılar</div>
+        <div class="audience-channel">LinkedIn · X</div>
+        <div class="audience-tone">Teknik, data odaklı, eşit</div>
+      </div>
+      <div class="audience-card">
+        <div class="audience-segment">Girişimciler / Startup</div>
+        <div class="audience-channel">TikTok · X</div>
+        <div class="audience-tone">Hızlı, pratik, trend</div>
+      </div>
+      <div class="audience-card">
+        <div class="audience-segment">Kurumsal KV</div>
+        <div class="audience-channel">LinkedIn</div>
+        <div class="audience-tone">Güven, ROI, vaka çalışması</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <div class="card-title">Awareness Seviyesi</div>
+      <div class="card-body">Hedef kitle <strong style="color: white;">problem-aware ama solution-unaware.</strong><br>
+      "AI'da görünmüyorum" sorununu hissediyorlar — ama GEO terimini bilmiyorlar. İletişimde önce sorunu doğrula, ardından çözümü tanıt.</div>
+    </div>
+  </section>
+
+  <!-- ── 5. MARKA SESİ ── -->
+  <section>
+    <h2>05 — Marka Sesi & Ton</h2>
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">Temel Ton Özellikleri</div>
+          <ul class="checklist">
+            <li><span class="check">✓</span><span><strong style="color: white;">Uzman</strong> — AI ve GEO konusunda derin bilgi, otorite</span></li>
+            <li><span class="check">✓</span><span><strong style="color: white;">Dürüst</strong> — Abartılı vaat yok, somut veri</span></li>
+            <li><span class="check">✓</span><span><strong style="color: white;">İddialı</strong> — Pazarda öncü konumunu vurgula</span></li>
+            <li><span class="check">✓</span><span><strong style="color: white;">Eğitici</strong> — Karmaşık konuları anlaşılır anlat</span></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Kaçınılanlar</div>
+          <ul class="checklist">
+            <li><span class="cross">✗</span><span>Jargon dolu, anlaşılmaz metinler</span></li>
+            <li><span class="cross">✗</span><span>Abartılı vaatler — "Garantili #1 sıra!"</span></li>
+            <li><span class="cross">✗</span><span>Belirsiz sonuçlar — "Trafiğiniz artabilir"</span></li>
+            <li><span class="cross">✗</span><span>Korku odaklı satış — "AI sizi yok edecek"</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6. İLETİŞİM DİLİ ── -->
+  <section>
+    <h2>06 — İletişim Dili & Yazım Kuralları</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Kural</th>
+            <th class="do">✓ Doğru</th>
+            <th class="dont">✗ Yanlış</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color: var(--text); font-weight: 600;">Dil</td>
+            <td class="do">Türkçe öncelikli, teknik terimler İngilizce</td>
+            <td class="dont">Tam İngilizce cümleler</td>
+          </tr>
+          <tr>
+            <td style="color: var(--text); font-weight: 600;">Sayılar</td>
+            <td class="do">%527, 90 gün, 48 saat</td>
+            <td class="dont">Beşyüzyirmiyedi, doksan gün</td>
+          </tr>
+          <tr>
+            <td style="color: var(--text); font-weight: 600;">Fiil yapısı</td>
+            <td class="do">Aktif: "Biz sağlıyoruz"</td>
+            <td class="dont">Pasif: "Sağlanmaktadır"</td>
+          </tr>
+          <tr>
+            <td style="color: var(--text); font-weight: 600;">İspat</td>
+            <td class="do">Somut rakam + gerçek vaka</td>
+            <td class="dont">Soyut iddia</td>
+          </tr>
+          <tr>
+            <td style="color: var(--text); font-weight: 600;">Teknik terim</td>
+            <td class="do">SEO, GEO, AI, ROAS, CTR, CPA</td>
+            <td class="dont">Açıklanmadan kullanmak</td>
+          </tr>
+          <tr>
+            <td style="color: var(--text); font-weight: 600;">Uzunluk</td>
+            <td class="do">Kısa + güçlü cümleler</td>
+            <td class="dont">Uzun, dolambaçlı paragraflar</td>
+          </tr>
+          <tr>
+            <td style="color: var(--text); font-weight: 600;">Hitap</td>
+            <td class="do">"Siz" ile hitap (saygılı, doğrudan)</td>
+            <td class="dont">Aşırı samimi veya resmi bürokrasi dili</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 7. KOPYA FRAMEWORK ── -->
+  <section>
+    <h2>07 — Kopya Framework & Hook Formülleri</h2>
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="card-title">Ana Framework: Hook → Agitate → Solution → CTA</div>
+      <div class="card-body">Tüm reklam kopyaları, sosyal medya postları ve landing page metinleri bu 4 aşamayı izler.</div>
+    </div>
+
+    <div class="hook-card">
+      <div class="hook-label">Acı Nokta Hook</div>
+      <div class="hook-text">"Müşteri ChatGPT'ye soruyor. Rakibin çıkıyor. Sen çıkmıyorsun."</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-label">Rakam Hook</div>
+      <div class="hook-text">"%527 organik trafik artışı — 90 günde."</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-label">Merak Hook</div>
+      <div class="hook-text">"ChatGPT'de kaç soru senin işletmenden geçti bu ay?"</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-label">Yerel Hook</div>
+      <div class="hook-text">"'En iyi [şehrin] avukatı' diye sorulduğunda ChatGPT seni söylüyor mu?"</div>
+    </div>
+    <div class="hook-card">
+      <div class="hook-label">Sosyal Kanıt Hook</div>
+      <div class="hook-text">"Türkiye'de GEO'yu uygulayan ajanslardan biriyiz."</div>
+    </div>
+  </section>
+
+  <!-- ── 8. İTİRAZ KIRMA ── -->
+  <section>
+    <h2>08 — İtiraz Kırma Mesajları</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>İtiraz</th>
+            <th>Yanıt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color: var(--orange);">"GEO ne demek?"</td>
+            <td style="color: var(--muted);">Google'da görünmek yetmez artık. İnsanlar ChatGPT'ye sorduğunda markanızın çıkması gerekiyor.</td>
+          </tr>
+          <tr>
+            <td style="color: var(--orange);">"SEO'dan farkı ne?"</td>
+            <td style="color: var(--muted);">SEO Google içindir. GEO tüm AI araçlarını kapsar — ChatGPT, Gemini, Perplexity, Claude.</td>
+          </tr>
+          <tr>
+            <td style="color: var(--orange);">"Sonuç garantisi var mı?"</td>
+            <td style="color: var(--muted);">%527 trafik artışı gördüğümüz müşteri vakamız var. Somut veri ve düzenli rapor sunuyoruz.</td>
+          </tr>
+          <tr>
+            <td style="color: var(--orange);">"Fiyat ne kadar?"</td>
+            <td style="color: var(--muted);">Müşteriye özel aylık danışmanlık paketi. Önce kapsamlı analiz, ardından teklif.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 9. MARKA RENKLERİ ── -->
+  <section>
+    <h2>09 — Marka Renk Paleti</h2>
+    <div class="swatch-row">
+      <div class="swatch" style="background: rgba(168,85,247,.15); border-color: rgba(168,85,247,.3);">
+        <div class="swatch-name" style="color: #A855F7;">Primary Purple</div>
+        <div class="swatch-hex" style="color: #A855F7;">#A855F7</div>
+        <div class="swatch-use" style="color: #A855F7;">Ana marka rengi</div>
+      </div>
+      <div class="swatch" style="background: rgba(124,58,237,.15); border-color: rgba(124,58,237,.3);">
+        <div class="swatch-name" style="color: #7C3AED;">Dark Purple</div>
+        <div class="swatch-hex" style="color: #7C3AED;">#7C3AED</div>
+        <div class="swatch-use" style="color: #7C3AED;">Vurgu / İkincil</div>
+      </div>
+      <div class="swatch" style="background: rgba(59,130,246,.15); border-color: rgba(59,130,246,.3);">
+        <div class="swatch-name" style="color: #3B82F6;">Blue</div>
+        <div class="swatch-hex" style="color: #3B82F6;">#3B82F6</div>
+        <div class="swatch-use" style="color: #3B82F6;">Bilgi / Vurgu</div>
+      </div>
+      <div class="swatch" style="background: rgba(249,115,22,.15); border-color: rgba(249,115,22,.3);">
+        <div class="swatch-name" style="color: #F97316;">Orange</div>
+        <div class="swatch-hex" style="color: #F97316;">#F97316</div>
+        <div class="swatch-use" style="color: #F97316;">CTA / Öne çıkarma</div>
+      </div>
+      <div class="swatch" style="background: rgba(253,224,71,.1); border-color: rgba(253,224,71,.3);">
+        <div class="swatch-name" style="color: #FDE047;">Yellow</div>
+        <div class="swatch-hex" style="color: #FDE047;">#FDE047</div>
+        <div class="swatch-use" style="color: #FDE047;">Rozet / Highlight</div>
+      </div>
+      <div class="swatch" style="background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+        <div class="swatch-name">Dark BG</div>
+        <div class="swatch-hex">#0A0A0A</div>
+        <div class="swatch-use">Arka plan</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 10. SOSYAL MEDYA ── -->
+  <section>
+    <h2>10 — Sosyal Medya Kanalları</h2>
+    <div class="platform-grid">
+      <div class="platform-card">
+        <div class="platform-name">Instagram</div>
+        <div class="platform-handle">@botfusions</div>
+        <div class="platform-format">Post · Story · Reel</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">Facebook</div>
+        <div class="platform-handle">Ömer Tokgöz</div>
+        <div class="platform-format">Post · Story · Reel</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">YouTube</div>
+        <div class="platform-handle">@botfusionss</div>
+        <div class="platform-format">Yalnızca Reel</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">TikTok</div>
+        <div class="platform-handle">@botfusions</div>
+        <div class="platform-format">Post · Reel</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">Pinterest</div>
+        <div class="platform-handle">cenk0342</div>
+        <div class="platform-format">Post · AI-Botfusions-GEO Board</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">X (Twitter)</div>
+        <div class="platform-handle">@botfusionss</div>
+        <div class="platform-format">Post · X Premium · 25K limit</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 11. SİSTEM DURUMU ── -->
+  <section>
+    <h2>11 — Sistem & Kampanya Durumu</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Bileşen</th><th>Durum</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="color: white;">Google Ads MCP</td>
+            <td><span class="status-dot green"></span>Aktif</td>
+            <td style="color: var(--muted);">Customer ID: 3646875139</td>
+          </tr>
+          <tr>
+            <td style="color: white;">OmniSocials API</td>
+            <td><span class="status-dot green"></span>Aktif</td>
+            <td style="color: var(--muted);">6 kanal bağlı</td>
+          </tr>
+          <tr>
+            <td style="color: white;">GA4 / GSC Pipeline</td>
+            <td><span class="status-dot yellow"></span>Bekliyor</td>
+            <td style="color: var(--muted);">API key gerekli</td>
+          </tr>
+          <tr>
+            <td style="color: white;">Dönüşüm Takibi</td>
+            <td><span class="status-dot red"></span>Eksik</td>
+            <td style="color: var(--muted);">analytics-tracking skill ile kurulacak</td>
+          </tr>
+          <tr>
+            <td style="color: white;">GEO Kampanyası</td>
+            <td><span class="status-dot yellow"></span>Aktif / Sorunlu</td>
+            <td style="color: var(--muted);">%99.4 bütçe tek keyword'de — dağıtım gerekli</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── ONAY KUTUSU ── -->
+  <div class="confirm-box">
+    <div class="confirm-icon">✅</div>
+    <div class="confirm-title">Şimdi kurumun iletişim diline hakimsin — bunlara hakim misin?</div>
+    <div class="confirm-text">
+      Bu belgeyi okuyan yapay zeka asistanı artık Botfusions'ın ne yaptığını, kiminle konuştuğunu,
+      nasıl yazdığını ve hangi renkleri, hook'ları, kanıt noktalarını kullandığını biliyor.<br><br>
+      <strong style="color: #4ade80;">Marka sesi: Uzman · Dürüst · İddialı · Eğitici</strong><br>
+      <strong style="color: #A855F7;">Framework: Hook → Agitate → Solution → CTA</strong><br>
+      <strong style="color: #F97316;">Ana kanıt: %527 organik trafik artışı, 90 günde</strong>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════ FOOTER ═══ -->
+<footer>
+  <div class="left">
+    <strong>Botfusions AI Reklam Ajansı</strong><br>
+    Marka & Kurumsal İletişim Brief · Mayıs 2026
+  </div>
+  <div class="right">
+    botfusions.com<br>
+    info@botfusions.com · +90 850 302 74 60
+  </div>
+</footer>
+
+</body>
+</html>
