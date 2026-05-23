@@ -1,0 +1,18 @@
+{
+  "_aciklama": "NocoDB MCP bağlantı konfigürasyonu — Claude Desktop veya Cowork için",
+  "_url": "https://nocodb.turklawai.com",
+  "_vps": "VPS 1 (turklawai.com)",
+  "_kurulum": "Aşağıdaki bloğu claude_desktop_config.json → mcpServers içine ekle. Token'ı gerçek değerle güncelle.",
+
+  "mcpServers": {
+    "NocoDB": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://nocodb.turklawai.com/mcp/nccjfizqudysafcg",
+        "--header",
+        "xc-mcp-token: BURAYA_GERCEK_TOKEN_GEL"
+      ]
+    }
+  }
+}

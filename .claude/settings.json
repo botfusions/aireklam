@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run python -c ':*)",
+      "Bash(ls \"Marketing V2/\")",
+      "Bash(ls 04-araclar/*rapor* 04-araclar/*Rapor*)",
+      "mcp__google-ads__list_accessible_accounts",
+      "mcp__google-ads__execute_gaql",
+      "Read(//c/Users/user/AppData/Roaming/Code/User/**)",
+      "Bash(npx -y @trueclicks/google-ads-mcp-js --help)",
+      "PowerShell($public = \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\\\\04-araclar\\\\remotion-kaynak\\\\public\"; $img1 = \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\\\\04-araclar\\\\remotion-kaynak\\\\out\\\\GEO v2.png\"; $img2 = \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\\\\04-araclar\\\\remotion-kaynak\\\\out\\\\The Visibility Report 12052026.png\"; $music = \"C:\\\\Users\\\\user\\\\ONE DRİVER\\\\OneDrive - mebel mobilya\\\\İNDİRİLENLER\\\\mixkit-deep-urban-623 \\(1\\).mp3\"; Copy-Item $img1 \"$public\\\\baslangic.png\" -Force; Copy-Item $img2 \"$public\\\\bit.png\" -Force; Copy-Item $music \"$public\\\\bg-music.mp3\" -Force; \"Kopyalandi:\"; \"  baslangic.png -> $\\(\\(Get-Item \"$public\\\\baslangic.png\"\\).Length / 1MB.ToString\\('0.0'\\)\\) MB\"; \"  bit.png -> $\\(\\(Get-Item \"$public\\\\bit.png\"\\).Length / 1MB.ToString\\('0.0'\\)\\) MB\"; \"  bg-music.mp3 -> $\\(\\(Get-Item \"$public\\\\bg-music.mp3\"\\).Length / 1MB.ToString\\('0.0'\\)\\) MB\")",
+      "PowerShell(cd \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\"; $dirs = Get-ChildItem -Directory | Select-Object Name; foreach \\($d in $dirs\\) { $count = \\(Get-ChildItem -Path $d.FullName -Recurse -File -ErrorAction SilentlyContinue | Measure-Object\\).Count; $size = [math]::Round\\(\\(\\(Get-ChildItem -Path $d.FullName -Recurse -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum\\).Sum / 1MB\\), 1\\); \"{0,-40} {1,5} dosya  {2,8} MB\" -f $d.Name, $count, $size })",
+      "PowerShell(cd \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\"; Get-ChildItem -File | Where-Object { $_.Name -notmatch '^\\\\.' } | Select-Object Name, @{N='Size_KB';E={[math]::Round\\($_.Length/1KB,1\\)}}, LastWriteTime | Sort-Object LastWriteTime -Descending | Format-Table -AutoSize)",
+      "PowerShell(cd \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\"; \"=== 05-dashboard/ ===\"; Get-ChildItem \"05-dashboard\" -ErrorAction SilentlyContinue | Format-Table Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}} -AutoSize; \"\"; \"=== 05-gsc-nocodb/ ===\"; Get-ChildItem \"05-gsc-nocodb\" -Recurse -ErrorAction SilentlyContinue | Format-Table Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}} -AutoSize; \"\"; \"=== _COP_KLASORU ===\"; Get-ChildItem \"_COP_KLASORU_SILME_ONCESI_KONTROL\" -Recurse -ErrorAction SilentlyContinue | Format-Table Name -AutoSize)",
+      "Bash(powershell \"Get-ChildItem -Path 'c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı' -Recurse | Format-Tree\")",
+      "Bash(grep -E \"\\\\.\\(png|jpg|jpeg|gif|bmp|svg|html|py|bat|ps1|sql\\)$\")",
+      "PowerShell($root = \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\"; Move-Item \"$root\\\\botfusions-brand-identity-poster.png\" \"$root\\\\02-gorseller\\\\brand-identity-poster.png\" -Force; \"1. brand-identity-poster.png -> 02-gorseller/\")",
+      "PowerShell($root = \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\"; $dest = \"$root\\\\01-reklam-kopyalari\\\\competitor-karsilastirmalar\"; New-Item -ItemType Directory -Path $dest -Force | Out-Null; Move-Item \"$root\\\\alafranga-vs-turkish-translation-office.html\" \"$dest\\\\\" -Force; Move-Item \"$root\\\\alafranga-vs-turklingua.html\" \"$dest\\\\\" -Force; Move-Item \"$root\\\\alafranga-vs-turkish-translators.html\" \"$dest\\\\\" -Force; \"2. 3 karsilastirma HTML -> 01-reklam-kopyalari/competitor-karsilastirmalar/\"; Get-ChildItem $dest | Select-Object Name)",
+      "PowerShell($root = \"c:\\\\Users\\\\user\\\\Downloads\\\\Z.ai_claude code\\\\AI  Reklam  Ajansı\"; Remove-Item \"$root\\\\_COP_KLASORU_SILME_ONCESI_KONTROL\" -Recurse -Force; \"3. _COP_KLASORU silindi\")",
+      "Bash(python -c \"import py_compile; py_compile.compile\\('gsc_api_server.py', doraise=True\\); print\\('OK'\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(git add *)"
+    ]
+  }
+}

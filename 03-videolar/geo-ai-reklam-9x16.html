@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <!-- HyperFrames: 9:16 — 1080x1920 — 30s — 30fps -->
+  <meta name="hf:width"    content="1080">
+  <meta name="hf:height"   content="1920">
+  <meta name="hf:duration" content="30">
+  <meta name="hf:fps"      content="30">
+  <title>Botfusions GEO — ChatGPT Claude Gemini Seni Görüyor mu?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #07070f;
+      --fg:      #f0f0ff;
+      --purple:  #A855F7;
+      --cyan:    #22d3ee;
+      --orange:  #F97316;
+      --red:     #ef4444;
+      --green:   #10b981;
+      --amber:   #f59e0b;
+    }
+
+    html {
+      width: 1080px;
+      height: 1920px;
+      background: var(--bg);
+    }
+
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--fg);
+      position: relative;
+    }
+
+    /* ── SCALE FOR BROWSER PREVIEW ── */
+    @media screen {
+      html { transform-origin: top left; transform: scale(var(--preview-scale, 0.45)); }
+    }
+
+    /* ══════════════════════════════════════
+       PERSISTENT BACKGROUND LAYER
+    ══════════════════════════════════════ */
+    #bg-layer {
+      position: absolute; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    #particle-canvas {
+      position: absolute; inset: 0;
+    }
+
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(160px);
+      opacity: 0;
+    }
+    .glow-purple {
+      width: 800px; height: 800px;
+      background: var(--purple);
+      top: 400px; left: -200px;
+    }
+    .glow-cyan {
+      width: 600px; height: 600px;
+      background: var(--cyan);
+      top: 900px; right: -100px;
+    }
+    .glow-orange {
+      width: 500px; height: 500px;
+      background: var(--orange);
+      bottom: 200px; left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #ghost-text {
+      position: absolute;
+      font-size: 680px;
+      font-weight: 900;
+      color: var(--purple);
+      opacity: 0.04;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      user-select: none;
+      letter-spacing: -0.05em;
+    }
+
+    /* Grid lines */
+    .grid-lines {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(168,85,247,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168,85,247,0.06) 1px, transparent 1px);
+      background-size: 108px 192px;
+    }
+
+    /* ══════════════════════════════════════
+       SCENES
+    ══════════════════════════════════════ */
+    .scene {
+      position: absolute; inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    .scene-content {
+      width: 100%;
+      height: 100%;
+      padding: 120px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 32px;
+      box-sizing: border-box;
+    }
+
+    /* ── SCENE 1: OPENING (0–5s) ── */
+    #s1 { z-index: 10; }
+
+    .ai-universe {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      margin-bottom: 40px;
+    }
+
+    .ai-orb {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .ai-orb-circle {
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 72px;
+      font-weight: 900;
+      border: 3px solid;
+      position: relative;
+    }
+
+    .ai-orb-circle::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px solid;
+      opacity: 0.3;
+      animation: orbit-ring 3s linear infinite;
+    }
+
+    @keyframes orbit-ring {
+      from { transform: rotate(0deg) scale(1); opacity: 0.3; }
+      50%  { transform: rotate(180deg) scale(1.05); opacity: 0.15; }
+      to   { transform: rotate(360deg) scale(1); opacity: 0.3; }
+    }
+
+    .orb-chatgpt { background: rgba(16,185,129,0.12); border-color: var(--green);  color: var(--green); }
+    .orb-chatgpt::after { border-color: var(--green); }
+    .orb-claude  { background: rgba(245,158,11,0.12); border-color: var(--amber);  color: var(--amber); }
+    .orb-claude::after  { border-color: var(--amber); }
+    .orb-gemini  { background: rgba(66,133,244,0.12); border-color: #4285f4; color: #4285f4; }
+    .orb-gemini::after  { border-color: #4285f4; }
+
+    .ai-orb-label {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .label-chatgpt { color: var(--green); }
+    .label-claude  { color: var(--amber); }
+    .label-gemini  { color: #4285f4; }
+
+    #s1-headline {
+      font-size: 96px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.05;
+      color: var(--fg);
+      letter-spacing: -0.02em;
+    }
+    #s1-sub {
+      font-size: 36px;
+      font-weight: 400;
+      text-align: center;
+      color: rgba(240,240,255,0.55);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    #s1-year {
+      font-family: 'Space Mono', monospace;
+      font-size: 28px;
+      text-align: center;
+      color: var(--purple);
+      letter-spacing: 0.3em;
+    }
+
+    /* ── SCENE 2: STATS (5–10s) ── */
+    #s2 { z-index: 10; }
+
+    .stat-label-top {
+      font-size: 36px;
+      font-weight: 600;
+      text-align: center;
+      color: rgba(240,240,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+    #counter-wrap {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      line-height: 1;
+    }
+    #counter-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 320px;
+      font-weight: 700;
+      color: var(--purple);
+      letter-spacing: -0.04em;
+    }
+    #counter-pct {
+      font-family: 'Space Mono', monospace;
+      font-size: 160px;
+      font-weight: 700;
+      color: var(--purple);
+      padding-top: 40px;
+    }
+    #stat-desc {
+      font-size: 52px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--fg);
+      line-height: 1.2;
+    }
+    #stat-desc span { color: var(--cyan); }
+    #stat-source {
+      font-family: 'Space Mono', monospace;
+      font-size: 24px;
+      text-align: center;
+      color: rgba(240,240,255,0.3);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── SCENE 3: THE QUESTION (10–14s) ── */
+    #s3 { z-index: 10; }
+
+    #s3-ask {
+      font-size: 72px;
+      font-weight: 900;
+      text-align: center;
+      color: rgba(240,240,255,0.45);
+      line-height: 1.15;
+    }
+    #s3-brands {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .brand-pill {
+      padding: 16px 48px;
+      border-radius: 60px;
+      font-size: 44px;
+      font-weight: 800;
+      border: 2px solid;
+      letter-spacing: 0.03em;
+    }
+    .pill-gpt    { color: var(--green); border-color: var(--green); background: rgba(16,185,129,0.1); }
+    .pill-claude { color: var(--amber); border-color: var(--amber); background: rgba(245,158,11,0.1); }
+    .pill-gemini { color: #4285f4;      border-color: #4285f4;      background: rgba(66,133,244,0.1); }
+
+    #s3-question {
+      font-size: 100px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.1;
+      color: var(--fg);
+    }
+    #s3-question em {
+      font-style: normal;
+      color: var(--red);
+    }
+
+    /* ── SCENE 4: THE PROBLEM (14–19s) ── */
+    #s4 { z-index: 10; }
+
+    #s4-title {
+      font-size: 54px;
+      font-weight: 700;
+      text-align: center;
+      color: rgba(240,240,255,0.5);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .visibility-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 36px 60px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      gap: 20px;
+    }
+    .vis-brand { font-size: 48px; font-weight: 800; letter-spacing: 0.03em; }
+    .vis-spacer { flex: 1; }
+    .vis-status {
+      font-size: 52px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .vis-status .check { color: var(--green); }
+    .vis-status .cross { color: var(--red); }
+    .vis-status .found-text { font-size: 32px; font-weight: 600; letter-spacing: 0.05em; }
+
+    .row-competitor { border-color: rgba(255,255,255,0.12); }
+    .row-you        { border-color: var(--red); background: rgba(239,68,68,0.06); }
+
+    .you-label { color: var(--red); }
+    .competitor-label { color: rgba(240,240,255,0.7); }
+
+    #s4-impact {
+      font-size: 52px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.25;
+      color: var(--fg);
+    }
+    #s4-impact strong { color: var(--red); }
+
+    /* ── SCENE 5: SOLUTION (19–25s) ── */
+    #s5 { z-index: 10; }
+
+    #s5-tag {
+      font-size: 30px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--purple);
+      font-family: 'Space Mono', monospace;
+    }
+    #s5-logo {
+      font-size: 88px;
+      font-weight: 900;
+      text-align: center;
+      color: var(--fg);
+      letter-spacing: -0.02em;
+    }
+    #s5-logo span { color: var(--purple); }
+    #s5-service {
+      font-size: 64px;
+      font-weight: 900;
+      text-align: center;
+      color: var(--fg);
+    }
+    #s5-service em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    .check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      font-size: 48px;
+      font-weight: 700;
+    }
+    .check-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(168,85,247,0.2);
+      border: 2px solid var(--purple);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      flex-shrink: 0;
+      color: var(--purple);
+    }
+    .check-icon.done {
+      background: rgba(16,185,129,0.15);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .divider-line {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--purple), transparent);
+    }
+
+    /* ── SCENE 6: CTA (25–30s) ── */
+    #s6 { z-index: 10; }
+
+    #s6-eyebrow {
+      font-size: 30px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(240,240,255,0.4);
+      font-family: 'Space Mono', monospace;
+    }
+    #s6-headline {
+      font-size: 108px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.0;
+      color: var(--fg);
+      letter-spacing: -0.03em;
+    }
+    #s6-headline span { color: var(--purple); }
+    #s6-url {
+      font-family: 'Space Mono', monospace;
+      font-size: 44px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--cyan);
+      letter-spacing: 0.05em;
+      padding: 30px 60px;
+      border: 2px solid var(--cyan);
+      border-radius: 12px;
+      background: rgba(34,211,238,0.07);
+    }
+    #s6-phone {
+      font-family: 'Space Mono', monospace;
+      font-size: 36px;
+      text-align: center;
+      color: rgba(240,240,255,0.45);
+      letter-spacing: 0.08em;
+    }
+    #s6-pulse-ring {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      border: 2px solid var(--purple);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      width: 0%;
+      z-index: 100;
+      box-shadow: 0 0 16px var(--purple);
+    }
+
+    /* ── WATERMARK ── */
+    #watermark {
+      position: absolute;
+      bottom: 60px; right: 60px;
+      font-size: 26px;
+      font-weight: 700;
+      color: rgba(168,85,247,0.45);
+      letter-spacing: 0.1em;
+      z-index: 50;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body data-duration="30">
+
+  <!-- ══ BACKGROUND LAYER ══ -->
+  <div id="bg-layer">
+    <canvas id="particle-canvas" width="1080" height="1920"></canvas>
+    <div class="grid-lines"></div>
+    <div class="glow glow-purple" id="glow-p"></div>
+    <div class="glow glow-cyan"   id="glow-c"></div>
+    <div class="glow glow-orange" id="glow-o"></div>
+    <div id="ghost-text">AI</div>
+  </div>
+
+  <!-- ══ SCENE 1: OPENING (0–5s) ══ -->
+  <div class="scene" id="s1" data-start="0" data-end="5">
+    <div class="scene-content" style="justify-content:center; gap:60px;">
+      <div id="s1-year">YAPAY ZEKA ÇAĞI · 2025</div>
+      <div class="ai-universe">
+        <div class="ai-orb" id="orb-gpt">
+          <div class="ai-orb-circle orb-chatgpt">G</div>
+          <div class="ai-orb-label label-chatgpt">ChatGPT</div>
+        </div>
+        <div class="ai-orb" id="orb-claude">
+          <div class="ai-orb-circle orb-claude">C</div>
+          <div class="ai-orb-label label-claude">Claude</div>
+        </div>
+        <div class="ai-orb" id="orb-gemini">
+          <div class="ai-orb-circle orb-gemini">✦</div>
+          <div class="ai-orb-label label-gemini">Gemini</div>
+        </div>
+      </div>
+      <div id="s1-headline">Yeni Arama<br>Motoru</div>
+      <div id="s1-sub">Milyonlarca soru soruldu</div>
+    </div>
+  </div>
+
+  <!-- ══ SCENE 2: STATS (5–10s) ══ -->
+  <div class="scene" id="s2" data-start="5" data-end="10">
+    <div class="scene-content" style="align-items:center; gap:48px;">
+      <div class="stat-label-top">Müşterilerin</div>
+      <div id="counter-wrap">
+        <div id="counter-num">0</div>
+        <div id="counter-pct">%</div>
+      </div>
+      <div id="stat-desc">artık cevap için<br><span>AI'a soruyor</span></div>
+      <div class="divider-line"></div>
+      <div id="stat-source">KAYNAK: HubSpot AI Tüketici Raporu · 2025</div>
+    </div>
+  </div>
+
+  <!-- ══ SCENE 3: THE QUESTION (10–14s) ══ -->
+  <div class="scene" id="s3" data-start="10" data-end="14">
+    <div class="scene-content" style="align-items:center; gap:60px;">
+      <div id="s3-ask">Onlar soruyor…</div>
+      <div id="s3-brands">
+        <div class="brand-pill pill-gpt">ChatGPT</div>
+        <div class="brand-pill pill-claude">Claude</div>
+        <div class="brand-pill pill-gemini">Gemini</div>
+      </div>
+      <div id="s3-question">Seni<br><em>görüyor mu?</em></div>
+    </div>
+  </div>
+
+  <!-- ══ SCENE 4: THE PROBLEM (14–19s) ══ -->
+  <div class="scene" id="s4" data-start="14" data-end="19">
+    <div class="scene-content" style="gap:36px;">
+      <div id="s4-title">AI Arama Sonuçları</div>
+      <div class="visibility-row row-competitor">
+        <div class="vis-brand competitor-label">Rakibiniz</div>
+        <div class="vis-spacer"></div>
+        <div class="vis-status">
+          <span class="check">✓</span>
+          <span class="found-text" style="color:var(--green);">GÖRÜNÜR</span>
+        </div>
+      </div>
+      <div class="visibility-row row-competitor">
+        <div class="vis-brand competitor-label">Rakibiniz 2</div>
+        <div class="vis-spacer"></div>
+        <div class="vis-status">
+          <span class="check">✓</span>
+          <span class="found-text" style="color:var(--green);">GÖRÜNÜR</span>
+        </div>
+      </div>
+      <div class="visibility-row row-you" id="row-you">
+        <div class="vis-brand you-label">SİZ</div>
+        <div class="vis-spacer"></div>
+        <div class="vis-status">
+          <span class="cross">✗</span>
+          <span class="found-text" style="color:var(--red);">BULUNAMADI</span>
+        </div>
+      </div>
+      <div id="s4-impact">Müşteriniz soruyor.<br><strong>Rakibinizi buluyor.</strong></div>
+    </div>
+  </div>
+
+  <!-- ══ SCENE 5: SOLUTION (19–25s) ══ -->
+  <div class="scene" id="s5" data-start="19" data-end="25">
+    <div class="scene-content" style="align-items:center; gap:48px;">
+      <div id="s5-tag">ÇÖZÜM</div>
+      <div id="s5-logo">Bot<span>fusions</span></div>
+      <div id="s5-service"><em>GEO</em> Hizmeti</div>
+      <div class="divider-line"></div>
+      <div class="check-list" style="width:100%;">
+        <div class="check-item" id="ci1">
+          <div class="check-icon done" id="icon1">✓</div>
+          <span>ChatGPT'de görünür ol</span>
+        </div>
+        <div class="check-item" id="ci2">
+          <div class="check-icon done" id="icon2">✓</div>
+          <span>Claude'da görünür ol</span>
+        </div>
+        <div class="check-item" id="ci3">
+          <div class="check-icon done" id="icon3">✓</div>
+          <span>Gemini'de görünür ol</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCENE 6: CTA (25–30s) ══ -->
+  <div class="scene" id="s6" data-start="25" data-end="30">
+    <div id="s6-pulse-ring"></div>
+    <div class="scene-content" style="align-items:center; gap:52px; position:relative; z-index:2;">
+      <div id="s6-eyebrow">AI'DA YERİNİ AL</div>
+      <div id="s6-headline">Görünür<br>Ol <span>Şimdi</span></div>
+      <div id="s6-url">botfusions.com/geo-hizmet</div>
+      <div id="s6-phone">+90 850 302 74 60</div>
+    </div>
+  </div>
+
+  <!-- ══ UI CHROME ══ -->
+  <div id="progress-bar"></div>
+  <div id="watermark">Botfusions</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+  /* ════════════════════════════════════════════
+     BROWSER PREVIEW SCALE
+  ════════════════════════════════════════════ */
+  (function() {
+    const targetH = window.innerHeight || 860;
+    const scale = Math.min(targetH / 1920, (window.innerWidth || 500) / 1080);
+    document.documentElement.style.setProperty('--preview-scale', scale);
+    document.documentElement.style.width  = (1080 * scale) + 'px';
+    document.documentElement.style.height = (1920 * scale) + 'px';
+  })();
+
+  /* ════════════════════════════════════════════
+     PARTICLE SYSTEM
+  ════════════════════════════════════════════ */
+  const canvas = document.getElementById('particle-canvas');
+  const ctx    = canvas.getContext('2d');
+  const COLORS  = ['#A855F7','#22d3ee','#F97316','#f0f0ff'];
+  const particles = [];
+  for (let i = 0; i < 90; i++) {
+    particles.push({
+      x: Math.random() * 1080,
+      y: Math.random() * 1920,
+      r: Math.random() * 2.5 + 0.5,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: Math.random() * 0.5 + 0.1,
+    });
+  }
+  function drawParticles() {
+    ctx.clearRect(0, 0, 1080, 1920);
+    for (const p of particles) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = 1080; if (p.x > 1080) p.x = 0;
+      if (p.y < 0) p.y = 1920; if (p.y > 1920) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  /* ════════════════════════════════════════════
+     SYNTHETIC MUSIC — Web Audio API
+     Techno pulse: 128 BPM, 4/4
+  ════════════════════════════════════════════ */
+  let audioCtx = null;
+  function startMusic() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const bpm  = 128;
+    const beat = 60 / bpm;
+
+    /* Master compressor */
+    const comp = audioCtx.createDynamicsCompressor();
+    comp.threshold.value = -12;
+    comp.ratio.value     = 4;
+    comp.connect(audioCtx.destination);
+
+    /* Reverb */
+    function makeReverb(duration, decay) {
+      const buf = audioCtx.createBuffer(2, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+      for (let c = 0; c < 2; c++) {
+        const d = buf.getChannelData(c);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, decay);
+      }
+      const cv = audioCtx.createConvolver();
+      cv.buffer = buf;
+      return cv;
+    }
+    const rev = makeReverb(1.5, 3);
+    rev.connect(comp);
+
+    /* Kick drum */
+    function kick(t) {
+      const osc = audioCtx.createOscillator();
+      const env = audioCtx.createGain();
+      osc.connect(env); env.connect(comp);
+      osc.frequency.setValueAtTime(180, t);
+      osc.frequency.exponentialRampToValueAtTime(40, t + 0.06);
+      env.gain.setValueAtTime(1.2, t);
+      env.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      osc.start(t); osc.stop(t + 0.25);
+    }
+
+    /* Hi-hat */
+    function hat(t, vol) {
+      const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.08, audioCtx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const src = audioCtx.createBufferSource();
+      const flt = audioCtx.createBiquadFilter();
+      const env = audioCtx.createGain();
+      src.buffer = buf;
+      flt.type = 'highpass'; flt.frequency.value = 8000;
+      src.connect(flt); flt.connect(env); env.connect(comp);
+      env.gain.setValueAtTime(vol, t);
+      env.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+      src.start(t);
+    }
+
+    /* Synth pad */
+    function pad(freq, startT, dur, vol) {
+      const osc  = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const env  = audioCtx.createGain();
+      osc.type  = 'sawtooth'; osc.frequency.value = freq;
+      osc2.type = 'sawtooth'; osc2.frequency.value = freq * 1.003;
+      osc.connect(env); osc2.connect(env);
+      env.connect(rev);
+      const g = audioCtx.createGain();
+      env.connect(g); g.connect(comp);
+      g.gain.value = vol * 0.12;
+      env.gain.setValueAtTime(0, startT);
+      env.gain.linearRampToValueAtTime(1, startT + 0.3);
+      env.gain.setValueAtTime(1, startT + dur - 0.3);
+      env.gain.linearRampToValueAtTime(0, startT + dur);
+      osc.start(startT); osc2.start(startT);
+      osc.stop(startT + dur); osc2.stop(startT + dur);
+    }
+
+    /* Bass line */
+    function bass(freq, t, dur) {
+      const osc = audioCtx.createOscillator();
+      const env = audioCtx.createGain();
+      const flt = audioCtx.createBiquadFilter();
+      osc.type = 'sawtooth'; osc.frequency.value = freq;
+      flt.type = 'lowpass'; flt.frequency.value = 300; flt.Q.value = 4;
+      osc.connect(flt); flt.connect(env); env.connect(comp);
+      env.gain.setValueAtTime(0.8, t);
+      env.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur);
+    }
+
+    const now = audioCtx.currentTime + 0.05;
+    const TOTAL = 30;
+    const bars  = Math.ceil(TOTAL / (beat * 4));
+
+    /* Chord progression: Am → F → C → G (Aeolian) */
+    const chords = [
+      [220, 261.6, 329.6],  // Am
+      [174.6,220,261.6],    // F
+      [261.6,329.6,392],    // C
+      [196, 246.9,293.7],   // G
+    ];
+    const bassNotes = [110, 87.3, 130.8, 98];
+
+    for (let bar = 0; bar < bars; bar++) {
+      const barStart = now + bar * beat * 4;
+      const chord    = chords[bar % 4];
+      const bNote    = bassNotes[bar % 4];
+
+      /* Kick: beats 1 & 3 */
+      kick(barStart);
+      kick(barStart + beat * 2);
+
+      /* Hi-hats: every 8th note */
+      for (let h = 0; h < 8; h++) {
+        hat(barStart + h * beat * 0.5, h % 2 === 0 ? 0.45 : 0.25);
+      }
+
+      /* Pad chord */
+      chord.forEach(f => pad(f, barStart, beat * 4, 0.9));
+
+      /* Bass */
+      bass(bNote,      barStart,             beat * 0.45);
+      bass(bNote,      barStart + beat,      beat * 0.35);
+      bass(bNote * 1.5,barStart + beat * 2,  beat * 0.45);
+      bass(bNote,      barStart + beat * 3,  beat * 0.35);
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     GSAP MASTER TIMELINE
+  ════════════════════════════════════════════ */
+  const DUR = 30;
+  const tl  = gsap.timeline({ paused: true });
+
+  /* Background glows */
+  tl.to('#glow-p', { opacity: 0.18, duration: 2, ease: 'power2.out' }, 0)
+    .to('#glow-c', { opacity: 0.14, duration: 2, ease: 'power2.out' }, 1)
+    .to('#ghost-text', { opacity: 0.04, duration: 2 }, 0);
+
+  /* Progress bar */
+  tl.to('#progress-bar', { width: '100%', duration: DUR, ease: 'none' }, 0);
+
+  /* ── SCENE 1: 0–5s ── */
+  tl.to('#s1', { opacity: 1, duration: 0 }, 0);
+
+  tl.from('#s1-year', { opacity: 0, y: 30, duration: 0.5, ease: 'expo.out' }, 0.1);
+  tl.from('#orb-gpt',    { opacity: 0, x: -180, duration: 0.6, ease: 'expo.out' }, 0.3);
+  tl.from('#orb-claude', { opacity: 0, y:  120, duration: 0.6, ease: 'expo.out' }, 0.45);
+  tl.from('#orb-gemini', { opacity: 0, x:  180, duration: 0.6, ease: 'expo.out' }, 0.3);
+  tl.from('#s1-headline',{ opacity: 0, y: 60, duration: 0.7, ease: 'expo.out' }, 0.8);
+  tl.from('#s1-sub',     { opacity: 0, y: 40, duration: 0.5, ease: 'expo.out' }, 1.1);
+
+  /* Pulse the AI orbs */
+  gsap.to('.ai-orb-circle', {
+    scale: 1.06, duration: 2.2, ease: 'sine.inOut',
+    repeat: -1, yoyo: true, stagger: 0.4
+  });
+
+  /* Exit S1 */
+  tl.to('#s1', { opacity: 0, duration: 0.25, ease: 'power3.in' }, 4.75);
+
+  /* ── SCENE 2: 5–10s ── */
+  tl.to('#s2', { opacity: 1, duration: 0 }, 5);
+  tl.from('.stat-label-top', { opacity: 0, y: 40, duration: 0.5, ease: 'expo.out' }, 5.1);
+  tl.from('#counter-wrap',   { opacity: 0, scale: 0.6, duration: 0.6, ease: 'back.out(1.4)' }, 5.3);
+
+  /* Counter animation: 0 → 62 */
+  const counterObj = { val: 0 };
+  tl.to(counterObj, {
+    val: 62, duration: 2.5, ease: 'power2.out',
+    onUpdate: () => {
+      document.getElementById('counter-num').textContent = Math.round(counterObj.val);
+    }
+  }, 5.5);
+
+  tl.from('#stat-desc',   { opacity: 0, y: 50, duration: 0.5, ease: 'expo.out' }, 7.0);
+  tl.from('.divider-line',{ scaleX: 0, duration: 0.6, ease: 'power2.out' }, 7.4);
+  tl.from('#stat-source', { opacity: 0, duration: 0.4 }, 7.8);
+
+  tl.to('#s2', { opacity: 0, duration: 0.25, ease: 'power3.in' }, 9.75);
+
+  /* ── SCENE 3: 10–14s ── */
+  tl.to('#s3', { opacity: 1, duration: 0 }, 10);
+  tl.from('#s3-ask', { opacity: 0, y: 50, duration: 0.5, ease: 'expo.out' }, 10.1);
+  tl.from('.brand-pill', {
+    opacity: 0, scale: 0.7, duration: 0.5, ease: 'back.out(1.6)',
+    stagger: 0.2
+  }, 10.5);
+  tl.from('#s3-question', { opacity: 0, y: 80, scale: 0.9, duration: 0.7, ease: 'expo.out' }, 11.6);
+
+  /* Glitch flash on "görüyor mu?" */
+  tl.to('#s3-question em', {
+    x: 6, skewX: 4, color: '#ff2244', duration: 0.06, ease: 'none', repeat: 4, yoyo: true
+  }, 12.5);
+
+  tl.to('#s3', { opacity: 0, duration: 0.25, ease: 'power3.in' }, 13.75);
+
+  /* Glow shift to red for problem scene */
+  tl.to('#glow-p', { opacity: 0.05, duration: 0.3 }, 13.8);
+  tl.to('#glow-c', { background: '#ef4444', opacity: 0.12, duration: 0.4 }, 13.8);
+
+  /* ── SCENE 4: 14–19s ── */
+  tl.to('#s4', { opacity: 1, duration: 0 }, 14);
+  tl.from('#s4-title', { opacity: 0, y: 30, duration: 0.4, ease: 'expo.out' }, 14.1);
+  tl.from('.visibility-row', {
+    opacity: 0, x: -80, duration: 0.5, ease: 'expo.out', stagger: 0.25
+  }, 14.4);
+  tl.from('#s4-impact', { opacity: 0, y: 60, duration: 0.6, ease: 'expo.out' }, 15.8);
+
+  /* "SİZ — BULUNAMADI" row pulse */
+  tl.to('#row-you', {
+    boxShadow: '0 0 40px rgba(239,68,68,0.4)', duration: 0.5,
+    repeat: 3, yoyo: true
+  }, 16.2);
+
+  tl.to('#s4', { opacity: 0, duration: 0.25, ease: 'power3.in' }, 18.75);
+
+  /* Glow back to purple for solution */
+  tl.to('#glow-p', { background: '#A855F7', opacity: 0.22, duration: 0.5 }, 18.8);
+  tl.to('#glow-c', { background: '#22d3ee', opacity: 0.14, duration: 0.5 }, 18.8);
+  tl.to('#glow-o', { opacity: 0.16, duration: 0.5 }, 18.8);
+
+  /* ── SCENE 5: 19–25s ── */
+  tl.to('#s5', { opacity: 1, duration: 0 }, 19);
+  tl.from('#s5-tag',     { opacity: 0, y: 30, duration: 0.4, ease: 'expo.out' }, 19.1);
+  tl.from('#s5-logo',    { opacity: 0, scale: 0.5, duration: 0.7, ease: 'back.out(1.5)' }, 19.3);
+  tl.from('#s5-service', { opacity: 0, y: 50, duration: 0.5, ease: 'expo.out' }, 19.9);
+  tl.from('#s5 .divider-line', { scaleX: 0, duration: 0.5, ease: 'power2.out' }, 20.3);
+
+  /* Check items stagger */
+  tl.from('#ci1', { opacity: 0, x: -60, duration: 0.5, ease: 'expo.out' }, 20.6);
+  tl.from('#ci2', { opacity: 0, x: -60, duration: 0.5, ease: 'expo.out' }, 21.1);
+  tl.from('#ci3', { opacity: 0, x: -60, duration: 0.5, ease: 'expo.out' }, 21.6);
+
+  /* Icons pop */
+  tl.from('#icon1,#icon2,#icon3', {
+    scale: 0, duration: 0.35, ease: 'back.out(2)', stagger: 0.5
+  }, 20.7);
+
+  tl.to('#s5', { opacity: 0, duration: 0.25, ease: 'power3.in' }, 24.75);
+
+  /* ── SCENE 6: 25–30s ── */
+  tl.to('#s6', { opacity: 1, duration: 0 }, 25);
+  tl.from('#s6-eyebrow',  { opacity: 0, y: 30, duration: 0.4, ease: 'expo.out' }, 25.1);
+  tl.from('#s6-headline', { opacity: 0, scale: 0.7, duration: 0.7, ease: 'back.out(1.3)' }, 25.4);
+  tl.from('#s6-url',      { opacity: 0, y: 50, duration: 0.5, ease: 'expo.out' }, 26.1);
+  tl.from('#s6-phone',    { opacity: 0, duration: 0.4 }, 26.6);
+
+  /* CTA pulse ring */
+  tl.to('#s6-pulse-ring', { opacity: 0.3, scale: 1.5, duration: 1.2, ease: 'power2.out', repeat: 3, yoyo: false }, 26.5);
+
+  /* URL glow pulse */
+  gsap.to('#s6-url', {
+    boxShadow: '0 0 40px rgba(34,211,238,0.5)', duration: 1,
+    repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 26
+  });
+
+  /* ════════════════════════════════════════════
+     AUTOPLAY ON LOAD
+  ════════════════════════════════════════════ */
+  document.addEventListener('click', startMusic, { once: true });
+  document.addEventListener('keydown', startMusic, { once: true });
+
+  /* Auto-start after 300ms */
+  setTimeout(() => {
+    startMusic();
+    tl.play();
+    /* Loop */
+    tl.eventCallback('onComplete', () => {
+      setTimeout(() => {
+        counterObj.val = 0;
+        document.getElementById('counter-num').textContent = '0';
+        tl.restart();
+      }, 800);
+    });
+  }, 300);
+
+  </script>
+</body>
+</html>

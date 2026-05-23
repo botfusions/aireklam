@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google AI Görünürlük — Yeni Reklam Grubu</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: #0A0A0A;
+    color: #E5E7EB;
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #7C3AED 0%, #A855F7 60%, #3B82F6 100%);
+    border-radius: 16px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .header p { color: rgba(255,255,255,0.75); font-size: 14px; }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 12px;
+    margin-right: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  /* Cards */
+  .card {
+    background: #111827;
+    border: 1px solid #1F2937;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #A855F7;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title span { font-size: 20px; }
+
+  /* Alert */
+  .alert {
+    background: rgba(249, 115, 22, 0.1);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-left: 4px solid #F97316;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #FDE68A;
+  }
+  .alert strong { color: #F97316; display: block; margin-bottom: 4px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #1F2937;
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #1F2937;
+    color: #D1D5DB;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(168, 85, 247, 0.05); }
+
+  .match-exact {
+    background: rgba(168, 85, 247, 0.15);
+    color: #C084FC;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+  .match-phrase {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93C5FD;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+  .priority-high { color: #A855F7; font-size: 16px; letter-spacing: -2px; }
+  .priority-mid { color: #6B7280; font-size: 16px; letter-spacing: -2px; }
+
+  /* Angles */
+  .angles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .angle-card {
+    background: #0D1117;
+    border: 1px solid #1F2937;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .angle-letter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #A855F7;
+    margin-bottom: 4px;
+  }
+  .angle-name { font-size: 12px; font-weight: 600; color: #F9FAFB; margin-bottom: 4px; }
+  .angle-desc { font-size: 11px; color: #6B7280; }
+
+  /* Headlines */
+  .headline-group { margin-bottom: 20px; }
+  .headline-group-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+  .headline-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0D1117;
+    border: 1px solid #1F2937;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .headline-item:hover { border-color: #A855F7; }
+  .headline-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #374151;
+    min-width: 28px;
+  }
+  .headline-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #F9FAFB;
+    padding: 0 12px;
+  }
+  .headline-chars {
+    font-size: 11px;
+    color: #10B981;
+    font-weight: 600;
+    min-width: 48px;
+    text-align: right;
+  }
+
+  /* Descriptions */
+  .desc-item {
+    background: #0D1117;
+    border: 1px solid #1F2937;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .desc-item:hover { border-color: #3B82F6; }
+  .desc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .desc-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3B82F6;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .desc-chars { font-size: 11px; color: #10B981; font-weight: 600; }
+  .desc-text { font-size: 14px; color: #D1D5DB; line-height: 1.6; }
+
+  /* Steps */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 18px;
+    counter-increment: step;
+  }
+  .step-num {
+    min-width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #7C3AED, #A855F7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .step-content { padding-top: 4px; }
+  .step-title { font-size: 14px; font-weight: 600; color: #F9FAFB; margin-bottom: 4px; }
+  .step-detail { font-size: 13px; color: #6B7280; }
+
+  /* Code block */
+  .code-block {
+    background: #0D1117;
+    border: 1px solid #1F2937;
+    border-radius: 10px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #A5B4FC;
+    line-height: 1.7;
+    margin-top: 10px;
+  }
+  .code-block .comment { color: #374151; }
+
+  /* URL display */
+  .url-display {
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .url-label { color: #6B7280; font-size: 12px; }
+  .url-value { color: #C084FC; font-weight: 600; }
+
+  /* Negatives */
+  .neg-tag {
+    display: inline-block;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #FCA5A5;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin: 4px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #1F2937;
+    font-size: 12px;
+    color: #374151;
+  }
+  .footer span { color: #A855F7; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Yeni Reklam Grubu: Google AI Görünürlük</h1>
+    <p>Website traffic-Search-1 kampanyası altında açılacak — 18 Nisan 2026</p>
+    <span class="badge">ads-google skill</span>
+    <span class="badge">ad-creative skill</span>
+    <span class="badge">Botfusions GEO</span>
+  </div>
+
+  <!-- Uyarı -->
+  <div class="alert">
+    <strong>⚠️ Önce Dönüşüm Takibini Kur</strong>
+    Bu reklam grubunu açmadan önce botfusions.com/geo-hizmet form submit + telefon tıklama takibi kurulmadan bütçe kör uçuş yapar. → <strong>analytics-tracking skill</strong>
+  </div>
+
+  <!-- Strateji -->
+  <div class="card">
+    <div class="card-title"><span>🎯</span> Strateji Notu</div>
+    <p style="font-size:14px;color:#9CA3AF;line-height:1.7;">
+      Hedef kitle <strong style="color:#A855F7;">problem-aware / solution-unaware</strong>: "Google AI'da görünmüyorum" sorununu hissediyorlar ama GEO terimini bilmiyorlar.
+      Bu reklam grubu onların dilinde konuşacak — teknik jargon yok, somut sonuç ve aciliyet var.
+    </p>
+  </div>
+
+  <!-- Anahtar Kelimeler -->
+  <div class="card">
+    <div class="card-title"><span>🔑</span> Anahtar Kelimeler</div>
+    <p style="font-size:12px;color:#6B7280;margin-bottom:16px;">Kural: Dönüşüm takibi olmadan Broad Match kullanma. Exact + Phrase öncelikli.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Kelime</th>
+          <th>Eşleme</th>
+          <th>Öncelik</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>[google ai görünürlük]</td>
+          <td><span class="match-exact">EXACT</span></td>
+          <td><span class="priority-high">★★★</span></td>
+        </tr>
+        <tr>
+          <td>"google ai görünürlük"</td>
+          <td><span class="match-phrase">PHRASE</span></td>
+          <td><span class="priority-high">★★★</span></td>
+        </tr>
+        <tr>
+          <td>[google ai overviews görünürlük]</td>
+          <td><span class="match-exact">EXACT</span></td>
+          <td><span class="priority-high">★★★</span></td>
+        </tr>
+        <tr>
+          <td>"google yapay zeka görünürlük"</td>
+          <td><span class="match-phrase">PHRASE</span></td>
+          <td><span class="priority-high">★★</span></td>
+        </tr>
+        <tr>
+          <td>"google ai overviews"</td>
+          <td><span class="match-phrase">PHRASE</span></td>
+          <td><span class="priority-high">★★</span></td>
+        </tr>
+        <tr>
+          <td>"yapay zeka arama görünürlüğü"</td>
+          <td><span class="match-phrase">PHRASE</span></td>
+          <td><span class="priority-high">★★</span></td>
+        </tr>
+        <tr>
+          <td>"ai overviews optimizasyon"</td>
+          <td><span class="match-phrase">PHRASE</span></td>
+          <td><span class="priority-mid">★★</span></td>
+        </tr>
+        <tr>
+          <td>"google sge görünürlük"</td>
+          <td><span class="match-phrase">PHRASE</span></td>
+          <td><span class="priority-mid">★</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:18px;">
+      <p style="font-size:12px;color:#6B7280;margin-bottom:10px;">Negatif Kelimeler:</p>
+      <span class="neg-tag">[ücretsiz]</span>
+      <span class="neg-tag">[free]</span>
+      <span class="neg-tag">[nasıl yapılır]</span>
+      <span class="neg-tag">[nedir]</span>
+      <span class="neg-tag">[kurs]</span>
+      <span class="neg-tag">[eğitim]</span>
+      <span class="neg-tag">[tool]</span>
+      <span class="neg-tag">[araç]</span>
+      <span class="neg-tag">[plugin]</span>
+      <span class="neg-tag">[chatbot]</span>
+      <span class="neg-tag">[program]</span>
+      <span class="neg-tag">[yazılım]</span>
+      <span class="neg-tag">[youtube]</span>
+    </div>
+  </div>
+
+  <!-- RSA Reklam -->
+  <div class="card">
+    <div class="card-title"><span>📝</span> RSA Reklam Kopyası</div>
+    <p style="font-size:12px;color:#6B7280;margin-bottom:18px;">≥8 benzersiz başlık + ≥3 açıklama | Hedef: Ad Strength "İyi" veya "Mükemmel"</p>
+
+    <!-- Açılar -->
+    <div class="angles-grid">
+      <div class="angle-card">
+        <div class="angle-letter">A</div>
+        <div class="angle-name">Sorun / Acı</div>
+        <div class="angle-desc">AI'da görünmüyorum kaygısı</div>
+      </div>
+      <div class="angle-card">
+        <div class="angle-letter">B</div>
+        <div class="angle-name">Rakip Tehdidi</div>
+        <div class="angle-desc">Rakiplerim beni geçiyor korkusu</div>
+      </div>
+      <div class="angle-card">
+        <div class="angle-letter">C</div>
+        <div class="angle-name">Kanıt / Sonuç</div>
+        <div class="angle-desc">%527 trafik artışı güveni</div>
+      </div>
+      <div class="angle-card">
+        <div class="angle-letter">D</div>
+        <div class="angle-name">CTA / Aciliyet</div>
+        <div class="angle-desc">Hemen başla, geç kalma</div>
+      </div>
+      <div class="angle-card">
+        <div class="angle-letter">E</div>
+        <div class="angle-name">Kimlik / Otorite</div>
+        <div class="angle-desc">Türkiye'nin GEO ajansı</div>
+      </div>
+    </div>
+
+    <!-- Başlıklar -->
+    <div class="headline-group">
+      <div class="headline-group-label">Açı A — Sorun / Acı</div>
+      <div class="headline-item">
+        <span class="headline-num">H1</span>
+        <span class="headline-text">Google AI'da Görünmüyor musun?</span>
+        <span class="headline-chars">30 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H2</span>
+        <span class="headline-text">AI Aramalar Sizi Atlıyor mu?</span>
+        <span class="headline-chars">28 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H3</span>
+        <span class="headline-text">Google AI'da Kaybolmayın</span>
+        <span class="headline-chars">25 ✓</span>
+      </div>
+    </div>
+
+    <div class="headline-group">
+      <div class="headline-group-label">Açı B — Rakip Tehdidi</div>
+      <div class="headline-item">
+        <span class="headline-num">H4</span>
+        <span class="headline-text">Rakibiniz AI'da Önde mi?</span>
+        <span class="headline-chars">24 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H5</span>
+        <span class="headline-text">AI'da Geride Kalmayın</span>
+        <span class="headline-chars">22 ✓</span>
+      </div>
+    </div>
+
+    <div class="headline-group">
+      <div class="headline-group-label">Açı C — Kanıt / Sonuç</div>
+      <div class="headline-item">
+        <span class="headline-num">H6</span>
+        <span class="headline-text">%527 Trafik Artışı Sağladık</span>
+        <span class="headline-chars">27 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H7</span>
+        <span class="headline-text">ChatGPT'de Markanız Görünsün</span>
+        <span class="headline-chars">28 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H8</span>
+        <span class="headline-text">Google AI Overviews'da Öne Çık</span>
+        <span class="headline-chars">30 ✓</span>
+      </div>
+    </div>
+
+    <div class="headline-group">
+      <div class="headline-group-label">Açı D — CTA / Aciliyet</div>
+      <div class="headline-item">
+        <span class="headline-num">H9</span>
+        <span class="headline-text">Ücretsiz GEO Analizi Alın</span>
+        <span class="headline-chars">25 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H10</span>
+        <span class="headline-text">Hemen GEO Teklifi Alın</span>
+        <span class="headline-chars">22 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H11</span>
+        <span class="headline-text">AI Görünürlüğünüzü Artırın</span>
+        <span class="headline-chars">26 ✓</span>
+      </div>
+    </div>
+
+    <div class="headline-group">
+      <div class="headline-group-label">Açı E — Kimlik / Otorite</div>
+      <div class="headline-item">
+        <span class="headline-num">H12</span>
+        <span class="headline-text">Google AI Görünürlük Ajansı</span>
+        <span class="headline-chars">27 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H13</span>
+        <span class="headline-text">KOBİ'ler İçin AI Görünürlük</span>
+        <span class="headline-chars">27 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H14</span>
+        <span class="headline-text">Botfusions GEO Danışmanlık</span>
+        <span class="headline-chars">26 ✓</span>
+      </div>
+      <div class="headline-item">
+        <span class="headline-num">H15</span>
+        <span class="headline-text">AI'da Görünmek Artık Zorunlu</span>
+        <span class="headline-chars">28 ✓</span>
+      </div>
+    </div>
+
+    <!-- Açıklamalar -->
+    <div style="margin-top:24px;">
+      <p style="font-size:12px;color:#6B7280;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;">Açıklamalar — 90 karakter maks.</p>
+
+      <div class="desc-item">
+        <div class="desc-header">
+          <span class="desc-label">D1 — Değer + CTA</span>
+          <span class="desc-chars">88 ✓</span>
+        </div>
+        <div class="desc-text">Markanız ChatGPT, Google AI ve Perplexity'de görünsün. Ücretsiz GEO analizi için hemen arayın.</div>
+      </div>
+
+      <div class="desc-item">
+        <div class="desc-header">
+          <span class="desc-label">D2 — Rakip + Otorite</span>
+          <span class="desc-chars">83 ✓</span>
+        </div>
+        <div class="desc-text">Google AI Overviews'da rakiplerinizin önüne geçin. Türkiye'nin GEO ajansı Botfusions.</div>
+      </div>
+
+      <div class="desc-item">
+        <div class="desc-header">
+          <span class="desc-label">D3 — Kanıt + Sonuç</span>
+          <span class="desc-chars">74 ✓</span>
+        </div>
+        <div class="desc-text">%527 organik trafik artışı sağladık. Markanız da AI aramalarında öne çıksın.</div>
+      </div>
+
+      <div class="desc-item">
+        <div class="desc-header">
+          <span class="desc-label">D4 — Bağlam + Aciliyet ⭐ Önerilen</span>
+          <span class="desc-chars">87 ✓</span>
+        </div>
+        <div class="desc-text">SEO artık yetmiyor. GEO ile ChatGPT ve Google AI'da görünürlüğünüzü şimdi garantileyin.</div>
+      </div>
+    </div>
+
+    <!-- URL -->
+    <div class="url-display">
+      <div>
+        <div class="url-label">Final URL</div>
+        <div class="url-value">botfusions.com/geo-hizmet</div>
+      </div>
+      <div>
+        <div class="url-label">Path 1</div>
+        <div class="url-value">geo-hizmet</div>
+      </div>
+      <div>
+        <div class="url-label">Path 2</div>
+        <div class="url-value">ai-gorunurluk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kurulum Adımları -->
+  <div class="card">
+    <div class="card-title"><span>🛠️</span> Google Ads UI — Kurulum Adımları</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Yeni Reklam Grubu Oluştur</div>
+          <div class="step-detail">Website traffic-Search-1 → Reklam grupları → + Yeni → Ad: "Google AI Görünürlük" → Teklif: 12-15 TL</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Anahtar Kelimeleri Ekle</div>
+          <div class="step-detail">Exact ve Phrase match kelimeleri yukarıdan gir. Broad match kelimeleri dönüşüm takibi kurulana kadar ekleme.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">RSA Reklamı Oluştur</div>
+          <div class="step-detail">+ Yeni reklam → Duyarlı arama ağı reklamı → H1–H15 başlıkları + D1–D4 açıklamalarını ekle</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Reklam Uzantıları Ekle (Eksik — Acil!)</div>
+          <div class="step-detail">
+            Sitelink (min. 4): "GEO Nedir?", "Ücretsiz Analiz", "Başarı Hikayeleri", "İletişim"<br>
+            Callout (min. 4): "Türkiye'de Öncü GEO Ajansı", "%527 Trafik Artışı", "Ücretsiz İlk Analiz", "ChatGPT + Google AI"
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Negatif Kelime Listesi</div>
+          <div class="step-detail">Yukarıdaki negatif kelimeleri ekle. Hesap düzeyinde Paylaşılan Negatif Liste oluşturmak tercih edilir.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="card">
+    <div class="card-title"><span>📊</span> Beklenti — İlk 2 Hafta</div>
+    <table>
+      <thead>
+        <tr><th>Metrik</th><th>Hedef</th><th>Mevcut Durum</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Gösterim</td>
+          <td style="color:#10B981;font-weight:600;">500+</td>
+          <td style="color:#6B7280;">—</td>
+        </tr>
+        <tr>
+          <td>CTR</td>
+          <td style="color:#10B981;font-weight:600;">> %5</td>
+          <td style="color:#F97316;">%3,02 (kampanya ort.)</td>
+        </tr>
+        <tr>
+          <td>Ortalama TBM</td>
+          <td style="color:#10B981;font-weight:600;">10–13 TL</td>
+          <td style="color:#F97316;">11,47 TL</td>
+        </tr>
+        <tr>
+          <td>Dönüşüm</td>
+          <td style="color:#A855F7;font-weight:600;">Takip kurulduktan sonra</td>
+          <td style="color:#EF4444;font-weight:600;">0 ⚠️</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span>Botfusions</span> AI Reklam Ajansı &nbsp;·&nbsp; ads-google + ad-creative skill &nbsp;·&nbsp; 18 Nisan 2026
+  </div>
+
+</div>
+</body>
+</html>

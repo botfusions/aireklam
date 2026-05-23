@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botfusions — Pazarlama Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #111111;
+            --bg-card: #1A1A2E;
+            --bg-card-hover: #1E1E35;
+            --purple: #A855F7;
+            --purple-dark: #7C3AED;
+            --purple-glow: rgba(168, 85, 247, 0.15);
+            --orange: #F97316;
+            --green: #22C55E;
+            --red: #EF4444;
+            --yellow: #EAB308;
+            --text-primary: #FFFFFF;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border: #2A2A3E;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            padding: 0 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 18px;
+        }
+
+        .logo-text { font-weight: 700; font-size: 18px; color: var(--text-primary); }
+        .logo-text span { color: var(--purple); }
+
+        .nav-section { padding: 0 12px; flex: 1; }
+        .nav-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 16px 12px 8px; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 8px; cursor: pointer;
+            color: var(--text-secondary); font-size: 14px; transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+        .nav-item:hover { background: var(--purple-glow); color: var(--text-primary); }
+        .nav-item.active { background: var(--purple-glow); color: var(--purple); }
+        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
+
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; }
+        .user-info { flex: 1; }
+        .user-name { font-size: 13px; font-weight: 500; }
+        .user-role { font-size: 11px; color: var(--text-muted); }
+
+        /* Main Content */
+        .main { margin-left: 240px; flex: 1; padding: 24px 32px; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .header-left h1 { font-size: 24px; font-weight: 700; }
+        .header-left p { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+        .header-right { display: flex; gap: 12px; }
+
+        .btn {
+            padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+            cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .btn-primary { background: var(--purple); color: white; }
+        .btn-primary:hover { background: var(--purple-dark); }
+        .btn-outline { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-outline:hover { border-color: var(--purple); color: var(--text-primary); }
+
+        /* KPI Cards */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: 0.2s;
+        }
+        .kpi-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+
+        .kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .kpi-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+
+        .kpi-value { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .kpi-change { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+        .kpi-change.up { color: var(--green); }
+        .kpi-change.down { color: var(--red); }
+        .kpi-target { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Middle Grid */
+        .mid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); }
+
+        /* Channel Performance */
+        .channel-row {
+            display: flex; align-items: center; padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .channel-row:last-child { border-bottom: none; }
+        .channel-name { width: 120px; font-size: 13px; font-weight: 500; }
+        .channel-bar-container { flex: 1; height: 8px; background: var(--bg-primary); border-radius: 4px; margin: 0 16px; overflow: hidden; }
+        .channel-bar { height: 100%; border-radius: 4px; transition: 0.5s; }
+        .channel-value { width: 80px; font-size: 13px; font-weight: 600; text-align: right; }
+        .channel-change { width: 60px; font-size: 12px; text-align: right; }
+
+        /* Anomaly Alerts */
+        .alert-item {
+            display: flex; align-items: flex-start; gap: 12px; padding: 12px;
+            border-radius: 8px; margin-bottom: 8px;
+        }
+        .alert-red { background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--red); }
+        .alert-yellow { background: rgba(234, 179, 8, 0.1); border-left: 3px solid var(--yellow); }
+        .alert-green { background: rgba(34, 197, 94, 0.1); border-left: 3px solid var(--green); }
+        .alert-icon { font-size: 16px; margin-top: 2px; }
+        .alert-content { flex: 1; }
+        .alert-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .alert-desc { font-size: 12px; color: var(--text-secondary); }
+        .alert-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Bottom Grid */
+        .bottom-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+
+        /* Campaign Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        td { font-size: 13px; padding: 10px 0; border-bottom: 1px solid rgba(42, 42, 62, 0.5); }
+        .status { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+        .status-good { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .status-warn { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+        .status-bad { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+
+        /* Donut Chart placeholder */
+        .donut-container { display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
+        .donut { width: 160px; height: 160px; border-radius: 50%; position: relative; }
+        .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .donut-value { font-size: 24px; font-weight: 700; }
+        .donut-label { font-size: 11px; color: var(--text-muted); }
+        .donut-legend { display: flex; gap: 16px; margin-top: 16px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* Responsive */
+        @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">B</div>
+        <div class="logo-text">Bot<span>fusions</span></div>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-label">Ana Menü</div>
+        <div class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Kampanyalar
+            <span class="nav-badge">3</span>
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            Reklam Analizi
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Görsel Üretim
+        </div>
+
+        <div class="nav-label">Raporlar</div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Haftalık Rapor
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Anomali Uyarıları
+            <span class="nav-badge" style="background:var(--orange)">2</span>
+        </div>
+
+        <div class="nav-label">Araçlar</div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            SEO & GEO
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            Müşteri Yolculuğu
+        </div>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="avatar">C</div>
+        <div class="user-info">
+            <div class="user-name">Cenk</div>
+            <div class="user-role">CMO</div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+    <div class="header">
+        <div class="header-left">
+            <h1>Pazarlama Dashboard</h1>
+            <p>Son güncelleme: 11 Nisan 2026, 09:00 • Nisan 2026 dönemi</p>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Tarih Seç
+            </button>
+            <button class="btn btn-outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export
+            </button>
+            <button class="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Yeni Kampanya
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-label">Toplam Harcama</span>
+                <div class="kpi-icon" style="background: rgba(168,85,247,0.15);">💰</div>
+            </div>
+            <div class="kpi-value">₺1.527</div>
+            <div class="kpi-change down">▼ %8 vs gecen hafta</div>
+            <div class="kpi-target">Hedef: ₺5.000/ay • %30 kullanildi</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-label">Dönüşüm</span>
+                <div class="kpi-icon" style="background: rgba(239,68,68,0.15);">🎯</div>
+            </div>
+            <div class="kpi-value" style="color: var(--red);">0</div>
+            <div class="kpi-change down">⚠️ Takip kurulmadi</div>
+            <div class="kpi-target">Hedef: 10/ay • Acil aksiyon gerekli</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-label">Tıklama Oranı (TO)</span>
+                <div class="kpi-icon" style="background: rgba(34,197,94,0.15);">📈</div>
+            </div>
+            <div class="kpi-value">6.68%</div>
+            <div class="kpi-change up">▲ %12 vs gecen hafta</div>
+            <div class="kpi-target">Sektör ortalaması: %3.17</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-label">CPA</span>
+                <div class="kpi-icon" style="background: rgba(249,115,22,0.15);">💵</div>
+            </div>
+            <div class="kpi-value">—</div>
+            <div class="kpi-change down">0 dönüşüm</div>
+            <div class="kpi-target">Hedef: ₺150/dönüşüm</div>
+        </div>
+    </div>
+
+    <!-- Middle Grid -->
+    <div class="mid-grid">
+        <!-- Channel Performance -->
+        <div class="card">
+            <div class="card-title"><span class="dot"></span> Kanal Performansı</div>
+            <div class="channel-row">
+                <div class="channel-name" style="color:var(--purple)">Google Ads</div>
+                <div class="channel-bar-container"><div class="channel-bar" style="width:85%; background: linear-gradient(90deg, var(--purple), var(--purple-dark));"></div></div>
+                <div class="channel-value">₺1.527</div>
+                <div class="channel-change" style="color:var(--yellow)">Aktif</div>
+            </div>
+            <div class="channel-row">
+                <div class="channel-name" style="color:var(--text-secondary)">Meta Ads</div>
+                <div class="channel-bar-container"><div class="channel-bar" style="width:5%; background: var(--text-muted);"></div></div>
+                <div class="channel-value">₺0</div>
+                <div class="channel-change" style="color:var(--text-muted)">Hazırlanıyor</div>
+            </div>
+            <div class="channel-row">
+                <div class="channel-name" style="color:var(--text-secondary)">LinkedIn</div>
+                <div class="channel-bar-container"><div class="channel-bar" style="width:0%; background: var(--text-muted);"></div></div>
+                <div class="channel-value">₺0</div>
+                <div class="channel-change" style="color:var(--text-muted)">Planlı</div>
+            </div>
+            <div class="channel-row">
+                <div class="channel-name" style="color:var(--text-secondary)">SEO/GEO</div>
+                <div class="channel-bar-container"><div class="channel-bar" style="width:20%; background: linear-gradient(90deg, var(--green), #16A34A);"></div></div>
+                <div class="channel-value">Organik</div>
+                <div class="channel-change" style="color:var(--green)">+527%</div>
+            </div>
+        </div>
+
+        <!-- Anomaly Alerts -->
+        <div class="card">
+            <div class="card-title"><span class="dot" style="background:var(--red)"></span> Anomali Uyarıları</div>
+            <div class="alert-item alert-red">
+                <div class="alert-icon">🔴</div>
+                <div class="alert-content">
+                    <div class="alert-title">Dönüşüm Takibi Eksik</div>
+                    <div class="alert-desc">Google Ads'e dönüşüm sinyali gitmiyor. Analytics-tracking skill ile kurulum gerekli.</div>
+                    <div class="alert-time">10 gün önce tespit edildi</div>
+                </div>
+            </div>
+            <div class="alert-item alert-yellow">
+                <div class="alert-icon">🟡</div>
+                <div class="alert-content">
+                    <div class="alert-title">Tek Kelime %99.4 Bütçe</div>
+                    <div class="alert-desc">"yapay zeka SEO" — 108 tıklama, 0 dönüşüm. Yeni kelime grubu gerekli.</div>
+                    <div class="alert-time">Mart 2026 verisi</div>
+                </div>
+            </div>
+            <div class="alert-item alert-green">
+                <div class="alert-icon">🟢</div>
+                <div class="alert-content">
+                    <div class="alert-title">TO Sektör Ortalamasının Üzerinde</div>
+                    <div class="alert-desc">%6.68 TO — sektör ortalaması %3.17. Reklam kopyası etkili.</div>
+                    <div class="alert-time">Güncel</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Grid -->
+    <div class="bottom-grid">
+        <!-- Campaign Table -->
+        <div class="card">
+            <div class="card-title"><span class="dot"></span> Kampanya Detayları</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kampanya</th>
+                        <th>Durum</th>
+                        <th>Harcama</th>
+                        <th>Tıklama</th>
+                        <th>Gösterim</th>
+                        <th>TO</th>
+                        <th>Dönüşüm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight:500">GEO_Hizmet_Search</td>
+                        <td><span class="status status-warn">Aktif</span></td>
+                        <td>₺1.519</td>
+                        <td>108</td>
+                        <td>1.616</td>
+                        <td style="color:var(--green)">%6.68</td>
+                        <td style="color:var(--red)">0</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:500">GEO_Brand_Exact</td>
+                        <td><span class="status status-good">Aktif</span></td>
+                        <td>₺8.10</td>
+                        <td>1</td>
+                        <td>146</td>
+                        <td>%0.68</td>
+                        <td style="color:var(--red)">0</td>
+                    </tr>
+                    <tr style="opacity:0.5">
+                        <td style="font-weight:500">GEO_Meta_Awareness</td>
+                        <td><span class="status" style="background:rgba(100,116,139,0.15); color:var(--text-muted)">Taslak</span></td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Budget Donut -->
+        <div class="card">
+            <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Bütçe Kullanımı</div>
+            <div class="donut-container">
+                <div class="donut" style="background: conic-gradient(var(--purple) 0deg 108deg, var(--orange) 108deg 144deg, var(--bg-primary) 144deg 360deg);">
+                    <div class="donut-center">
+                        <div class="donut-value">30%</div>
+                        <div class="donut-label">Kullanıldı</div>
+                    </div>
+                </div>
+                <div class="donut-legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div> Search %30</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Brand %10</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--text-muted)"></div> Kalan %60</div>
+                </div>
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                    <span style="color:var(--text-secondary)">Aylık Bütçe</span>
+                    <span style="font-weight:600">₺5.000</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                    <span style="color:var(--text-secondary)">Harcanan</span>
+                    <span style="font-weight:600; color:var(--purple)">₺1.527</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:13px;">
+                    <span style="color:var(--text-secondary)">Kalan</span>
+                    <span style="font-weight:600; color:var(--green)">₺3.473</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- PAGE: Kampanyalar -->
+    <div class="page" id="page-kampanyalar" style="display:none">
+        <div class="header">
+            <div class="header-left">
+                <h1>Kampanyalar</h1>
+                <p>Aktif ve planlanan tüm kampanyalar</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showPage('dashboard')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Dashboard'a Dön
+                </button>
+            </div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+            <div class="card-title"><span class="dot"></span> GEO Hizmet — Google Ads Search</div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px;">
+                <div style="text-align:center; padding:16px; background:var(--bg-primary); border-radius:8px;">
+                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">DURUM</div>
+                    <div style="color:var(--yellow); font-weight:600;">Aktif ⚠️</div>
+                </div>
+                <div style="text-align:center; padding:16px; background:var(--bg-primary); border-radius:8px;">
+                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">HARCAMA</div>
+                    <div style="font-weight:700; font-size:20px;">₺1.519</div>
+                </div>
+                <div style="text-align:center; padding:16px; background:var(--bg-primary); border-radius:8px;">
+                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">TIKLAMA</div>
+                    <div style="font-weight:700; font-size:20px;">108</div>
+                </div>
+                <div style="text-align:center; padding:16px; background:var(--bg-primary); border-radius:8px;">
+                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">DÖNÜŞÜM</div>
+                    <div style="font-weight:700; font-size:20px; color:var(--red);">0</div>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <h4 style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Anahtar Kelimeler</h4>
+                    <div style="background:var(--bg-primary); border-radius:8px; padding:12px;">
+                        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+                            <span style="font-size:13px; color:var(--purple);">yapay zeka SEO</span>
+                            <span style="font-size:12px; color:var(--red);">₺1.511 / %99.4 bütçe</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                            <span style="font-size:13px;">AI arama optimizasyonu</span>
+                            <span style="font-size:12px; color:var(--yellow);">₺8 / düşük hacim</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Sorunlar & Aksiyonlar</h4>
+                    <div style="background:var(--bg-primary); border-radius:8px; padding:12px;">
+                        <div style="font-size:12px; padding:6px 0; color:var(--red);">🔴 Dönüşüm takibi kurulmamış</div>
+                        <div style="font-size:12px; padding:6px 0; color:var(--yellow);">🟡 %99.4 bütçe tek kelimede</div>
+                        <div style="font-size:12px; padding:6px 0; color:var(--text-secondary);">→ Yeni kelime grubu: "AI pazarlama ajansı", "yapay zeka danışmanlık"</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="opacity:0.6;">
+            <div class="card-title"><span class="dot" style="background:var(--text-muted)"></span> GEO Awareness — Meta (Taslak)</div>
+            <p style="font-size:13px; color:var(--text-secondary);">Instagram + Facebook awareness kampanyası. Görseller hazır (3 format), kopyalar hazır. Yayın tarihi planlanıyor.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: Reklam Analizi -->
+    <div class="page" id="page-reklam" style="display:none">
+        <div class="header">
+            <div class="header-left">
+                <h1>Reklam Analizi</h1>
+                <p>Kreatif performans ve reklam metinleri</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showPage('dashboard')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Dashboard'a Dön
+                </button>
+            </div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-title"><span class="dot"></span> En İyi Performans Gösteren Reklam</div>
+            <div style="background:var(--bg-primary); border-radius:8px; padding:16px; margin-bottom:12px;">
+                <div style="font-size:14px; font-weight:600; margin-bottom:8px;">"Yapay Zeka ile SEO Artık Yetmiyor — GEO ile AI'da Görünür Olun"</div>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+                    <div><span style="font-size:11px; color:var(--text-muted);">Gösterim</span><br><strong>1.616</strong></div>
+                    <div><span style="font-size:11px; color:var(--text-muted);">TO</span><br><strong style="color:var(--green)">%6.68</strong></div>
+                    <div><span style="font-size:11px; color:var(--text-muted);">Ort. TBM</span><br><strong>₺14.01</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Kopya Varyasyonları</div>
+            <table>
+                <thead><tr><th>Başlık</th><th>Açıklama</th><th>Gösterim</th><th>TO</th><th>Not</th></tr></thead>
+                <tbody>
+                    <tr><td style="font-weight:500">AI'da Görünür Olun</td><td>ChatGPT, Gemini, Claude'da markanız çıksın</td><td>892</td><td style="color:var(--green)">%7.2</td><td><span class="status status-good">Kazanan</span></td></tr>
+                    <tr><td style="font-weight:500">Yapay Zeka SEO Hizmeti</td><td>Türkiye'nin GEO uzmanı</td><td>724</td><td>%5.9</td><td><span class="status status-warn">Orta</span></td></tr>
+                    <tr><td style="font-weight:500">GEO ile Büyüyün</td><td>%527 trafik artışı vaat</td><td>0</td><td>—</td><td><span class="status" style="background:rgba(100,116,139,0.15); color:var(--text-muted)">Test</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PAGE: Görsel Üretim -->
+    <div class="page" id="page-gorsel" style="display:none">
+        <div class="header">
+            <div class="header-left">
+                <h1>Görsel Üretim</h1>
+                <p>Krea.ai, Kie.ai ve Pixa ile reklam görselleri</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showPage('dashboard')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Dashboard'a Dön
+                </button>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:16px;">
+            <div class="card" style="border-color:var(--purple);">
+                <div class="card-title"><span class="dot"></span> Krea.ai</div>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">64+ model, LoRA eğitimi, 22K upscale</p>
+                <div style="background:var(--bg-primary); border-radius:8px; padding:12px; font-size:12px;">
+                    <div style="margin-bottom:6px;">📸 <strong>Görsel üretilen:</strong> 12</div>
+                    <div style="margin-bottom:6px;">🎬 <strong>Video üretilen:</strong> 2</div>
+                    <div>🎨 <strong>LoRA eğitimi:</strong> Botfusions stili</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Kie.ai</div>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Ucuz API gateway, batch üretim</p>
+                <div style="background:var(--bg-primary); border-radius:8px; padding:12px; font-size:12px;">
+                    <div style="margin-bottom:6px;">📸 <strong>Toplam görsel:</strong> 50</div>
+                    <div style="margin-bottom:6px;">💰 <strong>Maliyet:</strong> ~$4.50</div>
+                    <div>⚡ <strong>Model:</strong> Nano Banana Pro</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><span class="dot" style="background:var(--green)"></span> Pixa.com</div>
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">MCP-native, hızlı düzenleme</p>
+                <div style="background:var(--bg-primary); border-radius:8px; padding:12px; font-size:12px;">
+                    <div style="margin-bottom:6px;">✂️ <strong>BG kaldırılan:</strong> 8</div>
+                    <div style="margin-bottom:6px;">✨ <strong>Enhance:</strong> 5</div>
+                    <div>🔗 <strong>Durum:</strong> MCP bağlı</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="dot"></span> Mevcut Görseller</div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+                <div style="background:var(--bg-primary); border-radius:8px; padding:20px; text-align:center; border:2px dashed var(--border);">
+                    <div style="font-size:24px; margin-bottom:8px;">🖼️</div>
+                    <div style="font-size:12px; font-weight:500;">Instagram 1:1</div>
+                    <div style="font-size:11px; color:var(--text-muted);">1080x1080px</div>
+                    <div style="margin-top:8px;"><span class="status status-good">Hazır</span></div>
+                </div>
+                <div style="background:var(--bg-primary); border-radius:8px; padding:20px; text-align:center; border:2px dashed var(--border);">
+                    <div style="font-size:24px; margin-bottom:8px;">🖼️</div>
+                    <div style="font-size:12px; font-weight:500;">Facebook 16:9</div>
+                    <div style="font-size:11px; color:var(--text-muted);">1200x628px</div>
+                    <div style="margin-top:8px;"><span class="status status-good">Hazır</span></div>
+                </div>
+                <div style="background:var(--bg-primary); border-radius:8px; padding:20px; text-align:center; border:2px dashed var(--border);">
+                    <div style="font-size:24px; margin-bottom:8px;">🖼️</div>
+                    <div style="font-size:12px; font-weight:500;">Story 9:16</div>
+                    <div style="font-size:11px; color:var(--text-muted);">1080x1920px</div>
+                    <div style="margin-top:8px;"><span class="status status-good">Hazır</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE: Haftalık Rapor -->
+    <div class="page" id="page-rapor" style="display:none">
+        <div class="header">
+            <div class="header-left">
+                <h1>Haftalık Rapor</h1>
+                <p>6 – 13 Nisan 2026 haftası özeti</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-outline">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    PDF İndir
+                </button>
+                <button class="btn btn-primary" onclick="showPage('dashboard')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Dashboard'a Dön
+                </button>
+            </div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+            <div class="card-title"><span class="dot"></span> Özet KPI'lar</div>
+            <table>
+                <thead><tr><th>Metrik</th><th>Bu Hafta</th><th>Geçen Hafta</th><th>Değişim</th><th>Hedef</th><th>Durum</th></tr></thead>
+                <tbody>
+                    <tr><td style="font-weight:500">Harcama</td><td>₺1.527</td><td>₺1.665</td><td style="color:var(--green)">▼ %8</td><td>₺5.000/ay</td><td><span class="status status-warn">%30</span></td></tr>
+                    <tr><td style="font-weight:500">Tıklama</td><td>109</td><td>118</td><td style="color:var(--red)">▼ %8</td><td>500/ay</td><td><span class="status status-bad">Yetersiz</span></td></tr>
+                    <tr><td style="font-weight:500">TO</td><td>%6.68</td><td>%5.96</td><td style="color:var(--green)">▲ %12</td><td>>%3</td><td><span class="status status-good">İyi</span></td></tr>
+                    <tr><td style="font-weight:500">Dönüşüm</td><td>0</td><td>0</td><td>—</td><td>10/ay</td><td><span class="status status-bad">Acil</span></td></tr>
+                    <tr><td style="font-weight:500">ROAS</td><td>—</td><td>—</td><td>—</td><td>>4x</td><td><span class="status status-bad">Veri yok</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Aksiyon Maddeleri</div>
+            <div style="background:var(--bg-primary); border-radius:8px; padding:16px; font-size:13px;">
+                <div style="padding:8px 0; border-bottom:1px solid var(--border);">🔴 <strong>Acil:</strong> Dönüşüm takibi kur (analytics-tracking skill)</div>
+                <div style="padding:8px 0; border-bottom:1px solid var(--border);">🟡 <strong>Yüksek:</strong> "yapay zeka SEO" için yeni landing page veya mesaj uyarlaması</div>
+                <div style="padding:8px 0; border-bottom:1px solid var(--border);">🟡 <strong>Yüksek:</strong> Yeni kelime grubu: "AI pazarlama ajansı", "yapay zeka danışmanlık"</div>
+                <div style="padding:8px 0; border-bottom:1px solid var(--border);">🟢 <strong>Orta:</strong> Meta Ads görsellerini yayına hazırla</div>
+                <div style="padding:8px 0;">🟢 <strong>Orta:</strong> Google Ads MCP Basic Access onayı takip et</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE: SEO & GEO -->
+    <div class="page" id="page-seo" style="display:none">
+        <div class="header">
+            <div class="header-left">
+                <h1>SEO & GEO</h1>
+                <p>Google SEO + AI görünürlük optimizasyonu</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showPage('dashboard')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Dashboard'a Dön
+                </button>
+            </div>
+        </div>
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr); margin-bottom:16px;">
+            <div class="kpi-card">
+                <div class="kpi-label" style="margin-bottom:8px;">Google Organik</div>
+                <div class="kpi-value" style="font-size:20px; color:var(--green);">+527%</div>
+                <div style="font-size:12px; color:var(--text-secondary);">Müşteri vakası trafik artışı</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label" style="margin-bottom:8px;">AI Görünürlük</div>
+                <div class="kpi-value" style="font-size:20px;">Henüz ölçülmüyor</div>
+                <div style="font-size:12px; color:var(--text-secondary);">GEO monitoring kurulacak</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label" style="margin-bottom:8px;">Hedef Anahtar Kelime</div>
+                <div class="kpi-value" style="font-size:16px; color:var(--purple);">yapay zeka SEO</div>
+                <div style="font-size:12px; color:var(--text-secondary);">+ "GEO nedir", "ChatGPT'de görünür olmak"</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="dot"></span> GEO Strateji Durumu</div>
+            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">
+                <div style="background:var(--bg-primary); border-radius:8px; padding:16px;">
+                    <div style="font-size:13px; font-weight:600; margin-bottom:8px;">✅ Yapılan</div>
+                    <div style="font-size:12px; color:var(--text-secondary); line-height:1.8;">
+                        • Landing page aktif (botfusions.com/geo-hizmet)<br>
+                        • Google Ads kampanya çalışıyor<br>
+                        • Görsel/video üretim pipeline hazır<br>
+                        • SEO kuralları belgelendi
+                    </div>
+                </div>
+                <div style="background:var(--bg-primary); border-radius:8px; padding:16px;">
+                    <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--orange);">⏳ Yapılacak</div>
+                    <div style="font-size:12px; color:var(--text-secondary); line-height:1.8;">
+                        • Blog içerikleri üret ("GEO nedir?" serisi)<br>
+                        • GA4 + GSC bağla, organik veri topla<br>
+                        • AI görünürlük monitoring kur<br>
+                        • LinkedIn thought leadership başlat
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE: Anomali Uyarıları -->
+    <div class="page" id="page-anomali" style="display:none">
+        <div class="header">
+            <div class="header-left">
+                <h1>Anomali Uyarıları</h1>
+                <p>Otomatik tespit edilen sorunlar ve öneriler</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showPage('dashboard')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Dashboard'a Dön
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="alert-item alert-red" style="margin-bottom:12px;">
+                <div class="alert-icon" style="font-size:20px;">🔴</div>
+                <div class="alert-content">
+                    <div class="alert-title" style="font-size:15px;">Kritik: Dönüşüm Takibi Kurulmamış</div>
+                    <div class="alert-desc" style="font-size:13px;">Google Ads'e dönüşüm sinyali gitmiyor. 10 gündür 0 dönüşüm kaydedildi. Form submit ve telefon tıklama takibi acil kurulmalı.</div>
+                    <div class="alert-time">10 gün önce tespit edildi</div>
+                    <div style="margin-top:8px;"><button class="btn btn-primary" style="font-size:11px; padding:6px 12px;">Kurulum Başlat → analytics-tracking skill</button></div>
+                </div>
+            </div>
+            <div class="alert-item alert-yellow" style="margin-bottom:12px;">
+                <div class="alert-icon" style="font-size:20px;">🟡</div>
+                <div class="alert-content">
+                    <div class="alert-title" style="font-size:15px;">Uyarı: Bütçenin %99.4'ü Tek Kelimede</div>
+                    <div class="alert-desc" style="font-size:13px;">"yapay zeka SEO" — 108 tıklama, 0 dönüşüm, ₺1.511 harcama. Tek kelimeye bağımlılık riskli.</div>
+                    <div class="alert-time">Mart 2026 verisi</div>
+                    <div style="margin-top:8px;"><button class="btn btn-outline" style="font-size:11px; padding:6px 12px;">Yeni Kelime Grubu Öner → paid-ads skill</button></div>
+                </div>
+            </div>
+            <div class="alert-item alert-green">
+                <div class="alert-icon" style="font-size:20px;">🟢</div>
+                <div class="alert-content">
+                    <div class="alert-title" style="font-size:15px;">Pozitif: TO Sektör Ortalamasının 2x Üzerinde</div>
+                    <div class="alert-desc" style="font-size:13px;">%6.68 TO — sektör ortalaması %3.17. Reklam kopyası ve hedefleme etkili. Bu trendi korumak için kreatif tazelemesi önerilir.</div>
+                    <div class="alert-time">Güncel</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE: Müşteri Yolculuğu -->
+    <div class="page" id="page-journey" style="display:none">
+        <div class="header">
+            <div class="header-left">
+                <h1>Müşteri Yolculuğu</h1>
+                <p>Awareness → Consideration → Decision → Retention</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showPage('dashboard')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Dashboard'a Dön
+                </button>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+            <div class="card" style="border-top:3px solid var(--purple);">
+                <div style="font-size:12px; color:var(--purple); font-weight:600; margin-bottom:12px;">1 — AWARENESS</div>
+                <div style="font-size:13px; margin-bottom:8px; font-weight:500;">"AI'da görünmüyorum"</div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                    <strong>Kanal:</strong> Blog, SEO, LinkedIn<br>
+                    <strong>İçerik:</strong> "GEO nedir?", "ChatGPT'de görünür olmak"<br>
+                    <strong>CTA:</strong> Newsletter, ücretsiz test
+                </div>
+                <div style="margin-top:12px;"><span class="status status-warn">Planlı</span></div>
+            </div>
+            <div class="card" style="border-top:3px solid var(--orange);">
+                <div style="font-size:12px; color:var(--orange); font-weight:600; margin-bottom:12px;">2 — CONSIDERATION</div>
+                <div style="font-size:13px; margin-bottom:8px; font-weight:500;">"GEO hizmeti almalı mıyım?"</div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                    <strong>Kanal:</strong> Google Ads, Landing<br>
+                    <strong>İçerik:</strong> Hizmet sayfası, vaka analizi<br>
+                    <strong>CTA:</strong> Teklif iste, iletişime geç
+                </div>
+                <div style="margin-top:12px;"><span class="status status-good">Aktif</span></div>
+            </div>
+            <div class="card" style="border-top:3px solid var(--green);">
+                <div style="font-size:12px; color:var(--green); font-weight:600; margin-bottom:12px;">3 — DECISION</div>
+                <div style="font-size:13px; margin-bottom:8px; font-weight:500;">"Neden Botfusions?"</div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                    <strong>Kanal:</strong> Website, Email, Demo<br>
+                    <strong>İçerik:</strong> Vaka çalışması, ROI hesabı<br>
+                    <strong>CTA:</strong> Ücretsiz analiz, demo
+                </div>
+                <div style="margin-top:12px;"><span class="status status-warn">Kısmen</span></div>
+            </div>
+            <div class="card" style="border-top:3px solid var(--text-muted);">
+                <div style="font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px;">4 — RETENTION</div>
+                <div style="font-size:13px; margin-bottom:8px; font-weight:500;">"Sonuçları görmek istiyorum"</div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                    <strong>Kanal:</strong> Email, Dashboard<br>
+                    <strong>İçerik:</strong> Aylık rapor, anomali uyarıları<br>
+                    <strong>CTA:</strong> Paket yükseltme, referans
+                </div>
+                <div style="margin-top:12px;"><span class="status" style="background:rgba(100,116,139,0.15); color:var(--text-muted)">Planlı</span></div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+// Page Navigation
+function showPage(page) {
+    // Hide all pages
+    document.querySelectorAll('.page, .kpi-grid, .mid-grid, .bottom-grid').forEach(el => {
+        el.style.display = 'none';
+    });
+
+    // Deactivate all nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Show target page
+    const pageMap = {
+        'dashboard': { show: ['.kpi-grid', '.mid-grid', '.bottom-grid'], nav: 0 },
+        'kampanyalar': { show: ['#page-kampanyalar'], nav: 1 },
+        'reklam': { show: ['#page-reklam'], nav: 2 },
+        'gorsel': { show: ['#page-gorsel'], nav: 3 },
+        'rapor': { show: ['#page-rapor'], nav: 4 },
+        'anomali': { show: ['#page-anomali'], nav: 5 },
+        'seo': { show: ['#page-seo'], nav: 6 },
+        'journey': { show: ['#page-journey'], nav: 7 }
+    };
+
+    const config = pageMap[page];
+    if (config) {
+        config.show.forEach(selector => {
+            const el = document.querySelector(selector);
+            if (el) el.style.display = selector.includes('grid') ? 'grid' : 'block';
+        });
+        const navItems = document.querySelectorAll('.nav-item');
+        if (navItems[config.nav]) navItems[config.nav].classList.add('active');
+    }
+}
+
+// Bind nav clicks
+document.querySelectorAll('.nav-item').forEach((item, index) => {
+    item.addEventListener('click', () => {
+        const pages = ['dashboard', 'kampanyalar', 'reklam', 'gorsel', 'rapor', 'anomali', 'seo', 'journey'];
+        showPage(pages[index]);
+    });
+});
+
+// Animate channel bars on load
+setTimeout(() => {
+    document.querySelectorAll('.channel-bar').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => { bar.style.width = width; }, 100);
+    });
+}, 300);
+
+// Live clock
+function updateClock() {
+    const now = new Date();
+    const time = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const date = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const subtitle = document.querySelector('.header-left p');
+    if (subtitle && subtitle.textContent.includes('güncelleme')) {
+        subtitle.textContent = `Son güncelleme: ${date}, ${time} • Nisan 2026 dönemi`;
+    }
+}
+updateClock();
+setInterval(updateClock, 60000);
+</script>
+
+</body>
+</html>

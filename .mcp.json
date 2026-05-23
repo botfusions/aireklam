@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "google-ads": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "C:\\Users\\user\\Downloads\\Z.ai_claude code\\AI  Reklam  Ajansı\\04-araclar\\google_ads_mcp",
+        "-m",
+        "ads_mcp.server"
+      ],
+      "env": {
+        "GOOGLE_ADS_CREDENTIALS": "C:\\Users\\user\\google-ads.yaml"
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+[submodule "04-araclar/google_ads_mcp"]
+	path = 04-araclar/google_ads_mcp
+	url = https://github.com/google-marketing-solutions/google_ads_mcp.git
+[submodule "04-araclar/remotion-skills"]
+	path = 04-araclar/remotion-skills
+	url = https://github.com/remotion-dev/skills.git
+[submodule "04-araclar/serpiq"]
+	path = 04-araclar/serpiq
+	url = https://github.com/manojahi/serpiq.git

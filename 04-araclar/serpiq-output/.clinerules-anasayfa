@@ -1,0 +1,48 @@
+# .clinerules — Botfusions Ana Sayfa Revize
+
+## OTOPILOT MODU AKTİF ✅
+
+### Görev
+PRD-anasayfa-revize.md dosyasını oku ve ana sayfayı revize et.
+/geo-hizmet sayfasına DOKUNMA.
+
+### Yapılacaklar (Sırayla)
+1. ✅ PRD'yi oku ve tam anla
+2. ✅ Mevcut ana sayfa kodunu incele
+3. ✅ TR/EN dil yapısını kur (i18n)
+4. ✅ Title + meta description TR versiyonu
+5. ✅ Hero metnini Türkçeleştir
+6. ✅ İstatistik bandı ekle (%527, 8/8, 30 Gün, 100+)
+7. ✅ 3 Hizmet kartı ekle (GEO, AI Ajan, Otomasyon)
+8. ✅ FAQ Türkçe versiyonu ekle
+9. ✅ Güven rozetleri görselleştir
+10. ✅ EEAT metnini görünür hale getir
+11. ✅ hreflang tag'leri ekle
+12. ✅ FAQ accordion'a noscript fallback ekle
+
+### DOKUNULMAYACAKLAR
+- /geo-hizmet sayfası
+- Mevcut renk paleti (#A855F7, #7C3AED, #3B82F6, #F97316)
+- Schema markup'lar (Organization, HowTo, SoftwareApplication, FAQPage)
+- GEO Checker aracı
+- FAQ bölümü yapısı (sadece TR çevirisi ekle)
+- Footer yapısı
+
+### Dil Yapısı
+- / → Türkçe (varsayılan)
+- /en → İngilizce (mevcut içerik)
+- <html lang="tr"> ana sayfada
+- hreflang alternate tag'leri her iki sayfada
+
+### HİÇBİR ŞEY SORMA
+- PRD'de varsa → kullan
+- PRD'de yoksa → mevcut tasarım stilini koru
+- Varsayımları README'de dokümante et
+
+### TAMAMLAMA KRİTERİ
+- [ ] TR ana sayfa yayında
+- [ ] /en route çalışıyor
+- [ ] hreflang doğru
+- [ ] Tüm yeni bölümler eklendi
+- [ ] /geo-hizmet değişmedi
+- [ ] PageSpeed LCP < 2.5s

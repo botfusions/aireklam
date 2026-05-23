@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --version)",
+      "Bash(mkdir -p \"/c/Users/user/Downloads/Z.ai_claude code/AI  Reklam  Ajansı/.claude/commands\")",
+      "Bash(mkdir -p \"/c/Users/user/Downloads/Z.ai_claude code/AI  Reklam  Ajansı/.claude/agents\")",
+      "Bash(mkdir -p \"/c/Users/user/Downloads/Z.ai_claude code/AI  Reklam  Ajansı/04-araclar/seo-machine-modules\")",
+      "Bash(mkdir -p \"/c/Users/user/Downloads/Z.ai_claude code/AI  Reklam  Ajansı/context\")",
+      "Bash(ls \"04-araclar/remotion-skills/skills/\")",
+      "Bash(find \"04-araclar\" -name \"remotion*\" -type d)",
+      "Bash(cp -r \"04-araclar/claude-ads/skills/ads-apple\" .agents/skills/advertising/)",
+      "Bash(cp -r \"04-araclar/claude-ads/skills/ads-audit\" .agents/skills/advertising/)",
+      "Bash(cp -r \"04-araclar/claude-ads/skills/ads-budget\" .agents/skills/advertising/)",
+      "Bash(cp -r \"04-araclar/claude-ads/skills/ads-competitor\" .agents/skills/advertising/)",
+      "Bash(cp -r \"04-araclar/claude-ads/skills/ads-create\" .agents/skills/advertising/)",
+      "Bash(ls -la */references/)",
+      "WebSearch",
+      "Bash(python -m http.server 8080)",
+      "Bash(start http://localhost:8080/index.html)"
+    ]
+  }
+}

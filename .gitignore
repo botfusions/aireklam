@@ -1,0 +1,73 @@
+# Environment & Secrets
+.env/
+secrets.env
+*.env
+!*.env.template
+!05-gsc-nocodb/.env.example
+credentials.json
+google-ads.yaml
+**/ga4-service-account.json
+
+# Node
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Obsidian
+.obsidian/
+
+# ==========================================
+# BUYUK KLASORLER — GitHub'a PUSHLANMAZ
+# ==========================================
+
+# HyperFrames repo (1.1 GB — kendi git repo'su var)
+04-araclar/hyperframes/
+
+# Arsiv — eski Remotion (634 MB)
+04-araclar/_arsiv-remotion-kaynak/
+
+# Remotion gecici ciktilar
+04-araclar/remotion-kaynak/frames_output/
+04-araclar/remotion-kaynak/out/
+
+# SERPiq (kendi git repo'su var)
+04-araclar/serpiq/
+.serpiq/
+
+# Silinmis/kullanilmayan araclar
+canva-mcp-server/
+creative-engine-template/
+04-araclar/seomachine/
+04-araclar/google-cli/
+04-araclar/claude-ads/
+
+# Claude ADS klasoru (demo scriptler — buyuk)
+Claude ADS/
+
+# Video/audio ciktilar
+*.mp4
+*.mp3
+*.wav
+!assets/*.mp3
+
+# Binary gorseller (sadece ornekler commitlenir)
+02-gorseller/openai_*.png
+02-gorseller/free-tools_*.webp

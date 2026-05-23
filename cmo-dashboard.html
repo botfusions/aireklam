@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Botfusions — AI CMO Terminali</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #08080f;
+      --surface:  #0f0f1a;
+      --surface2: #141428;
+      --border:   #1e1e35;
+      --border2:  #252540;
+      --purple:   #A855F7;
+      --purple-d: #7C3AED;
+      --blue:     #3B82F6;
+      --orange:   #F97316;
+      --yellow:   #FDE047;
+      --green:    #10b981;
+      --red:      #ef4444;
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+      --muted2:   #94a3b8;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+      --font-body: 'Manrope', sans-serif;
+    }
+
+    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 13px; }
+
+    /* ── SCROLLBAR ─────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    /* ── LAYOUT ────────────────────────────── */
+    .app { display: flex; flex-direction: column; height: 100vh; }
+
+    /* ── TOPBAR ────────────────────────────── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 40px; min-height: 40px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-logo { font-family: var(--font-sans); font-weight: 700; font-size: 14px; color: var(--purple); letter-spacing: -0.3px; }
+    .topbar-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .topbar-badge { font-size: 10px; padding: 2px 7px; border-radius: 99px; border: 1px solid var(--border2); color: var(--muted2); font-family: var(--font-mono); }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .topbar-user { font-size: 12px; color: var(--muted2); font-family: var(--font-mono); }
+    .topbar-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--purple-d), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+
+    /* ── TERMINAL ──────────────────────────── */
+    .terminal {
+      background: #000; border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono); font-size: 11px; color: #a0a0b0;
+      padding: 8px 16px; height: 80px; overflow: hidden; position: relative;
+    }
+    .terminal-line { display: flex; gap: 6px; line-height: 1.6; }
+    .terminal-prompt { color: var(--purple); }
+    .terminal-cmd { color: #c0c0d0; }
+    .terminal-ok { color: var(--green); }
+    .terminal-info { color: var(--blue); }
+    .terminal-warn { color: var(--yellow); }
+    .cursor { display: inline-block; width: 7px; height: 12px; background: var(--purple); margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: middle; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── MAIN GRID ─────────────────────────── */
+    .main { display: grid; grid-template-columns: 220px 1fr 280px 240px; flex: 1; overflow: hidden; }
+
+    /* ── SIDEBAR ───────────────────────────── */
+    .sidebar { border-right: 1px solid var(--border); overflow-y: auto; padding: 14px 12px; background: var(--surface); }
+    .company-block { margin-bottom: 16px; }
+    .company-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .company-name { font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--text); }
+    .edit-btn { color: var(--muted); cursor: pointer; font-size: 11px; transition: color .2s; }
+    .edit-btn:hover { color: var(--purple); }
+    .company-desc { font-size: 11px; color: var(--muted2); line-height: 1.6; margin-bottom: 10px; }
+    .company-meta { display: flex; flex-direction: column; gap: 4px; }
+    .meta-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 3px 4px; border-radius: 4px; transition: background .15s; }
+    .meta-item:hover { background: var(--surface2); color: var(--muted2); }
+    .meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border2); }
+
+    .section-label { font-family: var(--font-mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 14px 4px 6px; }
+
+    .doc-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 6px; cursor: pointer; transition: background .15s; }
+    .doc-item:hover { background: var(--surface2); }
+    .doc-name { font-size: 12px; color: var(--muted2); }
+    .doc-arrow { color: var(--muted); font-size: 10px; }
+    .doc-badge { font-size: 9px; padding: 1px 6px; border-radius: 99px; background: rgba(168,85,247,.15); color: var(--purple); font-weight: 600; }
+
+    .competitor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .comp-tag { display: flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 5px; border: 1px solid var(--border); font-size: 10px; color: var(--muted2); cursor: pointer; transition: border-color .15s; }
+    .comp-tag:hover { border-color: var(--purple); color: var(--purple); }
+    .comp-icon { width: 14px; height: 14px; border-radius: 3px; background: var(--border2); display: flex; align-items: center; justify-content: center; font-size: 7px; }
+    .comp-add { border-style: dashed; color: var(--muted); }
+    .comp-remove { font-size: 8px; color: var(--muted); margin-left: auto; }
+
+    /* ── ANALYTICS ─────────────────────────── */
+    .analytics { border-right: 1px solid var(--border); overflow-y: auto; padding: 14px 16px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .panel-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-sans); font-size: 15px; font-weight: 600; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.7;transform:scale(1.2)} }
+    .panel-action { color: var(--muted); cursor: pointer; font-size: 14px; transition: color .2s; }
+    .panel-action:hover { color: var(--purple); }
+
+    .tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface); border-radius: 8px; padding: 3px; }
+    .tab { flex: 1; padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; text-align: center; cursor: pointer; color: var(--muted); transition: all .2s; white-space: nowrap; font-family: var(--font-sans); }
+    .tab.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Google connect */
+    .connect-header { font-size: 11px; font-weight: 600; color: var(--muted2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .5px; font-family: var(--font-mono); }
+    .connect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .connect-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: border-color .2s; }
+    .connect-card:hover { border-color: var(--purple); }
+    .connect-icon { font-size: 22px; margin-bottom: 6px; }
+    .connect-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .connect-sub { font-size: 10px; color: var(--muted); margin-bottom: 10px; }
+    .connect-btn { background: var(--surface2); border: 1px solid var(--border2); color: var(--muted2); font-size: 11px; font-weight: 600; padding: 5px 14px; border-radius: 6px; cursor: pointer; width: 100%; transition: all .2s; font-family: var(--font-sans); }
+    .connect-btn:hover { background: var(--purple); border-color: var(--purple); color: #fff; }
+    .connect-btn.connected { background: rgba(16,185,129,.1); border-color: var(--green); color: var(--green); }
+
+    /* Score section */
+    .score-section { margin-top: 4px; }
+    .score-section-title { font-size: 12px; font-weight: 600; color: var(--muted2); margin-bottom: 4px; font-family: var(--font-sans); }
+    .score-section-sub { font-size: 10px; color: var(--muted); margin-bottom: 14px; }
+    .score-label { font-family: var(--font-mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .score-row { display: flex; gap: 16px; margin-bottom: 20px; }
+
+    .score-circle { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .score-svg { position: relative; }
+    .score-svg text { font-family: var(--font-sans); font-weight: 700; }
+    .score-name { font-size: 9px; color: var(--muted2); text-align: center; max-width: 60px; }
+
+    /* Health cards */
+    .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .health-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+    .health-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .health-card-label { font-size: 11px; color: var(--muted2); font-weight: 500; }
+    .health-card-status { font-size: 9px; padding: 2px 6px; border-radius: 99px; }
+    .status-good { background: rgba(16,185,129,.1); color: var(--green); }
+    .status-warn { background: rgba(253,224,71,.1); color: var(--yellow); }
+    .status-bad  { background: rgba(239,68,68,.1); color: var(--red); }
+    .health-card-val { font-family: var(--font-sans); font-size: 22px; font-weight: 700; color: var(--text); }
+    .health-card-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    /* GEO tab */
+    .geo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+    .geo-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .geo-engine { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text); }
+    .geo-engine-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .geo-score { font-family: var(--font-sans); font-size: 20px; font-weight: 700; }
+    .geo-bar-bg { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+    .geo-bar-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
+    .geo-items { display: flex; flex-direction: column; gap: 4px; }
+    .geo-item { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--muted2); }
+    .geo-item-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+    /* ── GEO SCAN ──────────────────────────── */
+    .geo-scan-form { display: flex; gap: 6px; margin-bottom: 12px; }
+    .geo-scan-form select, .geo-scan-form input {
+      flex: 1; background: var(--surface); border: 1px solid var(--border2);
+      color: var(--text); border-radius: 6px; padding: 6px 10px;
+      font-size: 11px; font-family: var(--font-mono);
+    }
+    .geo-scan-form select:focus, .geo-scan-form input:focus { outline: none; border-color: var(--purple); }
+    .geo-scan-btn {
+      padding: 6px 14px; border: none; border-radius: 6px;
+      background: var(--purple); color: #fff; font-size: 11px;
+      font-weight: 600; cursor: pointer; white-space: nowrap;
+      font-family: var(--font-sans); transition: background .2s;
+    }
+    .geo-scan-btn:hover { background: var(--purple-d); }
+    .geo-scan-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .geo-score-hero { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .geo-score-circle {
+      width: 70px; height: 70px; border-radius: 50%;
+      background: conic-gradient(var(--purple) 0%, var(--border) 0%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; flex-shrink: 0;
+    }
+    .geo-score-inner {
+      width: 54px; height: 54px; border-radius: 50%;
+      background: var(--surface); display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .geo-score-num { font-family: var(--font-sans); font-size: 18px; font-weight: 700; color: var(--purple); line-height: 1; }
+    .geo-score-grade { font-size: 10px; color: var(--muted2); margin-top: 1px; }
+    .geo-score-meta { flex: 1; }
+    .geo-score-url { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .geo-score-label { font-family: var(--font-sans); font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .geo-score-time { font-size: 10px; color: var(--muted); }
+
+    .geo-components { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .geo-comp-row { display: flex; align-items: center; gap: 8px; }
+    .geo-comp-name { font-size: 10px; color: var(--muted2); width: 100px; flex-shrink: 0; }
+    .geo-comp-bar-bg { flex: 1; height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .geo-comp-bar-fill { height: 100%; border-radius: 99px; transition: width .5s ease; }
+    .geo-comp-val { font-size: 10px; font-family: var(--font-mono); color: var(--muted2); width: 28px; text-align: right; flex-shrink: 0; }
+
+    .geo-findings { margin-bottom: 12px; }
+    .geo-finding { display: flex; align-items: flex-start; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+    .geo-finding:last-child { border-bottom: none; }
+    .geo-finding-badge { font-size: 8px; padding: 1px 5px; border-radius: 3px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .geo-finding-badge.HIGH { background: rgba(239,68,68,.15); color: var(--red); }
+    .geo-finding-badge.MEDIUM { background: rgba(249,115,22,.15); color: var(--orange); }
+    .geo-finding-badge.LOW { background: rgba(59,130,246,.15); color: var(--blue); }
+    .geo-finding-text { font-size: 10px; color: var(--muted2); line-height: 1.4; }
+
+    .geo-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 12px; }
+    .geo-meta-item { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 6px 8px; }
+    .geo-meta-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 2px; }
+    .geo-meta-val { font-size: 11px; font-family: var(--font-mono); color: var(--text); }
+    .geo-meta-ok { color: var(--green); }
+    .geo-meta-bad { color: var(--red); }
+    .geo-meta-warn { color: var(--orange); }
+
+    .geo-history-table { width: 100%; border-collapse: collapse; }
+    .geo-history-table th { font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); padding: 4px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+    .geo-history-table td { font-size: 10px; font-family: var(--font-mono); color: var(--muted2); padding: 5px 6px; border-bottom: 1px solid var(--border); }
+    .geo-history-table tr:last-child td { border-bottom: none; }
+    .geo-grade { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+    .geo-grade-A { background: rgba(16,185,129,.15); color: var(--green); }
+    .geo-grade-B { background: rgba(59,130,246,.15); color: var(--blue); }
+    .geo-grade-C { background: rgba(249,115,22,.15); color: var(--orange); }
+    .geo-grade-D { background: rgba(239,68,68,.15); color: var(--red); }
+    .geo-grade-F { background: rgba(100,116,139,.15); color: var(--muted); }
+
+    .geo-status-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .geo-status-chip { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 99px; border: 1px solid var(--border); font-size: 9px; color: var(--muted2); }
+    .geo-status-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .geo-empty { text-align: center; padding: 24px; color: var(--muted); font-size: 11px; }
+    .geo-scanning { text-align: center; padding: 20px; color: var(--purple); font-size: 11px; }
+    @keyframes geo-spin { to { transform: rotate(360deg); } }
+    .geo-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border2); border-top-color: var(--purple); border-radius: 50%; animation: geo-spin .8s linear infinite; vertical-align: middle; margin-right: 6px; }
+
+    /* ── ACTION FEED ───────────────────────── */
+    .feed { border-right: 1px solid var(--border); overflow-y: auto; }
+    .feed-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; }
+    .feed-controls { display: flex; gap: 6px; }
+    .feed-btn { font-size: 14px; color: var(--muted); cursor: pointer; padding: 3px; border-radius: 4px; transition: color .2s; }
+    .feed-btn:hover { color: var(--purple); }
+
+    .feed-item { border-bottom: 1px solid var(--border); }
+    .feed-item-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; transition: background .15s; }
+    .feed-item-header:hover { background: var(--surface); }
+    .feed-item-left { display: flex; align-items: center; gap: 10px; }
+    .feed-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .icon-reddit  { background: rgba(255,87,0,.1); }
+    .icon-seo     { background: rgba(59,130,246,.1); }
+    .icon-x       { background: rgba(255,255,255,.05); }
+    .icon-article { background: rgba(168,85,247,.1); }
+    .icon-hn      { background: rgba(249,115,22,.1); }
+    .icon-li      { background: rgba(10,102,194,.1); }
+    .feed-text { display: flex; flex-direction: column; gap: 1px; }
+    .feed-item-title { font-size: 12px; font-weight: 600; color: var(--text); }
+    .feed-item-sub { font-size: 10px; color: var(--muted); }
+    .feed-chevron { color: var(--muted); font-size: 12px; transition: transform .2s; }
+    .feed-item.open .feed-chevron { transform: rotate(180deg); }
+
+    .feed-body { display: none; padding: 10px 14px 14px; background: var(--surface); }
+    .feed-item.open .feed-body { display: block; }
+    .feed-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+    .feed-card:last-child { margin-bottom: 0; }
+    .feed-card-title { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .feed-card-text { font-size: 10px; color: var(--muted2); line-height: 1.6; margin-bottom: 8px; }
+    .feed-card-actions { display: flex; gap: 6px; }
+    .feed-card-btn { font-size: 10px; padding: 3px 9px; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all .2s; border: none; font-family: var(--font-sans); }
+    .btn-primary { background: var(--purple); color: #fff; }
+    .btn-primary:hover { background: var(--purple-d); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--muted2); }
+    .btn-ghost:hover { border-color: var(--purple); color: var(--purple); }
+
+    /* ── CHAT PANEL ────────────────────────── */
+    .chat { display: flex; flex-direction: column; overflow: hidden; background: var(--surface); }
+    .chat-cta { background: linear-gradient(135deg, rgba(124,58,237,.2), rgba(59,130,246,.1)); border-bottom: 1px solid var(--border); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+    .chat-cta-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple-d), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .chat-cta-text { flex: 1; }
+    .chat-cta-title { font-size: 12px; font-weight: 700; color: var(--text); font-family: var(--font-sans); }
+    .chat-cta-sub { font-size: 10px; color: var(--muted2); }
+    .chat-cta-btn { font-size: 10px; font-weight: 700; padding: 6px 10px; border-radius: 6px; background: var(--purple); color: #fff; border: none; cursor: pointer; white-space: nowrap; font-family: var(--font-sans); transition: background .2s; }
+    .chat-cta-btn:hover { background: var(--purple-d); }
+
+    .chat-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    .chat-status { font-size: 12px; font-weight: 600; color: var(--text); font-family: var(--font-sans); flex: 1; }
+    .chat-tools { display: flex; gap: 8px; }
+    .chat-tool { font-size: 14px; color: var(--muted); cursor: pointer; transition: color .2s; }
+    .chat-tool:hover { color: var(--purple); }
+
+    .chat-messages { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+    .msg { display: flex; gap: 8px; }
+    .msg-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--purple-d), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+    .msg-bubble { background: var(--surface2); border: 1px solid var(--border); border-radius: 0 10px 10px 10px; padding: 8px 11px; max-width: 190px; }
+    .msg-text { font-size: 11px; color: var(--text); line-height: 1.6; }
+    .msg-list { margin: 6px 0 0; padding-left: 14px; }
+    .msg-list li { font-size: 10px; color: var(--muted2); line-height: 1.8; }
+
+    .msg.user { flex-direction: row-reverse; }
+    .msg.user .msg-avatar { background: linear-gradient(135deg, var(--blue), var(--purple)); }
+    .msg.user .msg-bubble { background: rgba(168,85,247,.1); border-color: rgba(168,85,247,.2); border-radius: 10px 0 10px 10px; }
+
+    .chat-input-wrap { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-end; }
+    .chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 10px; font-size: 11px; color: var(--text); resize: none; outline: none; font-family: var(--font-body); line-height: 1.5; transition: border-color .2s; }
+    .chat-input:focus { border-color: var(--purple); }
+    .chat-input::placeholder { color: var(--muted); }
+    .chat-send { width: 32px; height: 32px; border-radius: 8px; background: var(--purple); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: background .2s; flex-shrink: 0; }
+    .chat-send:hover { background: var(--purple-d); }
+    .chat-attach { color: var(--muted); cursor: pointer; font-size: 16px; transition: color .2s; padding-bottom: 7px; }
+    .chat-attach:hover { color: var(--purple); }
+
+    /* ── MINI STATS ─────────────────────────── */
+    .mini-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
+    .mini-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+    .mini-stat-val { font-family: var(--font-sans); font-size: 20px; font-weight: 700; color: var(--text); }
+    .mini-stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+    .mini-stat-change { font-size: 10px; margin-top: 4px; }
+    .change-up { color: var(--green); }
+    .change-down { color: var(--red); }
+
+    /* ── KEYWORD TABLE ──────────────────────── */
+    .kw-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .kw-table th { text-align: left; padding: 4px 8px; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; border-bottom: 1px solid var(--border); font-family: var(--font-mono); }
+    .kw-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); color: var(--muted2); }
+    .kw-table tr:last-child td { border-bottom: none; }
+    .kw-pos { font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+    .pos-good { color: var(--green); }
+    .pos-mid  { color: var(--yellow); }
+    .pos-bad  { color: var(--red); }
+    .kw-trend { font-size: 10px; }
+    .trend-up { color: var(--green); }
+    .trend-dn { color: var(--red); }
+
+    /* ── PAGESPEED LOADING ──────────────────── */
+    .psi-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .psi-refresh-btn { font-size:10px; padding:4px 10px; border-radius:6px; background:var(--surface2); border:1px solid var(--border2); color:var(--muted2); cursor:pointer; font-family:var(--font-mono); transition:all .2s; white-space:nowrap; }
+    .psi-refresh-btn:hover { border-color:var(--purple); color:var(--purple); }
+    .psi-refresh-btn.loading { color:var(--yellow); border-color:rgba(253,224,71,.3); animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .psi-last-fetch { font-size:9px; color:var(--muted); font-family:var(--font-mono); margin-top:4px; }
+    .score-arc { transition: stroke-dashoffset .6s ease, stroke .4s ease, opacity .3s; }
+    .cwv-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+    .cwv-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; }
+    .cwv-label { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; font-family:var(--font-mono); margin-bottom:4px; }
+    .cwv-val { font-family:var(--font-sans); font-size:18px; font-weight:700; }
+    .cwv-desc { font-size:9px; color:var(--muted); margin-top:2px; }
+    .fetch-banner { display:none; align-items:center; gap:8px; padding:6px 10px; border-radius:6px; background:rgba(168,85,247,.08); border:1px solid rgba(168,85,247,.2); margin-bottom:12px; font-size:10px; color:var(--purple); font-family:var(--font-mono); }
+    .fetch-banner.visible { display:flex; }
+    .fetch-spinner { width:10px; height:10px; border:2px solid rgba(168,85,247,.3); border-top-color:var(--purple); border-radius:50%; animation:spin .6s linear infinite; flex-shrink:0; }
+
+    /* ── GSC STATUS ─────────────────────────── */
+    .gsc-badge { display:inline-flex; align-items:center; gap:5px; font-size:9px; font-family:var(--font-mono); padding:2px 7px; border-radius:99px; border:1px solid var(--border2); color:var(--muted); margin-left:6px; }
+    .gsc-badge.connected { border-color:rgba(16,185,129,.3); color:var(--green); }
+    .gsc-badge.error { border-color:rgba(239,68,68,.3); color:var(--red); }
+    .gsc-badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+    .kw-table td { padding:6px 8px; border-bottom:1px solid var(--border); color:var(--muted2); }
+    .kw-ctr { font-size:10px; color:var(--muted); }
+    .kw-clicks { font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--blue); }
+    .kw-imp   { font-size:10px; color:var(--muted); }
+
+    .quickwin-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:6px; }
+    .quickwin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+    .quickwin-kw { font-size:12px; font-weight:600; color:var(--text); }
+    .quickwin-pos { font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--yellow); }
+    .quickwin-meta { display:flex; gap:12px; font-size:10px; color:var(--muted); }
+    .quickwin-priority { font-size:9px; padding:2px 6px; border-radius:99px; }
+    .priority-high { background:rgba(249,115,22,.1); color:var(--orange); }
+    .priority-medium { background:rgba(253,224,71,.1); color:var(--yellow); }
+
+    .pages-list { display:flex; flex-direction:column; gap:6px; }
+    .page-item { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px 10px; }
+    .page-path { font-family:var(--font-mono); font-size:10px; color:var(--purple); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .page-stats { display:flex; gap:12px; font-size:10px; color:var(--muted2); }
+
+    .gsc-section-title { font-size:11px; font-weight:600; color:var(--muted2); font-family:var(--font-sans); margin:14px 0 8px; display:flex; align-items:center; justify-content:space-between; }
+    .gsc-days-select { font-size:10px; background:var(--surface2); border:1px solid var(--border2); color:var(--muted2); border-radius:5px; padding:2px 6px; font-family:var(--font-mono); cursor:pointer; }
+
+    /* ── GOOGLE ADS TAB ─────────────────────── */
+    .gadv-banner { display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(249,115,22,.08); border:1px solid rgba(249,115,22,.25); border-radius:7px; margin-bottom:14px; font-size:10px; color:var(--orange); font-family:var(--font-mono); line-height:1.5; }
+    .gadv-banner code { background:var(--surface2); padding:1px 5px; border-radius:3px; color:var(--yellow); }
+    .gadv-section-title { font-size:11px; font-weight:600; color:var(--muted2); margin-bottom:8px; font-family:var(--font-sans); display:flex; align-items:center; gap:7px; }
+    .gadv-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-bottom:2px; }
+    .gadv-kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px; }
+    .gadv-kpi-label { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; font-family:var(--font-mono); }
+    .gadv-kpi-val { font-family:var(--font-sans); font-size:18px; font-weight:700; }
+    .gadv-kpi-sub { font-size:9px; color:var(--muted); margin-top:2px; }
+    .gadv-chart-wrap { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px 6px; margin-bottom:2px; }
+    .gadv-table { width:100%; border-collapse:collapse; font-size:10px; }
+    .gadv-table th { text-align:left; padding:4px 6px; font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid var(--border); font-family:var(--font-mono); font-weight:600; }
+    .gadv-table td { padding:5px 6px; border-bottom:1px solid var(--border); color:var(--muted2); vertical-align:middle; }
+    .gadv-table tr:last-child td { border-bottom:none; }
+    .gadv-table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:2px; }
+    .gadv-status { font-size:9px; padding:2px 6px; border-radius:99px; font-weight:600; }
+    .gadv-status.good   { background:rgba(16,185,129,.1); color:var(--green); }
+    .gadv-status.paused { background:rgba(100,116,139,.1); color:var(--muted2); }
+    .gadv-row-warn td { background:rgba(239,68,68,.03); }
+    .gadv-neg-tag { font-size:9px; padding:2px 6px; border-radius:4px; background:rgba(239,68,68,.1); color:var(--red); cursor:pointer; white-space:nowrap; font-weight:600; }
+    .gadv-badge-crit { font-size:9px; padding:2px 6px; border-radius:99px; background:rgba(239,68,68,.12); color:var(--red); font-weight:700; }
+    .gadv-badge-warn { font-size:9px; padding:2px 6px; border-radius:99px; background:rgba(253,224,71,.1); color:var(--yellow); font-weight:700; }
+    .gadv-two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .gadv-budget-box { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; }
+    .gadv-budget-label-row { display:flex; justify-content:space-between; font-size:9px; color:var(--muted2); margin-bottom:3px; margin-top:6px; }
+    .gadv-bar-bg { height:5px; background:var(--border); border-radius:99px; overflow:hidden; }
+    .gadv-bar-fill { height:100%; border-radius:99px; }
+    .gadv-qs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+    .gadv-qs-card { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:9px 10px; }
+    .gadv-qs-kw { font-size:10px; font-weight:600; color:var(--text); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gadv-qs-score { font-family:var(--font-sans); font-size:20px; font-weight:700; }
+    .gadv-qs-sub { font-size:9px; color:var(--muted); margin-top:2px; }
+    .gadv-anomaly-list { display:flex; flex-direction:column; gap:6px; }
+    .gadv-anomaly-item { display:flex; align-items:flex-start; gap:9px; padding:10px 12px; border-radius:8px; border:1px solid var(--border); }
+    .gadv-anomaly-item.crit { background:rgba(239,68,68,.05); border-color:rgba(239,68,68,.25); }
+    .gadv-anomaly-item.warn { background:rgba(253,224,71,.04); border-color:rgba(253,224,71,.2); }
+    .gadv-anomaly-item.ok   { background:rgba(16,185,129,.04); border-color:rgba(16,185,129,.2); }
+    .gadv-anomaly-ico { font-size:15px; flex-shrink:0; margin-top:1px; }
+    .gadv-anomaly-body { flex:1; min-width:0; }
+    .gadv-anomaly-title { font-size:11px; font-weight:600; color:var(--text); margin-bottom:3px; }
+    .gadv-anomaly-desc { font-size:10px; color:var(--muted2); line-height:1.55; }
+    .gadv-anomaly-delta { font-size:9px; font-weight:700; font-family:var(--font-mono); white-space:nowrap; flex-shrink:0; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── TOPBAR ── -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-logo">⚡ Botfusions</span>
+      <div class="topbar-dot"></div>
+      <span class="topbar-badge">AI CMO Terminali</span>
+      <span class="topbar-badge" style="color:var(--purple);border-color:rgba(168,85,247,.3)">Günlük Çalışıyor</span>
+      <span class="gsc-badge" id="gsc-badge"><div class="gsc-badge-dot"></div>GSC Bağlanıyor...</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user">Cenk Tokgöz</span>
+      <div class="topbar-avatar">CT</div>
+    </div>
+  </div>
+
+  <!-- ── TERMINAL ── -->
+  <div class="terminal" id="terminal">
+    <div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-cmd"> HEDEF : botfusions.com</span></div>
+    <div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-cmd"> DURUM : <span class="terminal-ok">AKTİF</span></span></div>
+    <div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-cmd"> DURUM : AI CMO'yu Başlatmak...</span></div>
+    <div class="terminal-line" id="term-anim"><span class="terminal-prompt">$</span><span class="terminal-cmd"> <span id="term-text"></span><span class="cursor"></span></span></div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+
+    <!-- ── SIDEBAR ── -->
+    <div class="sidebar">
+      <div class="company-block">
+        <div class="company-header">
+          <span class="company-name">Botfusions</span>
+          <span class="edit-btn">✎</span>
+        </div>
+        <p class="company-desc">Botfusions, işletmeler için otonom AI ajanları, iş akışı otomasyon sistemleri ve GEO (Generatif Motor Optimizasyonu) hizmetlerini kuran bir Türk AI ajansıdır.</p>
+        <div class="company-meta">
+          <div class="meta-item"><div class="meta-dot"></div>Takım boyutunu ekleyin</div>
+          <div class="meta-item"><div class="meta-dot"></div>Yazma kalitesini geliştirin</div>
+        </div>
+      </div>
+
+      <div class="section-label">Belgeler</div>
+      <div class="doc-item"><span class="doc-name">📦 Ürün Bilgileri</span><span class="doc-arrow">›</span></div>
+      <div class="doc-item"><span class="doc-name">🔍 Rakip Analizi</span><span class="doc-arrow">›</span></div>
+      <div class="doc-item"><span class="doc-name">🎯 Marka Sesi</span><span class="doc-arrow">›</span></div>
+      <div class="doc-item"><span class="doc-name">📊 Pazarlama Stratejisi</span><span class="doc-badge">Yeni</span></div>
+      <div class="doc-item"><span class="doc-name">✍️ Makaleler</span><span class="doc-arrow">›</span></div>
+
+      <div class="section-label">Rakipler</div>
+      <div class="competitor-grid">
+        <div class="comp-tag"><div class="comp-icon">🌅</div><span>Morningside</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag"><div class="comp-icon">⚙️</div><span>Otomasyon Aja.</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag"><div class="comp-icon">🔗</div><span>Lindy.ai</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag"><div class="comp-icon">🤖</div><span>İlgili AI</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag"><div class="comp-icon">📄</div><span>İlk Sayfa</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag"><div class="comp-icon">💥</div><span>Yıkıcı Rek.</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag"><div class="comp-icon">🔮</div><span>Yakın Gelecek</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag"><div class="comp-icon">🔄</div><span>n8n</span><span class="comp-remove">×</span></div>
+        <div class="comp-tag comp-add"><span>+ Ekle</span></div>
+      </div>
+
+      <div class="section-label" style="margin-top:16px;">Hızlı Metrikler</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 4px;">
+          <span style="font-size:11px;color:var(--muted2)">28g Tıklama</span>
+          <span id="sidebar-clicks" style="font-family:var(--font-mono);font-size:11px;color:var(--green)">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 4px;">
+          <span style="font-size:11px;color:var(--muted2)">Ortalama Sıra</span>
+          <span id="sidebar-position" style="font-family:var(--font-mono);font-size:11px;color:var(--yellow)">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 4px;">
+          <span style="font-size:11px;color:var(--muted2)">Gösterim (28g)</span>
+          <span id="sidebar-impressions" style="font-family:var(--font-mono);font-size:11px;color:var(--blue)">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 4px;">
+          <span style="font-size:11px;color:var(--muted2)">CTR Ort.</span>
+          <span id="sidebar-ctr" style="font-family:var(--font-mono);font-size:11px;color:var(--purple)">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS ── -->
+    <div class="analytics">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="live-dot"></div>
+          Analitik
+        </div>
+        <div style="display:flex;gap:10px;">
+          <span class="panel-action">⟳</span>
+          <span class="panel-action">↗</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" data-tab="saglik">Sağlık</div>
+        <div class="tab" data-tab="baglanti">Bağlantılar</div>
+        <div class="tab" data-tab="teknik">Teknik</div>
+        <div class="tab" data-tab="aigeo">AI/GEO</div>
+        <div class="tab" data-tab="kontrol">Kontroller</div>
+        <div class="tab" data-tab="gadv">Google Ads</div>
+        <div class="tab" data-tab="sosyal">Sosyal Medya</div>
+      </div>
+
+      <!-- Sağlık Tab -->
+      <div class="tab-content active" id="tab-saglik">
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="stat-site-score" style="color:var(--green)">—</div>
+            <div class="mini-stat-label">Perf Skoru</div>
+            <div class="mini-stat-change" id="stat-site-change" style="color:var(--muted)">Yükleniyor...</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="stat-seo-score" style="color:var(--yellow)">—</div>
+            <div class="mini-stat-label">SEO Skoru</div>
+            <div class="mini-stat-change" id="stat-seo-change" style="color:var(--muted)">Yükleniyor...</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="stat-acc-score" style="color:var(--blue)">—</div>
+            <div class="mini-stat-label">Erişilebilirlik</div>
+            <div class="mini-stat-change" id="stat-acc-change" style="color:var(--muted)">Yükleniyor...</div>
+          </div>
+        </div>
+
+        <!-- Google Connect -->
+        <div class="connect-header">Google Hizmetlerini Bir Araya Getirin</div>
+        <div class="connect-grid">
+          <div class="connect-card">
+            <div class="connect-icon">📊</div>
+            <div class="connect-name">Google Analytics</div>
+            <div class="connect-sub">Trafik ve davranış</div>
+            <button class="connect-btn">Bağla</button>
+          </div>
+          <div class="connect-card">
+            <div class="connect-icon">🔍</div>
+            <div class="connect-name">Arama Konsolu</div>
+            <div class="connect-sub">Arama sıralamaları</div>
+            <button class="connect-btn">Bağla</button>
+          </div>
+        </div>
+
+        <!-- Sayfa Puanları -->
+        <div class="score-section">
+          <div class="psi-header">
+            <div>
+              <div class="score-section-title">Sayfa Temeli Puanlar</div>
+              <div class="score-section-sub" id="psi-last-fetch">Google PageSpeed API — canlı veri</div>
+            </div>
+            <button class="psi-refresh-btn" id="psi-refresh-btn" onclick="fetchPageSpeed()">⟳ Yenile</button>
+          </div>
+
+          <div class="fetch-banner" id="fetch-banner">
+            <div class="fetch-spinner"></div>
+            <span id="fetch-banner-text">botfusions.com analiz ediliyor...</span>
+          </div>
+
+          <div class="score-label">📱 MOBİL</div>
+          <div class="score-row">
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="mob-perf-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="mob-perf-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">Performans</span>
+            </div>
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="mob-acc-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="mob-acc-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">Erişilebilirlik</span>
+            </div>
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="mob-bp-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="mob-bp-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">En İyi Uyg.</span>
+            </div>
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="mob-seo-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="mob-seo-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">SEO</span>
+            </div>
+          </div>
+
+          <div class="score-label">🖥 MASAÜSTÜ</div>
+          <div class="score-row">
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="desk-perf-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="desk-perf-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">Performans</span>
+            </div>
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="desk-acc-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="desk-acc-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">Erişilebilirlik</span>
+            </div>
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="desk-bp-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="desk-bp-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">En İyi Uyg.</span>
+            </div>
+            <div class="score-circle">
+              <svg width="60" height="60" class="score-svg">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border)" stroke-width="4"/>
+                <circle id="desk-seo-arc" class="score-arc" cx="30" cy="30" r="24" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                <text id="desk-seo-val" x="30" y="35" text-anchor="middle" fill="var(--text)" font-size="13">—</text>
+              </svg>
+              <span class="score-name">SEO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bağlantılar Tab -->
+      <div class="tab-content" id="tab-baglanti">
+        <div class="health-grid">
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">Domain Rating</span><span class="health-card-status status-warn">Orta</span></div>
+            <div class="health-card-val" style="color:var(--yellow)">28</div>
+            <div class="health-card-desc">Hedef: 40+ (6 ay)</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">Backlink</span><span class="health-card-status status-good">İyi</span></div>
+            <div class="health-card-val" style="color:var(--green)">312</div>
+            <div class="health-card-desc">↑ +28 bu ay</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">Ref. Domain</span><span class="health-card-status status-warn">Orta</span></div>
+            <div class="health-card-val" style="color:var(--yellow)">47</div>
+            <div class="health-card-desc">Çeşitlendirme gerek</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">Broken Links</span><span class="health-card-status status-bad">Acil</span></div>
+            <div class="health-card-val" style="color:var(--red)">7</div>
+            <div class="health-card-desc">Hemen düzeltilmeli</div>
+          </div>
+        </div>
+
+        <!-- GA4 Trafik Özeti -->
+        <div style="margin-top:16px;">
+          <div class="gsc-section-title"><span>📊 GA4 Trafik Özeti</span></div>
+          <div id="ga4-status" style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:8px;">Yükleniyor...</div>
+          <div class="mini-stats" id="ga4-summary-stats" style="display:none;">
+            <div class="mini-stat">
+              <div class="mini-stat-val" id="ga4-pageviews" style="color:var(--blue)">—</div>
+              <div class="mini-stat-label">Sayfa Görüntüleme</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-val" id="ga4-sessions" style="color:var(--purple)">—</div>
+              <div class="mini-stat-label">Oturum</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-val" id="ga4-engagement" style="color:var(--green)">—</div>
+              <div class="mini-stat-label">Etkileşim Oranı</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-val" id="ga4-bounce" style="color:var(--orange)">—</div>
+              <div class="mini-stat-label">Sıçrama Oranı</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-val" id="ga4-conversions" style="color:var(--yellow)">—</div>
+              <div class="mini-stat-label">Dönüşüm</div>
+            </div>
+          </div>
+          <div id="ga4-pages-area" style="display:none;margin-top:8px;">
+            <div style="font-size:9px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">En Çok Ziyaret Edilen Sayfalar</div>
+            <table class="kw-table">
+              <thead><tr><th>Sayfa</th><th>Görüntüleme</th><th>Oturum</th><th>Etkileşim</th></tr></thead>
+              <tbody id="ga4-pages-body"></tbody>
+            </table>
+          </div>
+          <div id="ga4-sources-area" style="display:none;margin-top:8px;">
+            <div style="font-size:9px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">Trafik Kaynakları</div>
+            <table class="kw-table">
+              <thead><tr><th>Kanal</th><th>Oturum</th><th>Görüntüleme</th><th>Etkileşim</th></tr></thead>
+              <tbody id="ga4-sources-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teknik Tab -->
+      <div class="tab-content" id="tab-teknik">
+
+        <!-- Özet Metrikler -->
+        <div class="mini-stats" id="gsc-summary-stats" style="margin-bottom:14px;">
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="gsc-clicks" style="color:var(--blue)">—</div>
+            <div class="mini-stat-label">Tıklama (28g)</div>
+            <div class="mini-stat-change" style="color:var(--muted)">GSC verisi</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="gsc-impressions" style="color:var(--purple)">—</div>
+            <div class="mini-stat-label">Gösterim</div>
+            <div class="mini-stat-change" style="color:var(--muted)">GSC verisi</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="gsc-position" style="color:var(--yellow)">—</div>
+            <div class="mini-stat-label">Ort. Sıra</div>
+            <div class="mini-stat-change" style="color:var(--muted)">GSC verisi</div>
+          </div>
+        </div>
+
+        <!-- Top Keywords -->
+        <div class="gsc-section-title">
+          <span>🔑 Top Keyword'lar</span>
+          <select class="gsc-days-select" id="gsc-days-select" onchange="fetchGSC(+this.value)">
+            <option value="7">7 gün</option>
+            <option value="28" selected>28 gün</option>
+            <option value="90">90 gün</option>
+          </select>
+        </div>
+
+        <div id="kw-loading" style="text-align:center;padding:20px;color:var(--muted);font-family:var(--font-mono);font-size:11px;">
+          GSC API bekleniyor... <span class="cursor"></span>
+        </div>
+
+        <div id="kw-table-wrap" style="display:none;margin-bottom:14px;">
+          <table class="kw-table" id="kw-table-real">
+            <thead>
+              <tr>
+                <th>Keyword</th>
+                <th>Sıra</th>
+                <th>Tıklama</th>
+                <th>Gösterim</th>
+                <th>CTR</th>
+              </tr>
+            </thead>
+            <tbody id="kw-table-body"></tbody>
+          </table>
+        </div>
+
+        <!-- Quick Wins -->
+        <div class="gsc-section-title"><span>⚡ Quick Win Fırsatları (Sıra 11-20)</span></div>
+        <div id="quickwins-loading" style="text-align:center;padding:10px;color:var(--muted);font-size:10px;font-family:var(--font-mono);">Yükleniyor...</div>
+        <div id="quickwins-wrap" style="display:none;"></div>
+
+        <!-- Top Sayfalar -->
+        <div class="gsc-section-title"><span>📄 En Çok Trafik Alan Sayfalar</span></div>
+        <div id="pages-loading" style="text-align:center;padding:10px;color:var(--muted);font-size:10px;font-family:var(--font-mono);">Yükleniyor...</div>
+        <div class="pages-list" id="pages-wrap" style="display:none;"></div>
+
+      </div>
+
+      <!-- AI/GEO Tab -->
+      <!-- AI/GEO Tab — bofusions_geo_mcp canlı analiz -->
+      <div class="tab-content" id="tab-aigeo">
+
+        <!-- Tarama Formu -->
+        <div class="geo-scan-form">
+          <select id="geo-url-select">
+            <option value="https://botfusions.com">botfusions.com</option>
+            <option value="https://botfusions.com/geo-hizmet" selected>botfusions.com/geo-hizmet</option>
+          </select>
+          <input id="geo-brand-input" type="text" value="Botfusions" placeholder="Marka adı" style="max-width:110px;" />
+          <button class="geo-scan-btn" id="geo-scan-btn" onclick="startGeoScan()">⚡ Tara</button>
+        </div>
+
+        <!-- Sonuç Alanı -->
+        <div id="geo-result-area">
+          <div class="geo-empty" id="geo-empty-state">
+            Tarama yapmak için URL seçin ve <strong>Tara</strong>'ya basın.<br/>
+            <span style="font-size:10px;color:var(--muted);margin-top:4px;display:block;">bofusions_geo_mcp v1.1.0 — teknik GEO analizi</span>
+          </div>
+        </div>
+
+        <!-- Geçmiş -->
+        <div style="margin-top:12px;">
+          <div class="score-label" style="margin-bottom:8px;">📋 TARAMA GEÇMİŞİ</div>
+          <div id="geo-history-area">
+            <div style="font-size:10px;color:var(--muted);text-align:center;padding:8px;">Yükleniyor…</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Kontroller Tab -->
+      <div class="tab-content" id="tab-kontrol">
+        <div class="health-grid">
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">Sitemap</span><span class="health-card-status status-good">OK</span></div>
+            <div class="health-card-val" style="color:var(--green);font-size:16px">✓ Aktif</div>
+            <div class="health-card-desc">47 URL indexlendi</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">robots.txt</span><span class="health-card-status status-good">OK</span></div>
+            <div class="health-card-val" style="color:var(--green);font-size:16px">✓ Aktif</div>
+            <div class="health-card-desc">AI botlar erişebilir</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">SSL / HTTPS</span><span class="health-card-status status-good">OK</span></div>
+            <div class="health-card-val" style="color:var(--green);font-size:16px">✓ Geçerli</div>
+            <div class="health-card-desc">Let's Encrypt</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-top"><span class="health-card-label">TBT</span><span id="cwv-tbt-status" class="health-card-status status-warn">Bekliyor</span></div>
+            <div class="health-card-val cwv-val" id="cwv-tbt" style="color:var(--muted)">—</div>
+            <div class="health-card-desc">Total Blocking Time</div>
+          </div>
+        </div>
+
+        <div class="score-label" style="margin-top:14px;">⚡ CORE WEB VITALS — Mobil (PageSpeed Canlı)</div>
+        <div class="cwv-grid">
+          <div class="cwv-card">
+            <div class="cwv-label">LCP — Largest Contentful Paint</div>
+            <div class="cwv-val" id="cwv-lcp" style="color:var(--muted)">—</div>
+            <div class="cwv-desc">Hedef: &lt; 2.5s</div>
+          </div>
+          <div class="cwv-card">
+            <div class="cwv-label">FCP — First Contentful Paint</div>
+            <div class="cwv-val" id="cwv-fcp" style="color:var(--muted)">—</div>
+            <div class="cwv-desc">Hedef: &lt; 1.8s</div>
+          </div>
+          <div class="cwv-card">
+            <div class="cwv-label">CLS — Cumulative Layout Shift</div>
+            <div class="cwv-val" id="cwv-cls" style="color:var(--muted)">—</div>
+            <div class="cwv-desc">Hedef: &lt; 0.1</div>
+          </div>
+          <div class="cwv-card">
+            <div class="cwv-label">Speed Index</div>
+            <div class="cwv-val" id="cwv-si" style="color:var(--muted)">—</div>
+            <div class="cwv-desc">Hedef: &lt; 3.4s</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Google Ads Tab ── -->
+      <div class="tab-content" id="tab-gadv">
+
+        <!-- Bağlantı Banner -->
+        <div class="gadv-banner" id="gadv-banner">
+          <span>⏳</span>
+          <span id="gadv-banner-text">Google Ads verisi yükleniyor...</span>
+        </div>
+
+        <!-- 1. Hesap Sağlığı -->
+        <div class="gadv-section-title">1 — Hesap Sağlığı <span style="font-size:9px;color:var(--muted);font-weight:400" id="gadv-period">(Son 30 gün)</span></div>
+        <div class="gadv-kpi-grid">
+          <div class="gadv-kpi-card">
+            <div class="gadv-kpi-label">Toplam Harcama</div>
+            <div class="gadv-kpi-val" style="color:var(--orange)" id="ads-spend">—</div>
+            <div class="gadv-kpi-sub" id="ads-spend-sub">Yükleniyor...</div>
+          </div>
+          <div class="gadv-kpi-card">
+            <div class="gadv-kpi-label">Tıklama</div>
+            <div class="gadv-kpi-val" style="color:var(--blue)" id="ads-clicks">—</div>
+            <div class="gadv-kpi-sub" id="ads-ctr-sub">—</div>
+          </div>
+          <div class="gadv-kpi-card">
+            <div class="gadv-kpi-label">Gösterim</div>
+            <div class="gadv-kpi-val" style="color:var(--purple)" id="ads-impr">—</div>
+            <div class="gadv-kpi-sub" id="ads-cpc-sub">—</div>
+          </div>
+          <div class="gadv-kpi-card">
+            <div class="gadv-kpi-label">ROAS</div>
+            <div class="gadv-kpi-val" style="color:var(--muted)" id="ads-roas">—</div>
+            <div class="gadv-kpi-sub" id="ads-roas-sub">Mayıs'tan ölçülüyor</div>
+          </div>
+          <div class="gadv-kpi-card">
+            <div class="gadv-kpi-label">Dönüşüm</div>
+            <div class="gadv-kpi-val" style="color:var(--yellow)" id="ads-conv">—</div>
+            <div class="gadv-kpi-sub" id="ads-conv-sub">—</div>
+          </div>
+          <div class="gadv-kpi-card">
+            <div class="gadv-kpi-label">CPA</div>
+            <div class="gadv-kpi-val" style="color:var(--muted)" id="ads-cpa">—</div>
+            <div class="gadv-kpi-sub" id="ads-cpa-sub">—</div>
+          </div>
+        </div>
+
+        <!-- Trend Sparkline -->
+        <div class="gadv-chart-wrap" style="margin-top:8px;" id="gadv-trend-wrap">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--font-mono);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Haftalık Harcama Trendi (₺)</div>
+          <div id="gadv-trend-chart" style="font-size:10px;color:var(--muted);text-align:center;padding:8px;">Yükleniyor...</div>
+        </div>
+
+        <!-- 2. Kampanya Dağılımı -->
+        <div class="gadv-section-title" style="margin-top:12px;">2 — Kampanya Dağılımı</div>
+        <div class="gadv-table-wrap" id="gadv-campaigns-area">
+          <table class="gadv-table">
+            <thead><tr><th>Kampanya</th><th>Durum</th><th>Harcama</th><th>Tıklama</th><th>CTR</th><th>Dön.</th></tr></thead>
+            <tbody>
+              <tr><td colspan="6" style="color:var(--muted);text-align:center;padding:12px;">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 4. Arama Terimi Atık -->
+        <div class="gadv-section-title" style="margin-top:12px;">4 — Arama Terimi Atık Denetimi <span class="gadv-badge-crit">Kritik</span></div>
+        <div class="gadv-table-wrap" id="gadv-keywords-area">
+          <table class="gadv-table">
+            <thead><tr><th>Keyword</th><th>Eşleşme</th><th>Harcama</th><th>Tıklama</th><th>CTR</th><th>Dön.</th></tr></thead>
+            <tbody>
+              <tr><td colspan="6" style="color:var(--muted);text-align:center;padding:12px;">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 5. Bütçe Tahsisi -->
+        <div class="gadv-section-title" style="margin-top:12px;">5 — Bütçe Tahsisi Optimizatörü</div>
+        <div class="gadv-two-col">
+          <div class="gadv-budget-box">
+            <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-family:var(--font-mono);">Mevcut — Sorunlu</div>
+            <div class="gadv-budget-label-row"><span>yapay zeka SEO</span><span style="color:var(--red);font-weight:700">%99.4</span></div>
+            <div class="gadv-bar-bg"><div class="gadv-bar-fill" style="width:99.4%;background:var(--red)"></div></div>
+            <div class="gadv-budget-label-row"><span>Diğer</span><span>%0.6</span></div>
+            <div class="gadv-bar-bg"><div class="gadv-bar-fill" style="width:0.6%;background:var(--muted)"></div></div>
+          </div>
+          <div class="gadv-budget-box">
+            <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-family:var(--font-mono);">Önerilen Dağılım</div>
+            <div class="gadv-budget-label-row"><span>GEO danışmanlık</span><span style="color:var(--green)">%30</span></div>
+            <div class="gadv-bar-bg"><div class="gadv-bar-fill" style="width:30%;background:var(--purple)"></div></div>
+            <div class="gadv-budget-label-row"><span>AI pazarlama ajansı</span><span style="color:var(--green)">%25</span></div>
+            <div class="gadv-bar-bg"><div class="gadv-bar-fill" style="width:25%;background:var(--blue)"></div></div>
+            <div class="gadv-budget-label-row"><span>yapay zeka SEO</span><span>%25</span></div>
+            <div class="gadv-bar-bg"><div class="gadv-bar-fill" style="width:25%;background:var(--orange)"></div></div>
+            <div class="gadv-budget-label-row"><span>Yapay zeka danışmanlık</span><span>%20</span></div>
+            <div class="gadv-bar-bg"><div class="gadv-bar-fill" style="width:20%;background:var(--muted)"></div></div>
+          </div>
+        </div>
+
+        <!-- 3. Quality Score -->
+        <div class="gadv-section-title" style="margin-top:12px;">3 — Quality Score Özeti <span class="gadv-badge-warn">İyileştirme Gerek</span></div>
+        <div class="gadv-qs-grid">
+          <div class="gadv-qs-card">
+            <div class="gadv-qs-kw">yapay zeka SEO</div>
+            <div class="gadv-qs-score" style="color:var(--yellow)">6/10</div>
+            <div class="gadv-qs-sub">Ad Rel: Orta · LP: Düşük</div>
+          </div>
+          <div class="gadv-qs-card">
+            <div class="gadv-qs-kw">AI arama opt.</div>
+            <div class="gadv-qs-score" style="color:var(--orange)">4/10</div>
+            <div class="gadv-qs-sub">Ad Rel: Düşük · LP: Düşük</div>
+          </div>
+          <div class="gadv-qs-card">
+            <div class="gadv-qs-kw">GEO hizmet</div>
+            <div class="gadv-qs-score" style="color:var(--muted)">—</div>
+            <div class="gadv-qs-sub">0 gösterim → veri yok</div>
+          </div>
+        </div>
+
+        <!-- 6. Açık Artırma İçgörüleri -->
+        <div class="gadv-section-title" style="margin-top:12px;">6 — Açık Artırma İçgörüleri</div>
+        <div class="gadv-table-wrap">
+          <table class="gadv-table">
+            <thead><tr><th>Rakip</th><th>Gösterim Payı</th><th>Ort. Pozisyon</th><th>Üstümüzde</th></tr></thead>
+            <tbody>
+              <tr><td>dijitalmerkez.com</td><td style="color:var(--red)">%34.2</td><td>1.8</td><td>%28</td></tr>
+              <tr><td>seoajans.com.tr</td><td>%22.1</td><td>2.4</td><td>%19</td></tr>
+              <tr><td>medyalab.com</td><td>%18.5</td><td>3.1</td><td>%12</td></tr>
+              <tr><td style="color:var(--purple);font-weight:600">Botfusions ←</td><td style="color:var(--yellow)">%14.8</td><td>2.9</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:9px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;margin-bottom:2px;" id="gadv-footer-note">* Veriler Google Ads API'den çekiliyor</div>
+
+        <!-- 7. Anomali Raporu -->
+        <div class="gadv-section-title" style="margin-top:12px;">7 — Haftalık Anomali Raporu</div>
+        <div class="gadv-anomaly-list">
+          <div class="gadv-anomaly-item crit">
+            <div class="gadv-anomaly-ico">🔴</div>
+            <div class="gadv-anomaly-body">
+              <div class="gadv-anomaly-title">Bütçe Konsantrasyonu — Tek keyword %99.4</div>
+              <div class="gadv-anomaly-desc">HATA-003 (Kronik): BROAD eşleşme + Smart Bidding yok. Tüm bütçe "yapay zeka SEO"ya akıyor. Smart Bidding için 30+ dönüşüm gerekiyor — önce dönüşüm topla.</div>
+            </div>
+            <div class="gadv-anomaly-delta" style="color:var(--red)">KRİTİK</div>
+          </div>
+          <div class="gadv-anomaly-item warn">
+            <div class="gadv-anomaly-ico">🟡</div>
+            <div class="gadv-anomaly-body">
+              <div class="gadv-anomaly-title">14 Keyword — Sıfır Gösterim (%74 pasif)</div>
+              <div class="gadv-anomaly-desc">HATA-002: "generative engine optimization", "ChatGPT'de görünürlük" vb. Türkiye'de aranmıyor. Keyword Planner ile kontrol et → 0 hacimli olanları durdur.</div>
+            </div>
+            <div class="gadv-anomaly-delta" style="color:var(--yellow)">UYARI</div>
+          </div>
+          <div class="gadv-anomaly-item ok">
+            <div class="gadv-anomaly-ico">🟢</div>
+            <div class="gadv-anomaly-body">
+              <div class="gadv-anomaly-title">GA4 Dönüşüm Takibi — Aktif</div>
+              <div class="gadv-anomaly-desc">HATA-001 çözüldü (Mayıs 2026): GTM v3 yayınlandı, G-T1JJQT8QXT doğru. GA4 ↔ Google Ads bağlantısı 19 Nis'ten itibaren aktif. form_submitted + phone_click izleniyor.</div>
+            </div>
+            <div class="gadv-anomaly-delta" style="color:var(--green)">ÇÖZÜLDÜ</div>
+          </div>
+        </div>
+
+      </div><!-- /tab-gadv -->
+
+      <!-- ── SOSYAL MEDYA TAB ── -->
+      <div class="tab-content" id="tab-sosyal">
+
+        <!-- Mini stats -->
+        <div class="mini-stats" style="margin-bottom:14px;">
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="sm-total-posts" style="color:var(--purple)">—</div>
+            <div class="mini-stat-label">Toplam Post</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="sm-total-media" style="color:var(--blue)">—</div>
+            <div class="mini-stat-label">Medya</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="sm-published" style="color:var(--green)">—</div>
+            <div class="mini-stat-label">Yayında</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val" id="sm-failed" style="color:var(--red)">—</div>
+            <div class="mini-stat-label">Başarısız</div>
+          </div>
+        </div>
+
+        <!-- Platform durumu -->
+        <div class="gadv-section-title">Platform Durumu</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;" id="sm-platform-badges">
+          <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:10px;font-family:var(--font-mono);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>Instagram
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:10px;font-family:var(--font-mono);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>Facebook
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:10px;font-family:var(--font-mono);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>YouTube
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:10px;font-family:var(--font-mono);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>TikTok
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:10px;font-family:var(--font-mono);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span>X
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:10px;font-family:var(--font-mono);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--yellow);display:inline-block;"></span>Pinterest (görsel)
+          </div>
+        </div>
+
+        <!-- Yayın Oluştur Butonu -->
+        <div style="margin-bottom:14px;">
+          <button onclick="openPublishModal()" style="background:linear-gradient(135deg,#A855F7,#7C3AED);border:none;color:#fff;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.5px;">
+            ＋ Yayın Oluştur
+          </button>
+        </div>
+
+        <!-- Son Postlar -->
+        <div class="gadv-section-title" style="margin-bottom:8px;">
+          Son Yayınlar
+          <span onclick="fetchOmniPosts()" style="cursor:pointer;font-size:10px;color:var(--muted);font-family:var(--font-mono);">⟳ Yenile</span>
+        </div>
+        <div class="gadv-table-wrap" style="margin-bottom:14px;">
+          <table class="gadv-table" style="width:100%;">
+            <thead>
+              <tr>
+                <th>İçerik</th>
+                <th>Tip</th>
+                <th>Platformlar</th>
+                <th>Durum</th>
+                <th>Tarih</th>
+              </tr>
+            </thead>
+            <tbody id="sm-posts-tbody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:12px;">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Medya Kütüphanesi (Supabase) -->
+        <div class="gadv-section-title" style="margin-bottom:8px;">
+          Medya Kütüphanesi (Supabase)
+          <span onclick="fetchSupabaseMedia()" style="cursor:pointer;font-size:10px;color:var(--muted);font-family:var(--font-mono);">⟳ Yenile</span>
+        </div>
+        <div id="sm-media-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:14px;">
+          <div style="text-align:center;color:var(--muted);font-size:11px;grid-column:1/-1;padding:12px;">Yükleniyor...</div>
+        </div>
+
+        <!-- OmniSocials Medya -->
+        <div class="gadv-section-title" style="margin-bottom:8px;">
+          OmniSocials Medya Kütüphanesi
+          <span onclick="fetchOmniMedia()" style="cursor:pointer;font-size:10px;color:var(--muted);font-family:var(--font-mono);">⟳ Yenile</span>
+        </div>
+        <div class="gadv-table-wrap">
+          <table class="gadv-table" style="width:100%;">
+            <thead>
+              <tr><th>Dosya</th><th>Tip</th><th>Boyut</th><th>Tarih</th><th>ID</th></tr>
+            </thead>
+            <tbody id="sm-omni-media-tbody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:12px;">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /tab-sosyal -->
+
+    </div>
+
+    <!-- ── FEED ── -->
+    <div class="feed">
+      <div class="feed-header">
+        <div class="panel-title"><div class="live-dot"></div>Eylemler Yemi</div>
+        <div class="feed-controls">
+          <span class="feed-btn">⚙</span>
+          <span class="feed-btn">↑</span>
+        </div>
+      </div>
+
+      <!-- Reddit -->
+      <div class="feed-item" onclick="toggleFeed(this)">
+        <div class="feed-item-header">
+          <div class="feed-item-left">
+            <div class="feed-icon icon-reddit">🔴</div>
+            <div class="feed-text">
+              <div class="feed-item-title">Reddit Fırsatları</div>
+              <div class="feed-item-sub">2 fırsat hazır</div>
+            </div>
+          </div>
+          <span class="feed-chevron">⌄</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-card">
+            <div class="feed-card-title">r/artificial — "Türkiye'de AI ajans önerir misiniz?"</div>
+            <div class="feed-card-text">12 upvote, 8 saat önce. Botfusions için mükemmel mention fırsatı. Sektör deneyimi ile yanıt ver.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Yorum Yaz</button><button class="feed-card-btn btn-ghost">Ata</button></div>
+          </div>
+          <div class="feed-card">
+            <div class="feed-card-title">r/marketing — "GEO vs SEO 2025 tartışması"</div>
+            <div class="feed-card-text">Trend konu, 340 upvote. Uzman olarak Botfusions perspektifi eklenebilir.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Yorum Yaz</button><button class="feed-card-btn btn-ghost">Ata</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO GEO -->
+      <div class="feed-item open" onclick="toggleFeed(this)">
+        <div class="feed-item-header">
+          <div class="feed-item-left">
+            <div class="feed-icon icon-seo">🌐</div>
+            <div class="feed-text">
+              <div class="feed-item-title">SEO & GEO Tavsiyeleri</div>
+              <div class="feed-item-sub">2 tavsiye hazır; SEO düzeltmeleri kuyruk</div>
+            </div>
+          </div>
+          <span class="feed-chevron">⌄</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-card">
+            <div class="feed-card-title">⚡ "AI pazarlama ajansı İstanbul" — Quickwin</div>
+            <div class="feed-card-text">Aylık 880 arama, rakipler zayıf (DR&lt;20). Landing page oluşturulursa Top 5 potansiyeli yüksek.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Landing Yaz</button><button class="feed-card-btn btn-ghost">Ata</button></div>
+          </div>
+          <div class="feed-card">
+            <div class="feed-card-title">🤖 Perplexity'de kaynak ol — Schema Markup</div>
+            <div class="feed-card-text">FAQ ve HowTo şeması eksik. Eklenince AI motorlarında citation oranı %40 artabilir.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Schema Ekle</button><button class="feed-card-btn btn-ghost">Detay</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- X Yazar -->
+      <div class="feed-item" onclick="toggleFeed(this)">
+        <div class="feed-item-header">
+          <div class="feed-item-left">
+            <div class="feed-icon icon-x">✕</div>
+            <div class="feed-text">
+              <div class="feed-item-title">X Yazar</div>
+              <div class="feed-item-sub">2 fikir hazır</div>
+            </div>
+          </div>
+          <span class="feed-chevron">⌄</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-card">
+            <div class="feed-card-title">Thread: "GEO neden SEO'yu geçecek?"</div>
+            <div class="feed-card-text">Trend konu. 8 tweet'lik thread şablonu hazır. Botfusions vaka çalışması ile güçlendir.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Paylaş</button><button class="feed-card-btn btn-ghost">Düzenle</button></div>
+          </div>
+          <div class="feed-card">
+            <div class="feed-card-title">Tweet: AI ajan case study mini-thread</div>
+            <div class="feed-card-text">Müşteri sonuçlarını (anonim) paylaş. "3 ayda %180 organik büyüme" hook'u test et.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Paylaş</button><button class="feed-card-btn btn-ghost">Düzenle</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Makaleler -->
+      <div class="feed-item" onclick="toggleFeed(this)">
+        <div class="feed-item-header">
+          <div class="feed-item-left">
+            <div class="feed-icon icon-article">✍️</div>
+            <div class="feed-text">
+              <div class="feed-item-title">Makaleler</div>
+              <div class="feed-item-sub">1 konu hazır</div>
+            </div>
+          </div>
+          <span class="feed-chevron">⌄</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-card">
+            <div class="feed-card-title">Blog: "2025'te GEO: AI Motorlarında Görünür Olmanın Yolu"</div>
+            <div class="feed-card-text">1.8K aylık arama hacmi, düşük rekabet. Pillar content fırsatı. Tahmini trafik potansiyeli: +320/ay.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Yaz</button><button class="feed-card-btn btn-ghost">Brief Gör</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hacker News -->
+      <div class="feed-item" onclick="toggleFeed(this)">
+        <div class="feed-item-header">
+          <div class="feed-item-left">
+            <div class="feed-icon icon-hn">🟠</div>
+            <div class="feed-text">
+              <div class="feed-item-title">Hacker Haberleri</div>
+              <div class="feed-item-sub">1 posta hazır</div>
+            </div>
+          </div>
+          <span class="feed-chevron">⌄</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-card">
+            <div class="feed-card-title">HN: "Show HN: AI agents for SME automation" post</div>
+            <div class="feed-card-text">Teknik topluluk için ürün lansmanı post'u. Botfusions'ın otonom ajan altyapısını paylaş.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Hazırla</button><button class="feed-card-btn btn-ghost">Ata</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LinkedIn -->
+      <div class="feed-item" onclick="toggleFeed(this)">
+        <div class="feed-item-header">
+          <div class="feed-item-left">
+            <div class="feed-icon icon-li">💼</div>
+            <div class="feed-text">
+              <div class="feed-item-title">LinkedIn Yazarı</div>
+              <div class="feed-item-sub">1 posta hazır</div>
+            </div>
+          </div>
+          <span class="feed-chevron">⌄</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-card">
+            <div class="feed-card-title">LinkedIn: Müşteri vaka çalışması — Carousel post</div>
+            <div class="feed-card-text">B2B karar vericilere yönelik. "ROI in 30 days" angle ile carousel formatı en çok engagement alıyor.</div>
+            <div class="feed-card-actions"><button class="feed-card-btn btn-primary">Yaz</button><button class="feed-card-btn btn-ghost">Ata</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHAT ── -->
+    <div class="chat">
+      <div class="chat-cta">
+        <div class="chat-cta-icon">🤖</div>
+        <div class="chat-cta-text">
+          <div class="chat-cta-title">Tam zamanlı CMO'nuzu işe alın</div>
+          <div class="chat-cta-sub">AI destekli pazarlama — 99 $ / ay</div>
+        </div>
+        <button class="chat-cta-btn">Şimdi İşe Al</button>
+      </div>
+
+      <div class="chat-header">
+        <div class="live-dot"></div>
+        <span class="chat-status">AI CMO ile konuşun</span>
+        <div class="chat-tools">
+          <span class="chat-tool">⟳</span>
+          <span class="chat-tool">⏱</span>
+          <span class="chat-tool">⚙</span>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">
+            <div class="msg-text">Merhaba, benim de senin kozunun. Beni getirdiğin için teşekkürler.</div>
+          </div>
+        </div>
+        <div class="msg">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">
+            <div class="msg-text">Bugün için öncelikli aksiyonlar:</div>
+            <ul class="msg-list">
+              <li>2 SEO / GEO düzeltmesi</li>
+              <li>Reddit fırsatı yanıtla</li>
+              <li>GEO makalesi brief'i</li>
+              <li>LinkedIn carousel hazırla</li>
+            </ul>
+          </div>
+        </div>
+        <div class="msg">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">
+            <div class="msg-text">Mobil performansın 55 — bu acil. LCP'yi düzeltmek isterim, onay ver?</div>
+          </div>
+        </div>
+        <div class="msg user">
+          <div class="msg-avatar">CT</div>
+          <div class="msg-bubble">
+            <div class="msg-text">Evet, LCP için öneri gönder.</div>
+          </div>
+        </div>
+        <div class="msg">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">
+            <div class="msg-text">Analiz ediyorum... Ana sorun: hero görseli 1.2MB. WebP dönüşümü + lazy load ile 3.2s → 1.8s'ye düşebilir. Teknik brief hazırlayayım mı?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-wrap">
+        <span class="chat-attach">📎</span>
+        <textarea class="chat-input" placeholder="Bir şey sor..." rows="1" id="chatInput" onkeydown="sendMsg(event)"></textarea>
+        <button class="chat-send" onclick="sendMsg({key:'Enter',shiftKey:false})">➤</button>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.app -->
+
+<script>
+  // ── CONFIG ──────────────────────────────
+  const SITE_URL = 'https://botfusions.com';
+  const PSI_API  = 'http://localhost:8765/api/pagespeed';
+
+  // ── TERMINAL ANIMATION ──────────────────
+  const lines = [
+    'Botfusions.com\'a bir göz atmak için izin ver...',
+    'Başlayarak...',
+    'Derinlemesine başlamak — tüm sayfalar süzülüyor...',
+    'Twitter / X taraması tamamlandı → 2 fırsat bulundu',
+    'SEO fırsatları analiz edildi → 2 quickwin tespit edildi',
+    'Reddit monitör aktif → topluluk fırsatları izleniyor',
+    'Google PageSpeed API bağlanıyor...',
+    'AI CMO hazır — günlük görevler kuyrukta ✓',
+  ];
+  let li = 0, ci = 0;
+  const el = document.getElementById('term-text');
+  function typeNext() {
+    if (li >= lines.length) { li = 0; }
+    if (ci < lines[li].length) {
+      el.textContent += lines[li][ci++];
+      setTimeout(typeNext, 28);
+    } else {
+      setTimeout(() => { el.textContent = ''; ci = 0; li++; typeNext(); }, 1600);
+    }
+  }
+  typeNext();
+
+  // ── TABS ────────────────────────────────
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── FEED TOGGLE ─────────────────────────
+  function toggleFeed(item) { item.classList.toggle('open'); }
+
+  // ── PAGESPEED API ────────────────────────
+  let psiRunning = false;
+
+  async function fetchPageSpeed() {
+    if (psiRunning) return;
+    psiRunning = true;
+
+    const btn    = document.getElementById('psi-refresh-btn');
+    const banner = document.getElementById('fetch-banner');
+    const bannerTxt = document.getElementById('fetch-banner-text');
+
+    btn.classList.add('loading');
+    btn.textContent = '⟳ Yükleniyor...';
+    banner.classList.add('visible');
+
+    try {
+      // Mobil ve masaüstü paralel çek
+      bannerTxt.textContent = 'Mobil analiz ediliyor...';
+      const [mobRes, deskRes] = await Promise.all([
+        fetch(`${PSI_API}?url=${encodeURIComponent(SITE_URL)}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo`),
+        fetch(`${PSI_API}?url=${encodeURIComponent(SITE_URL)}&strategy=desktop&category=performance&category=accessibility&category=best-practices&category=seo`)
+      ]);
+
+      if (!mobRes.ok || !deskRes.ok) throw new Error('API yanıt vermedi');
+
+      bannerTxt.textContent = 'Veriler işleniyor...';
+      const [mob, desk] = await Promise.all([mobRes.json(), deskRes.json()]);
+
+      const mc = mob.lighthouseResult.categories;
+      const dc = desk.lighthouseResult.categories;
+      const ma = mob.lighthouseResult.audits;
+
+      // ── Mobil skorlar
+      const mobPerf = Math.round(mc.performance.score * 100);
+      const mobAcc  = Math.round(mc.accessibility.score * 100);
+      const mobBp   = Math.round(mc['best-practices'].score * 100);
+      const mobSeo  = Math.round(mc.seo.score * 100);
+
+      setCircle('mob-perf', mobPerf);
+      setCircle('mob-acc',  mobAcc);
+      setCircle('mob-bp',   mobBp);
+      setCircle('mob-seo',  mobSeo);
+
+      // ── Masaüstü skorlar
+      setCircle('desk-perf', Math.round(dc.performance.score * 100));
+      setCircle('desk-acc',  Math.round(dc.accessibility.score * 100));
+      setCircle('desk-bp',   Math.round(dc['best-practices'].score * 100));
+      setCircle('desk-seo',  Math.round(dc.seo.score * 100));
+
+      // ── Mini stats
+      setMiniStat('stat-site-score', mobPerf,  scoreColor(mobPerf),  mobPerf >= 90 ? '✓ İyi seviye' : mobPerf >= 50 ? '⚠ İyileştirme gerek' : '✗ Acil aksiyon');
+      setMiniStat('stat-seo-score',  mobSeo,   scoreColor(mobSeo),   mobSeo  >= 90 ? '✓ Optimize' : '⚠ Geliştirilebilir');
+      setMiniStat('stat-acc-score',  mobAcc,   scoreColor(mobAcc),   mobAcc  >= 90 ? '✓ Erişilebilir' : '⚠ Kontrol et');
+
+      // ── Core Web Vitals
+      setCWV('cwv-lcp', ma['largest-contentful-paint'],  2500,  5000);
+      setCWV('cwv-fcp', ma['first-contentful-paint'],    1800,  3000);
+      setCWV('cwv-cls', ma['cumulative-layout-shift'],   0.1,   0.25, true);
+      setCWV('cwv-si',  ma['speed-index'],               3400,  5800);
+      setCWV('cwv-tbt', ma['total-blocking-time'],       200,   600);
+
+      // TBT status badge
+      const tbtScore = ma['total-blocking-time'].score;
+      const tbtBadge = document.getElementById('cwv-tbt-status');
+      if (tbtBadge) {
+        tbtBadge.textContent = tbtScore >= 0.9 ? 'OK' : tbtScore >= 0.5 ? 'Dikkat' : 'Acil';
+        tbtBadge.className = 'health-card-status ' + (tbtScore >= 0.9 ? 'status-good' : tbtScore >= 0.5 ? 'status-warn' : 'status-bad');
+      }
+
+      // ── Son güncelleme
+      const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('psi-last-fetch').textContent = `Son güncelleme: ${now} · Mobil Perf: ${mobPerf} · Masaüstü Perf: ${Math.round(dc.performance.score * 100)}`;
+
+      // ── CMO chat bildirimi
+      if (mobPerf < 50) {
+        addChatMsg(`⚡ Gerçek veri geldi! Mobil performans ${mobPerf} — kritik seviye. LCP: ${ma['largest-contentful-paint'].displayValue}. Hemen optimizasyon başlatayım mı?`);
+      } else if (mobPerf < 90) {
+        addChatMsg(`📊 PageSpeed analizi tamamlandı. Mobil: ${mobPerf}, Masaüstü: ${Math.round(dc.performance.score * 100)}. ${mobPerf < 70 ? 'İyileştirme önerilerim var.' : 'Genel durum iyi, küçük optimize fırsatları var.'}`);
+      } else {
+        addChatMsg(`✅ Harika! Mobil performans ${mobPerf} — üst düzey. SEO skoru: ${mobSeo}. Büyümeye odaklanabiliriz.`);
+      }
+
+    } catch (err) {
+      console.error('PageSpeed hatası:', err);
+      document.getElementById('psi-last-fetch').textContent = `Hata: ${err.message} — VPN/CORS sorunu olabilir`;
+      addChatMsg(`⚠ PageSpeed API'ye ulaşılamadı: ${err.message}. Proxy veya CORS engelliyor olabilir.`);
+    } finally {
+      btn.classList.remove('loading');
+      btn.textContent = '⟳ Yenile';
+      banner.classList.remove('visible');
+      psiRunning = false;
+    }
+  }
+
+  function setCircle(id, score) {
+    const arc = document.getElementById(id + '-arc');
+    const val = document.getElementById(id + '-val');
+    if (!arc || !val) return;
+    const offset = (150.8 * (1 - score / 100)).toFixed(1);
+    arc.setAttribute('stroke-dashoffset', offset);
+    arc.style.stroke = scoreColor(score);
+    val.textContent  = score;
+  }
+
+  function scoreColor(s) {
+    return s >= 90 ? 'var(--green)' : s >= 50 ? 'var(--yellow)' : 'var(--red)';
+  }
+
+  function setMiniStat(id, val, color, changeText) {
+    const el = document.getElementById(id);
+    const ch = document.getElementById(id.replace('score','change'));
+    if (el) { el.textContent = val; el.style.color = color; }
+    if (ch) { ch.textContent = changeText; ch.style.color = color; }
+  }
+
+  function setCWV(id, audit, goodThreshold, poorThreshold, isCLS) {
+    const el = document.getElementById(id);
+    if (!el || !audit) return;
+    el.textContent = audit.displayValue || '—';
+    el.style.color  = audit.score >= 0.9 ? 'var(--green)' : audit.score >= 0.5 ? 'var(--yellow)' : 'var(--red)';
+  }
+
+  function addChatMsg(text) {
+    const msgs = document.getElementById('chatMessages');
+    msgs.innerHTML += `<div class="msg"><div class="msg-avatar">🤖</div><div class="msg-bubble"><div class="msg-text">${text}</div></div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  // ── GSC API ─────────────────────────────
+  const GSC_API = 'http://localhost:8765';
+  let gscConnected = false;
+
+  async function checkGSCServer() {
+    try {
+      const r = await fetch(`${GSC_API}/api/health`, { signal: AbortSignal.timeout(3000) });
+      if (r.ok) {
+        gscConnected = true;
+        const badge = document.getElementById('gsc-badge');
+        badge.className = 'gsc-badge connected';
+        badge.innerHTML = '<div class="gsc-badge-dot"></div>GSC Bağlı';
+        return true;
+      }
+    } catch (_) {}
+    const badge = document.getElementById('gsc-badge');
+    badge.className = 'gsc-badge error';
+    badge.innerHTML = '<div class="gsc-badge-dot"></div>GSC Çevrimdışı';
+    showGSCOfflineMsg();
+    return false;
+  }
+
+  function showGSCOfflineMsg() {
+    ['kw-loading','quickwins-loading','pages-loading'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '⚠ GSC sunucusu çevrimdışı — <code>start-cmo-dashboard.bat</code> çalıştır';
+    });
+  }
+
+  async function fetchGSC(days = 28) {
+    if (!gscConnected) return;
+
+    try {
+      const r    = await fetch(`${GSC_API}/api/gsc/all?days=${days}`);
+      const data = await r.json();
+      if (!data.ok) throw new Error(data.error || 'API hatası');
+
+      const s = data.summary;
+
+      // Sidebar metrikleri
+      const fmt = n => n >= 1000 ? (n/1000).toFixed(1)+'K' : n;
+      setEl('sidebar-clicks',      fmt(s.total_clicks));
+      setEl('sidebar-impressions', fmt(s.total_impressions));
+      setEl('sidebar-position',    s.avg_position);
+      setEl('sidebar-ctr',         s.avg_ctr + '%');
+
+      // Teknik tab özet
+      setEl('gsc-clicks',      fmt(s.total_clicks));
+      setEl('gsc-impressions', fmt(s.total_impressions));
+      setEl('gsc-position',    s.avg_position);
+
+      // Keyword tablosu
+      renderKeywords(data.top_keywords);
+
+      // Quick wins
+      renderQuickWins(data.quickwins);
+
+      // Sayfalar
+      renderPages(data.top_pages);
+
+      // Feed'deki SEO önerisini güncelle
+      if (data.quickwins && data.quickwins.length > 0) {
+        const top = data.quickwins[0];
+        addChatMsg(`📊 GSC verisi geldi! ${s.total_clicks} tıklama, ort. sıra ${s.avg_position}. En iyi quick win: "${top.keyword}" (Sıra ${top.position}, ${top.impressions} gösterim)`);
+      }
+
+    } catch (e) {
+      console.error('GSC fetch hatası:', e);
+    }
+  }
+
+  function renderKeywords(keywords) {
+    if (!keywords || !keywords.length) return;
+    const tbody = document.getElementById('kw-table-body');
+    tbody.innerHTML = keywords.map(k => {
+      const posClass = k.position <= 10 ? 'pos-good' : k.position <= 20 ? 'pos-mid' : 'pos-bad';
+      const fmt = n => n >= 1000 ? (n/1000).toFixed(1)+'K' : n;
+      return `<tr>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${k.keyword}</td>
+        <td class="kw-pos ${posClass}">${k.position}</td>
+        <td class="kw-clicks">${fmt(k.clicks)}</td>
+        <td class="kw-imp">${fmt(k.impressions)}</td>
+        <td class="kw-ctr">${(k.ctr*100).toFixed(1)}%</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('kw-loading').style.display    = 'none';
+    document.getElementById('kw-table-wrap').style.display = 'block';
+  }
+
+  function renderQuickWins(wins) {
+    const wrap = document.getElementById('quickwins-wrap');
+    const load = document.getElementById('quickwins-loading');
+    if (!wins || !wins.length) {
+      load.textContent = 'Quick win bulunamadı (pozisyon 11-20)';
+      return;
+    }
+    wrap.innerHTML = wins.slice(0,5).map(w => `
+      <div class="quickwin-card">
+        <div class="quickwin-header">
+          <span class="quickwin-kw">${w.keyword}</span>
+          <span class="quickwin-pos">#${w.position}</span>
+        </div>
+        <div class="quickwin-meta">
+          <span>👁 ${w.impressions} gösterim</span>
+          <span>🖱 ${w.clicks} tıklama</span>
+          <span>🎯 ${w.ctr ? (w.ctr*100).toFixed(1)+'%' : '—'} CTR</span>
+          <span class="quickwin-priority ${w.priority === 'high' ? 'priority-high' : 'priority-medium'}">${w.priority === 'high' ? '🔥 Yüksek' : '📌 Orta'}</span>
+        </div>
+      </div>`).join('');
+    load.style.display   = 'none';
+    wrap.style.display   = 'block';
+  }
+
+  function renderPages(pages) {
+    const wrap = document.getElementById('pages-wrap');
+    const load = document.getElementById('pages-loading');
+    if (!pages || !pages.length) {
+      load.textContent = 'Sayfa verisi bulunamadı';
+      return;
+    }
+    wrap.innerHTML = pages.map(p => `
+      <div class="page-item">
+        <div class="page-path">${p.page || '/'}</div>
+        <div class="page-stats">
+          <span>🖱 ${p.clicks} tıklama</span>
+          <span>👁 ${p.impressions} gösterim</span>
+          <span>📍 Sıra ${p.position}</span>
+          <span>📊 ${p.ctr}% CTR</span>
+        </div>
+      </div>`).join('');
+    load.style.display = 'none';
+    wrap.style.display = 'block';
+  }
+
+  function setEl(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  // ── Sayfa yüklenince otomatik çek ──────────
+  window.addEventListener('load', () => {
+    setTimeout(fetchPageSpeed, 1200);
+    // GSC sunucusunu kontrol et, bağlıysa veri çek
+    setTimeout(async () => {
+      const ok = await checkGSCServer();
+      if (ok) fetchGSC(28);
+    }, 1800);
+  });
+
+  // ══════════════════════════════════════════
+  // SOSYAL MEDYA — OmniSocials + Supabase
+  // ══════════════════════════════════════════
+
+  // OmniSocials → lokal Flask proxy üzerinden (CORS bypass)
+  const OMNI_BASE = 'http://localhost:8765/api/omni';
+  const OMNI_HDR  = {};   // proxy API key'i kendisi ekliyor
+
+  // Supabase → direkt (CORS destekli)
+  const SB_URL    = 'https://supabase.turklawai.com';
+  const SB_ANON   = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc1OTA3MDIyMCwiZXhwIjo0OTE0NzQzODIwLCJyb2xlIjoiYW5vbiJ9.GhyoDRoTItfuiUtOWQD82zjras_rWUzChVK9bFJ1FMA';
+  const SB_HDR    = { 'Authorization': `Bearer ${SB_ANON}`, 'apikey': SB_ANON };
+
+  function statusBadge(s) {
+    const map = {
+      published:        ['var(--green)',  'Yayında'],
+      posting:          ['var(--yellow)', 'Gönderiliyor'],
+      scheduled:        ['var(--blue)',   'Zamanlandı'],
+      partially_posted: ['var(--orange)', 'Kısmi'],
+      failed:           ['var(--red)',    'Hata'],
+      draft:            ['var(--muted)',  'Taslak'],
+    };
+    const [c, label] = map[s] || ['var(--muted)', s];
+    return `<span style="color:${c};font-family:var(--font-mono);font-size:10px;">${label}</span>`;
+  }
+
+  function platformIcons(accounts) {
+    if (!accounts || typeof accounts !== 'object') return '—';
+    const icons = { instagram:'📸', facebook:'📘', youtube:'▶️', tiktok:'🎵', x:'𝕏', pinterest:'📌' };
+    return Object.keys(accounts).filter(k => accounts[k]).map(k => icons[k] || k).join(' ');
+  }
+
+  async function fetchOmniPosts() {
+    const tbody = document.getElementById('sm-posts-tbody');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:12px;">Yükleniyor...</td></tr>';
+    try {
+      const res  = await fetch(`${OMNI_BASE}/posts?limit=20`);
+      const json = await res.json();
+      const posts = json.posts || json.data || [];
+
+      let published = 0, failed = 0;
+      document.getElementById('sm-total-posts').textContent = posts.length;
+
+      if (!posts.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:12px;">Post bulunamadı</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = posts.map(p => {
+        if (p.status === 'published') published++;
+        if (p.status === 'failed') failed++;
+        const caption  = (p.caption || p.content?.default || '').substring(0, 45) + '…';
+        const platforms = Array.isArray(p.platforms) ? p.platforms : [];
+        const icons    = { instagram:'📸', facebook:'📘', youtube:'▶️', tiktok:'🎵', x:'𝕏', pinterest:'📌' };
+        const platHtml = platforms.map(k => icons[k] || k).join(' ') || '—';
+        const date     = p.created_at ? new Date(p.created_at).toLocaleDateString('tr-TR') : '—';
+        return `<tr>
+          <td style="color:var(--text);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${caption}</td>
+          <td style="font-family:var(--font-mono);font-size:10px;">${p.post_type || p.type || 'post'}</td>
+          <td>${platHtml}</td>
+          <td>${statusBadge(p.status)}</td>
+          <td style="color:var(--muted);font-size:10px;">${date}</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('sm-published').textContent = published;
+      document.getElementById('sm-failed').textContent = failed;
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--red);padding:12px;">Hata: ${e.message}</td></tr>`;
+    }
+  }
+
+  async function fetchOmniMedia() {
+    const tbody = document.getElementById('sm-omni-media-tbody');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:12px;">Yükleniyor...</td></tr>';
+    try {
+      const res  = await fetch(`${OMNI_BASE}/media?limit=20`);
+      const json = await res.json();
+      const items = json.media || json.data || [];
+
+      document.getElementById('sm-total-media').textContent = items.length;
+
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:12px;">Medya bulunamadı</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = items.map(m => {
+        const name      = (m.filename || '').substring(0, 28) + (m.filename?.length > 28 ? '…' : '');
+        const sizeBytes = m.size_bytes || m.size;
+        const sizeFmt   = sizeBytes ? (sizeBytes / (1024*1024)).toFixed(2) + ' MB' : '—';
+        const date      = m.created_at ? new Date(m.created_at).toLocaleDateString('tr-TR') : '—';
+        const typeColor = m.type === 'video' ? 'var(--purple)' : 'var(--blue)';
+        const ext       = m.mime_type ? m.mime_type.split('/')[1] : (m.type || '—');
+        return `<tr>
+          <td style="color:var(--text);">${name || '—'}</td>
+          <td style="color:${typeColor};font-size:10px;">${ext}</td>
+          <td style="font-family:var(--font-mono);font-size:10px;">${sizeFmt}</td>
+          <td style="color:var(--muted);font-size:10px;">${date}</td>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--muted2);">${m.omnisocials_id || m.id}</td>
+        </tr>`;
+      }).join('');
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--red);padding:12px;">Hata: ${e.message}</td></tr>`;
+    }
+  }
+
+  async function fetchSupabaseMedia() {
+    const grid = document.getElementById('sm-media-grid');
+    grid.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:11px;grid-column:1/-1;padding:12px;">Yükleniyor...</div>';
+    try {
+      const res  = await fetch(`${SB_URL}/rest/v1/media_library?select=*&order=created_at.desc&limit=20`, { headers: SB_HDR });
+      const items = await res.json();
+
+      if (!Array.isArray(items) || !items.length) {
+        grid.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:11px;grid-column:1/-1;padding:12px;">Henüz medya yok — SQL çalıştır</div>';
+        return;
+      }
+
+      grid.innerHTML = items.map(m => {
+        const isVideo = m.type === 'video';
+        const icon    = isVideo ? '🎬' : '🖼️';
+        const name    = (m.filename || '').substring(0, 14);
+        const camp    = m.campaign ? `<div style="font-size:9px;color:var(--purple);margin-top:2px;">${m.campaign}</div>` : '';
+        return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center;cursor:pointer;"
+                     onclick="window.open('${m.public_url}','_blank')" title="${m.filename}">
+          <div style="font-size:20px;margin-bottom:4px;">${icon}</div>
+          <div style="font-size:10px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>
+          ${camp}
+        </div>`;
+      }).join('');
+    } catch(e) {
+      grid.innerHTML = `<div style="text-align:center;color:var(--red);font-size:11px;grid-column:1/-1;padding:12px;">Hata: ${e.message}</div>`;
+    }
+  }
+
+  // Sosyal medya tab'ı açıldığında veri çek
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      if (t.dataset.tab === 'sosyal') {
+        fetchOmniPosts();
+        fetchOmniMedia();
+        fetchSupabaseMedia();
+      }
+    });
+  });
+
+  // ── CHAT ────────────────────────────────
+  function sendMsg(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const inp = document.getElementById('chatInput');
+      const val = inp.value.trim();
+      if (!val) return;
+      const msgs = document.getElementById('chatMessages');
+
+      msgs.innerHTML += `<div class="msg user"><div class="msg-avatar">CT</div><div class="msg-bubble"><div class="msg-text">${val}</div></div></div>`;
+      inp.value = '';
+
+      setTimeout(() => {
+        msgs.innerHTML += `<div class="msg" id="typing"><div class="msg-avatar">🤖</div><div class="msg-bubble"><div class="msg-text" style="color:var(--muted)">Analiz ediliyor<span class="cursor"></span></div></div></div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 300);
+
+      setTimeout(() => {
+        document.getElementById('typing')?.remove();
+        const replies = [
+          'Harika soru! Şu an bunu analiz ediyorum. Botfusions için en uygun stratejiyi belirliyorum...',
+          'Bu konuda 3 farklı yaklaşım öneriyorum. Hangisini daha detaylı inceleyelim?',
+          'Rakip verilerine göre bu hamle güçlü görünüyor. Detaylı brief hazırlayayım mı?',
+          'GEO perspektifinden bakıldığında, bu içerik ChatGPT ve Perplexity\'de visibility kazandırabilir.',
+        ];
+        const r = replies[Math.floor(Math.random()*replies.length)];
+        msgs.innerHTML += `<div class="msg"><div class="msg-avatar">🤖</div><div class="msg-bubble"><div class="msg-text">${r}</div></div></div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 1800);
+
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+  }
+
+  // ══════════════════════════════════════════
+  // YAYIN OLUŞTUR — Modal
+  // ══════════════════════════════════════════
+
+  function openPublishModal() {
+    document.getElementById('publish-modal').style.display = 'flex';
+  }
+  function closePublishModal() {
+    document.getElementById('publish-modal').style.display = 'none';
+    document.getElementById('publish-result').innerHTML = '';
+  }
+
+  function setPublishTab(tab) {
+    document.querySelectorAll('.pub-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.pub-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('pub-tab-' + tab).classList.add('active');
+    document.getElementById('pub-panel-' + tab).style.display = 'block';
+  }
+
+  async function publishVideo() {
+    const btn = document.getElementById('btn-publish-video');
+    btn.textContent = 'Gönderiliyor...'; btn.disabled = true;
+    const body = {
+      text_default:   document.getElementById('pub-text-default').value,
+      text_youtube:   document.getElementById('pub-text-youtube').value,
+      youtube_title:  document.getElementById('pub-youtube-title').value,
+      video_url:      document.getElementById('pub-video-url').value,
+      campaign:       document.getElementById('pub-campaign').value,
+    };
+    try {
+      const res  = await fetch(`${GSC_API}/api/publish/video`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      const json = await res.json();
+      showPublishResult(json, 'video');
+      if (json.ok) fetchOmniPosts();
+    } catch(e) {
+      showPublishResult({ error: e.message }, 'video');
+    }
+    btn.textContent = '🎬 Video Yayınla (Grup A)'; btn.disabled = false;
+  }
+
+  async function publishImage() {
+    const btn = document.getElementById('btn-publish-image');
+    btn.textContent = 'Gönderiliyor...'; btn.disabled = true;
+    const body = {
+      text_default:       document.getElementById('pub-img-text-default').value,
+      text_x:             document.getElementById('pub-img-text-x').value,
+      text_linkedin:      document.getElementById('pub-img-text-linkedin').value,
+      text_pinterest:     document.getElementById('pub-img-text-pinterest').value,
+      image_url:          document.getElementById('pub-image-url').value,
+      image_url_pinterest:document.getElementById('pub-image-url-pinterest').value,
+      pinterest_board_id: document.getElementById('pub-pinterest-board').value,
+      campaign:           document.getElementById('pub-campaign').value,
+      include_linkedin:   document.getElementById('pub-include-linkedin').checked,
+      include_pinterest:  document.getElementById('pub-include-pinterest').checked,
+    };
+    try {
+      const res  = await fetch(`${GSC_API}/api/publish/image`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      const json = await res.json();
+      showPublishResult(json, 'image');
+      if (json.ok) fetchOmniPosts();
+    } catch(e) {
+      showPublishResult({ error: e.message }, 'image');
+    }
+    btn.textContent = '🖼️ Görsel Yayınla (Grup B)'; btn.disabled = false;
+  }
+
+  function showPublishResult(json, type) {
+    const el = document.getElementById('publish-result');
+    const ok = json.ok || json.post_id;
+    el.innerHTML = `<div style="margin-top:12px;padding:10px;border-radius:6px;background:${ok ? 'rgba(34,197,94,.1)' : 'rgba(239,68,68,.1)'};border:1px solid ${ok ? '#22c55e' : '#ef4444'};font-size:11px;font-family:monospace;color:${ok ? '#22c55e' : '#ef4444'}">
+      ${ok ? '✅ Başarılı' : '❌ Hata'} — ${type} — ${ok ? 'Post ID: ' + (json.post_id || '?') : json.error}
+    </div>`;
+  }
+
+  // X karakter sayacı
+  document.addEventListener('DOMContentLoaded', () => {
+    const xInput = document.getElementById('pub-img-text-x');
+    const xCount = document.getElementById('pub-x-count');
+    if (xInput && xCount) {
+      xInput.addEventListener('input', () => {
+        const len = xInput.value.length;
+        xCount.textContent = len + '/280';
+        xCount.style.color = len > 260 ? 'var(--red)' : 'var(--muted)';
+      });
+    }
+    // Google Ads verisini yükle
+    loadGoogleAds();
+    // GA4 verisini yükle
+    loadGA4();
+    // Tab geçişlerinde ilgili veriyi yükle
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        if (t.dataset.tab === 'aigeo') loadGeoHistory();
+        if (t.dataset.tab === 'gadv') loadGoogleAds();
+        if (t.dataset.tab === 'baglanti') loadGA4();
+      });
+    });
+  });
+
+  // ══════════════════════════════════════════════════
+  // GEO ANALİZ — bofusions_geo_mcp canlı entegrasyon
+  // ══════════════════════════════════════════════════
+  const API = 'http://localhost:8765';
+
+  function gradeColor(g) {
+    return { A: 'var(--green)', B: 'var(--blue)', C: 'var(--orange)', D: 'var(--red)', F: 'var(--muted)' }[g] || 'var(--muted)';
+  }
+  function scoreColor(s) {
+    if (s >= 70) return 'var(--green)';
+    if (s >= 50) return 'var(--orange)';
+    return 'var(--red)';
+  }
+  function compColor(s) {
+    if (s >= 65) return 'var(--green)';
+    if (s >= 40) return 'var(--blue)';
+    return 'var(--red)';
+  }
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
+  }
+  function compLabel(key) {
+    return {
+      ai_citability: 'AI Citability', brand_authority: 'Marka Otorite',
+      content_quality: 'İçerik Kal.', technical: 'Teknik',
+      schema: 'Schema', platform: 'Platform (llms)'
+    }[key] || key;
+  }
+
+  async function startGeoScan() {
+    const url   = document.getElementById('geo-url-select').value;
+    const brand = document.getElementById('geo-brand-input').value || 'Botfusions';
+    const btn   = document.getElementById('geo-scan-btn');
+    const area  = document.getElementById('geo-result-area');
+
+    btn.disabled = true;
+    btn.textContent = 'Taranıyor…';
+    area.innerHTML = '<div class="geo-scanning"><span class="geo-spinner"></span>Analiz çalışıyor — bu 10-20 saniye sürebilir…</div>';
+
+    try {
+      const r = await fetch(`${API}/api/geo/scan`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ url, brand })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        renderGeoResult(d);
+        loadGeoHistory();
+      } else {
+        area.innerHTML = `<div class="geo-empty" style="color:var(--red)">Hata: ${d.error}</div>`;
+      }
+    } catch(e) {
+      area.innerHTML = `<div class="geo-empty" style="color:var(--red)">Sunucu bağlantısı yok — gsc_api_server.py çalışıyor mu?</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⚡ Tara';
+    }
+  }
+
+  function renderGeoResult(d) {
+    const area = document.getElementById('geo-result-area');
+    const score = d.geo_score || 0;
+    const grade = d.grade || 'F';
+    const pct = Math.round(score);
+
+    // Gradient çemberi
+    const angle = pct * 3.6;
+    const circleStyle = `conic-gradient(${gradeColor(grade)} ${angle}deg, var(--border) ${angle}deg)`;
+
+    // Component satırları
+    const compRows = Object.entries(d.components || {}).map(([k, v]) => `
+      <div class="geo-comp-row">
+        <div class="geo-comp-name">${compLabel(k)}</div>
+        <div class="geo-comp-bar-bg">
+          <div class="geo-comp-bar-fill" style="width:${v.score}%;background:${compColor(v.score)};"></div>
+        </div>
+        <div class="geo-comp-val" style="color:${compColor(v.score)}">${v.score}</div>
+      </div>`).join('');
+
+    // Bulgular
+    const findingRows = (d.findings || []).map(f => `
+      <div class="geo-finding">
+        <span class="geo-finding-badge ${f.level}">${f.level}</span>
+        <span class="geo-finding-text">${f.text}</span>
+      </div>`).join('') || '<div style="font-size:10px;color:var(--green);padding:6px 0;">✓ Kritik sorun bulunamadı</div>';
+
+    // Durum chip'leri
+    const llmsOk   = d.llms?.llms_txt;
+    const robotsOk = d.robots?.exists;
+    const ssrOk    = d.page?.has_ssr;
+
+    const chips = [
+      { label: 'llms.txt',   ok: llmsOk },
+      { label: 'robots.txt', ok: robotsOk },
+      { label: 'SSR',        ok: ssrOk },
+      { label: 'Schema',     ok: (d.page?.schema_count || 0) > 0 },
+      { label: 'Canonical',  ok: !!d.page?.canonical },
+      { label: 'Meta Desc',  ok: !!d.page?.description },
+    ].map(c => `
+      <div class="geo-status-chip">
+        <div class="geo-status-dot" style="background:${c.ok ? 'var(--green)' : 'var(--red)'}"></div>
+        ${c.label}
+      </div>`).join('');
+
+    // Meta grid
+    const metaItems = [
+      { label: 'Sözcük Sayısı', val: (d.page?.word_count || 0).toLocaleString('tr'), ok: (d.page?.word_count||0) > 300 },
+      { label: 'Schema Count',  val: d.page?.schema_count || 0, ok: (d.page?.schema_count||0) > 0 },
+      { label: 'Citability',    val: (d.scores?.citability || 0) + '/100', ok: (d.scores?.citability||0) >= 50 },
+      { label: 'Teknik Skor',   val: (d.scores?.technical || 0) + '/100', ok: (d.scores?.technical||0) >= 60 },
+    ].map(m => `
+      <div class="geo-meta-item">
+        <div class="geo-meta-label">${m.label}</div>
+        <div class="geo-meta-val ${m.ok ? 'geo-meta-ok' : 'geo-meta-bad'}">${m.val}</div>
+      </div>`).join('');
+
+    area.innerHTML = `
+      <!-- Skor Hero -->
+      <div class="geo-card">
+        <div class="geo-score-hero">
+          <div class="geo-score-circle" style="background:${circleStyle}">
+            <div class="geo-score-inner">
+              <div class="geo-score-num" style="color:${gradeColor(grade)}">${pct}</div>
+              <div class="geo-score-grade">/ 100</div>
+            </div>
+          </div>
+          <div class="geo-score-meta">
+            <div class="geo-score-url">${d.url}</div>
+            <div class="geo-score-label" style="color:${gradeColor(grade)}">
+              Grade ${grade} — ${grade === 'A' ? 'Mükemmel' : grade === 'B' ? 'İyi' : grade === 'C' ? 'Orta' : grade === 'D' ? 'Zayıf' : 'Kritik'}
+            </div>
+            <div class="geo-score-time">🕐 ${fmtDate(d.scanned_at)}</div>
+          </div>
+        </div>
+        <div class="geo-status-row">${chips}</div>
+      </div>
+
+      <!-- Bileşen Skorları -->
+      <div class="geo-card">
+        <div class="score-label" style="margin-bottom:8px;">📊 BİLEŞEN SKORLARI</div>
+        <div class="geo-components">${compRows}</div>
+        <div class="geo-meta-grid">${metaItems}</div>
+      </div>
+
+      <!-- Bulgular -->
+      <div class="geo-card">
+        <div class="score-label" style="margin-bottom:8px;">⚠️ BULGULAR & AKSİYONLAR</div>
+        <div class="geo-findings">${findingRows}</div>
+      </div>
+    `;
+  }
+
+  // ── GA4 ────────────────────────────────────
+  async function loadGA4() {
+    const status = document.getElementById('ga4-status');
+    const summary = document.getElementById('ga4-summary-stats');
+    try {
+      const r = await fetch(`${GSC_API}/api/ga4/summary?days=30`, { signal: AbortSignal.timeout(10000) });
+      const d = await r.json();
+      if (!d.ok) throw new Error(d.error || 'API hatası');
+
+      status.textContent = `✅ GA4 bağlı · Son ${d.period.days} gün`;
+      status.style.color = 'var(--green)';
+      summary.style.display = 'grid';
+
+      const t = d.totals;
+      document.getElementById('ga4-pageviews').textContent = t.pageviews.toLocaleString('tr-TR');
+      document.getElementById('ga4-sessions').textContent = t.sessions.toLocaleString('tr-TR');
+      document.getElementById('ga4-engagement').textContent = '%' + t.engagement_rate;
+      document.getElementById('ga4-bounce').textContent = '%' + t.bounce_rate;
+      document.getElementById('ga4-conversions').textContent = t.conversions || '—';
+
+      // Top sayfalar
+      if (d.top_pages.length) {
+        document.getElementById('ga4-pages-area').style.display = 'block';
+        document.getElementById('ga4-pages-body').innerHTML = d.top_pages.slice(0, 8).map(p => `
+          <tr>
+            <td style="color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.path}</td>
+            <td>${p.pageviews.toLocaleString('tr-TR')}</td>
+            <td>${p.sessions.toLocaleString('tr-TR')}</td>
+            <td>${(p.engagement_rate * 100).toFixed(0)}%</td>
+          </tr>`).join('');
+      }
+
+      // Kaynaklar
+      if (d.sources.length) {
+        document.getElementById('ga4-sources-area').style.display = 'block';
+        document.getElementById('ga4-sources-body').innerHTML = d.sources.slice(0, 6).map(s => `
+          <tr>
+            <td style="color:var(--text)">${s.source}</td>
+            <td>${s.sessions.toLocaleString('tr-TR')}</td>
+            <td>${s.pageviews.toLocaleString('tr-TR')}</td>
+            <td>${(s.engagement_rate * 100).toFixed(0)}%</td>
+          </tr>`).join('');
+      }
+    } catch (e) {
+      console.warn('GA4 yükleme:', e.message);
+      if (status) {
+        status.innerHTML = `⚠️ GA4 bağlantısı yok — <code>ga4-service-account.json</code> gerekli`;
+        status.style.color = 'var(--yellow)';
+      }
+    }
+  }
+
+  // ── Google Ads ──────────────────────────────
+  async function loadGoogleAds() {
+    const banner = document.getElementById('gadv-banner');
+    const bannerText = document.getElementById('gadv-banner-text');
+    try {
+      const r = await fetch(`${GSC_API}/api/google-ads/summary?days=30`, { signal: AbortSignal.timeout(15000) });
+      const d = await r.json();
+      if (!d.ok) throw new Error(d.error || 'API hatası');
+
+      const t = d.totals;
+      // Banner — bağlı
+      banner.querySelector('span').textContent = '✅';
+      bannerText.textContent = `Google Ads bağlı · Müşteri ${d.period.days} gün · ${d.period.start} → ${d.period.end}`;
+      banner.style.background = 'rgba(34,197,94,.1)';
+      banner.style.borderColor = 'rgba(34,197,94,.3)';
+
+      // Period
+      document.getElementById('gadv-period').textContent = `(Son ${d.period.days} gün)`;
+
+      // KPI'lar
+      document.getElementById('ads-spend').textContent = '₺' + t.spend.toLocaleString('tr-TR');
+      document.getElementById('ads-spend-sub').textContent = `${d.campaigns.length} kampanya`;
+      document.getElementById('ads-clicks').textContent = t.clicks.toLocaleString('tr-TR');
+      document.getElementById('ads-ctr-sub').textContent = `CTR: %${t.ctr_avg}`;
+      document.getElementById('ads-impr').textContent = t.impressions >= 1000 ? (t.impressions / 1000).toFixed(1) + 'K' : t.impressions;
+      document.getElementById('ads-cpc-sub').textContent = `Ort. CPC: ₺${t.cpc_avg}`;
+
+      const conv = t.conversions || 0;
+      document.getElementById('ads-conv').textContent = conv || '—';
+      document.getElementById('ads-conv-sub').textContent = conv ? `${conv} dönüşüm` : 'Henüz dönüşüm yok';
+      document.getElementById('ads-conv').style.color = conv ? 'var(--green)' : 'var(--yellow)';
+
+      const cpa = conv > 0 ? (t.spend / conv).toFixed(0) : '—';
+      document.getElementById('ads-cpa').textContent = cpa === '—' ? '—' : '₺' + cpa;
+      document.getElementById('ads-cpa-sub').textContent = conv ? 'Hedef altında' : '30+ dön. bekleniyor';
+
+      // Kampanya tablosu
+      const campArea = document.getElementById('gadv-campaigns-area');
+      if (d.campaigns.length) {
+        campArea.innerHTML = `<table class="gadv-table">
+          <thead><tr><th>Kampanya</th><th>Durum</th><th>Harcama</th><th>Tıklama</th><th>CTR</th><th>Dön.</th></tr></thead>
+          <tbody>${d.campaigns.map(c => {
+            const statusClass = c.status === 'ENABLED' ? 'good' : (c.status === 'PAUSED' ? 'paused' : '');
+            const statusText = c.status === 'ENABLED' ? 'Aktif' : (c.status === 'PAUSED' ? 'Durduruldu' : c.status);
+            return `<tr>
+              <td style="font-weight:600;color:var(--text)">${c.name}</td>
+              <td><span class="gadv-status ${statusClass}">${statusText}</span></td>
+              <td>₺${c.spend.toLocaleString('tr-TR')}</td>
+              <td>${c.clicks.toLocaleString('tr-TR')}</td>
+              <td>%${c.ctr}</td>
+              <td>${c.conversions || '—'}</td>
+            </tr>`;
+          }).join('')}</tbody></table>`;
+      } else {
+        campArea.innerHTML = '<div style="font-size:10px;color:var(--muted);text-align:center;padding:12px;">Aktif kampanya yok</div>';
+      }
+
+      // Keyword tablosu
+      const kwArea = document.getElementById('gadv-keywords-area');
+      if (d.keywords.length) {
+        const totalSpend = t.spend || 1;
+        kwArea.innerHTML = `<table class="gadv-table">
+          <thead><tr><th>Keyword</th><th>Eşleşme</th><th>Harcama</th><th>Pay</th><th>Tıklama</th><th>CTR</th><th>Dön.</th></tr></thead>
+          <tbody>${d.keywords.map(kw => {
+            const share = ((kw.spend / totalSpend) * 100).toFixed(1);
+            const isHigh = parseFloat(share) > 50;
+            return `<tr class="${isHigh ? 'gadv-row-warn' : ''}">
+              <td style="font-weight:600;color:var(--text)">${kw.keyword}</td>
+              <td>${kw.match_type}</td>
+              <td style="${isHigh ? 'color:var(--red);font-weight:700' : ''}">₺${kw.spend.toLocaleString('tr-TR')}</td>
+              <td style="${isHigh ? 'color:var(--red)' : ''}">%${share}</td>
+              <td>${kw.clicks}</td>
+              <td>%${kw.ctr}</td>
+              <td>${kw.conversions || '—'}</td>
+            </tr>`;
+          }).join('')}</tbody></table>`;
+      } else {
+        kwArea.innerHTML = '<div style="font-size:10px;color:var(--muted);text-align:center;padding:12px;">Keyword verisi yok</div>';
+      }
+
+      // Trend sparkline
+      if (d.daily.length >= 2) {
+        const maxSpend = Math.max(...d.daily.map(x => x.spend), 1);
+        const w = 420, h = 70;
+        const step = w / (d.daily.length - 1);
+        const points = d.daily.map((d, i) => {
+          const x = i * step;
+          const y = h - (d.spend / maxSpend) * (h - 10) - 5;
+          return { x: Math.round(x), y: Math.round(y), date: d.date, spend: d.spend };
+        });
+        const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+        const fillPath = linePath + ` L${points[points.length - 1].x},${h} L${points[0].x},${h} Z`;
+        const last = points[points.length - 1];
+        const mid = points[Math.floor(points.length / 2)];
+        document.getElementById('gadv-trend-chart').outerHTML = `
+          <svg width="100%" height="70" viewBox="0 0 420 70" preserveAspectRatio="none">
+            <defs><linearGradient id="spendGrad" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#A855F7" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#A855F7" stop-opacity="0"/>
+            </linearGradient></defs>
+            <path d="${fillPath}" fill="url(#spendGrad)"/>
+            <path d="${linePath}" fill="none" stroke="#A855F7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="${last.x}" cy="${last.y}" r="3" fill="#A855F7"/>
+            <text x="2" y="67" font-size="9" fill="#64748b" font-family="monospace">${points[0].date.slice(5)}</text>
+            <text x="${mid.x - 15}" y="67" font-size="9" fill="#64748b" font-family="monospace">${mid.date.slice(5)}</text>
+            <text x="${last.x - 30}" y="67" font-size="9" fill="#64748b" font-family="monospace">${last.date.slice(5)}</text>
+          </svg>`;
+      } else {
+        document.getElementById('gadv-trend-chart').textContent = 'Yeterli veri yok (en az 2 gün gerekli)';
+      }
+
+      // Footer
+      document.getElementById('gadv-footer-note').textContent = `* Son güncelleme: ${new Date().toLocaleTimeString('tr-TR')} · Kaynak: Google Ads API`;
+
+    } catch (e) {
+      console.error('Google Ads yükleme hatası:', e);
+      banner.querySelector('span').textContent = '⚠';
+      bannerText.textContent = `Google Ads bağlanamadı — ${e.message}. Token yenilemek için: get-refresh-token.py`;
+      banner.style.background = 'rgba(234,179,8,.1)';
+      banner.style.borderColor = 'rgba(234,179,8,.3)';
+      // KPI'ları "bağlantı yok" yap
+      ['ads-spend','ads-clicks','ads-impr','ads-roas','ads-conv','ads-cpa'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      ['ads-spend-sub','ads-ctr-sub','ads-cpc-sub','ads-roas-sub','ads-conv-sub','ads-cpa-sub'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = 'Bağlantı yok';
+      });
+      document.getElementById('gadv-campaigns-area').innerHTML = '<div style="font-size:10px;color:var(--muted);text-align:center;padding:12px;">Google Ads bağlantısı kurulamadı</div>';
+      document.getElementById('gadv-keywords-area').innerHTML = '<div style="font-size:10px;color:var(--muted);text-align:center;padding:12px;">Google Ads bağlantısı kurulamadı</div>';
+    }
+  }
+
+  async function loadGeoHistory() {
+    const area = document.getElementById('geo-history-area');
+    if (!area) return;
+    try {
+      const r = await fetch(`${API}/api/geo/history?limit=8`);
+      const d = await r.json();
+      const scans = d.scans || [];
+      if (!scans.length) {
+        area.innerHTML = '<div style="font-size:10px;color:var(--muted);text-align:center;padding:8px;">Henüz tarama yok</div>';
+        return;
+      }
+      area.innerHTML = `
+        <table class="geo-history-table">
+          <thead><tr>
+            <th>URL</th><th>Skor</th><th>Not</th><th>Tarih</th>
+          </tr></thead>
+          <tbody>${scans.map(s => `
+            <tr>
+              <td style="color:var(--text);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(s.url||'').replace('https://','')}</td>
+              <td style="color:${scoreColor(s.geo_score)};font-weight:600">${s.geo_score || '—'}</td>
+              <td><span class="geo-grade geo-grade-${s.grade||'F'}">${s.grade||'?'}</span></td>
+              <td>${fmtDate(s.created_at)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+    } catch(e) {
+      area.innerHTML = '<div style="font-size:10px;color:var(--muted);text-align:center;padding:8px;">Geçmiş yüklenemedi</div>';
+    }
+  }
+
+</script>
+
+<!-- ══ YAYIN MODAL ══════════════════════════════════════ -->
+<div id="publish-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;width:680px;max-height:90vh;overflow-y:auto;padding:24px;position:relative;">
+
+    <!-- Başlık -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="color:#A855F7;font-size:13px;font-weight:700;letter-spacing:1px;">YAYIN OLUŞTUR</div>
+      <button onclick="closePublishModal()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer;">✕</button>
+    </div>
+
+    <!-- Ortak alanlar -->
+    <div style="margin-bottom:14px;">
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">KAMPANYA</label>
+      <input id="pub-campaign" placeholder="geo-hizmet" style="width:100%;margin-top:4px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;">
+    </div>
+
+    <!-- Tab seçici -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid #2a2a2a;padding-bottom:12px;">
+      <button id="pub-tab-video" class="pub-tab active" onclick="setPublishTab('video')"
+        style="padding:6px 16px;border-radius:6px;border:1px solid #A855F7;background:rgba(168,85,247,.15);color:#A855F7;font-size:11px;cursor:pointer;font-weight:600;">
+        🎬 Grup A — Video
+      </button>
+      <button id="pub-tab-image" class="pub-tab" onclick="setPublishTab('image')"
+        style="padding:6px 16px;border-radius:6px;border:1px solid #333;background:none;color:#666;font-size:11px;cursor:pointer;">
+        🖼️ Grup B — Görsel
+      </button>
+    </div>
+
+    <!-- PANEL A: Video -->
+    <div id="pub-panel-video">
+      <div style="font-size:10px;color:#666;margin-bottom:10px;">📸 Instagram Reel · 📘 Facebook Reel · ▶️ YouTube Shorts · 🎵 TikTok</div>
+
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">VİDEO URL (MP4, 9:16)</label>
+      <input id="pub-video-url" placeholder="https://cdn.../video.mp4" style="width:100%;margin:4px 0 10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;">
+
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">YOUTUBE BAŞLIĞI (max 100 karakter)</label>
+      <input id="pub-youtube-title" placeholder="Atıf Ekonomisi: AI Çağında SEO | Botfusions GEO" style="width:100%;margin:4px 0 10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;">
+
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">METİN — Instagram / Facebook / TikTok</label>
+      <textarea id="pub-text-default" rows="4" placeholder="Tüm platformlar için genel metin..." style="width:100%;margin:4px 0 10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;resize:vertical;"></textarea>
+
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">METİN — YouTube (opsiyonel, farklıysa)</label>
+      <textarea id="pub-text-youtube" rows="3" placeholder="YouTube açıklaması..." style="width:100%;margin:4px 0 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;resize:vertical;"></textarea>
+
+      <button id="btn-publish-video" onclick="publishVideo()" style="width:100%;padding:10px;background:linear-gradient(135deg,#A855F7,#7C3AED);border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;">
+        🎬 Video Yayınla (Grup A)
+      </button>
+    </div>
+
+    <!-- PANEL B: Görsel -->
+    <div id="pub-panel-image" style="display:none;">
+      <div style="font-size:10px;color:#666;margin-bottom:10px;">𝕏 X · 💼 LinkedIn · 📌 Pinterest · 📸 Instagram feed · 📘 Facebook feed</div>
+
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">GÖRSEL URL (1:1 JPG/PNG)</label>
+      <input id="pub-image-url" placeholder="https://cdn.../image_1x1.jpg" style="width:100%;margin:4px 0 10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;">
+
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">X METİN <span id="pub-x-count" style="color:var(--muted);">0/280</span></label>
+      <textarea id="pub-img-text-x" rows="2" maxlength="280" placeholder="280 karakter..." style="width:100%;margin:4px 0 10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;resize:vertical;"></textarea>
+
+      <label style="font-size:10px;color:#666;letter-spacing:1px;">INSTAGRAM / FACEBOOK METİN</label>
+      <textarea id="pub-img-text-default" rows="3" placeholder="Genel metin..." style="width:100%;margin:4px 0 10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;resize:vertical;"></textarea>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div>
+          <label style="font-size:10px;color:#666;letter-spacing:1px;">
+            <input type="checkbox" id="pub-include-linkedin" checked style="margin-right:4px;">
+            LİNKEDIN METİN
+          </label>
+          <textarea id="pub-img-text-linkedin" rows="3" placeholder="Profesyonel ton, 1500+ karakter..." style="width:100%;margin-top:4px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;resize:vertical;"></textarea>
+        </div>
+        <div>
+          <label style="font-size:10px;color:#666;letter-spacing:1px;">
+            <input type="checkbox" id="pub-include-pinterest" checked style="margin-right:4px;">
+            PİNTEREST METİN (500 kar.)
+          </label>
+          <textarea id="pub-img-text-pinterest" rows="3" maxlength="500" placeholder="Keyword odaklı açıklama..." style="width:100%;margin-top:4px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;resize:vertical;"></textarea>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div>
+          <label style="font-size:10px;color:#666;letter-spacing:1px;">PİNTEREST GÖRSEL URL (2:3, opsiyonel)</label>
+          <input id="pub-image-url-pinterest" placeholder="https://cdn.../image_2x3.jpg" style="width:100%;margin-top:4px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;">
+        </div>
+        <div>
+          <label style="font-size:10px;color:#666;letter-spacing:1px;">PİNTEREST BOARD</label>
+          <select id="pub-pinterest-board" style="width:100%;margin-top:4px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#e0e0e0;font-size:12px;outline:none;">
+            <option value="1091067515915706441">AI-Botfusions-GEO</option>
+            <option value="1091067515915706431">Profil</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btn-publish-image" onclick="publishImage()" style="width:100%;padding:10px;background:linear-gradient(135deg,#3B82F6,#1d4ed8);border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;">
+        🖼️ Görsel Yayınla (Grup B)
+      </button>
+    </div>
+
+    <!-- Sonuç -->
+    <div id="publish-result"></div>
+  </div>
+</div>
+
+<style>
+  .pub-tab.active { background:rgba(168,85,247,.15) !important; color:#A855F7 !important; border-color:#A855F7 !important; }
+</style>
+
+</body>
+</html>
