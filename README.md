@@ -15,24 +15,24 @@ URL / Brifing
 [6. RAPORLAMA]             marketing-dashboard, ab-test-setup
 ```
 
-## Skill Envanteri (68 Skill, v2.0)
+## Skill Envanteri (76 Skill, v2.1)
 
 | Kategori | Sayi | Konum |
 |----------|------|-------|
-| Marketing | 45 | `.agents/skills/marketing/` |
-| Advertising | 18 | `.agents/skills/advertising/` |
-| Media Production | 3 | `.agents/skills/media/` |
+| Marketing | 47 | `.agents/skills/marketing/` |
+| Advertising | 21 | `.agents/skills/advertising/` |
+| Media Production | 4 | `.agents/skills/media/` |
 | SEO | 1 | `.agents/skills/seo/` |
 | Video | 1 | `.agents/skills/video/` |
 
-### Marketing (45)
-ab-test-setup, ad-creative, ai-seo, analytics-tracking, attribution-modeling, churn-prevention, cold-email, competitor-alternatives, competitor-audit, content-strategy, context-analyzer, copy-editing, copywriting, customer-journey, customer-research, email-sequence, form-cro, free-tool-strategy, influencer-marketing, launch-strategy, lead-magnets, marketing-automation, marketing-dashboard, marketing-ideas, marketing-psychology, newsletter, onboarding-cro, page-cro, paid-ads, paywall-upgrade-cro, popup-cro, pr-communications, pricing-strategy, product-marketing-context, programmatic-seo, referral-program, revops, sales-enablement, schema-markup, seo-audit, signup-flow-cro, site-architecture, social-content, social-listening, video-marketing
+### Marketing (47)
+ab-test-setup, ad-creative, ai-seo, analytics-tracking, attribution-modeling, churn-prevention, cold-email, competitor-alternatives, competitor-audit, content-strategy, context-analyzer, copy-editing, copywriting, customer-journey, customer-research, email-sequence, form-cro, free-tool-strategy, image, influencer-marketing, launch-strategy, lead-magnets, marketing-automation, marketing-dashboard, marketing-ideas, marketing-psychology, newsletter, onboarding-cro, page-cro, paid-ads, paywall-upgrade-cro, popup-cro, pr-communications, pricing-strategy, product-marketing-context, programmatic-seo, referral-program, revops, sales-enablement, schema-markup, seo-audit, signup-flow-cro, site-architecture, social-content, social-listening, video, video-marketing
 
-### Advertising (18)
-ads, ads-apple, ads-audit, ads-budget, ads-competitor, ads-create, ads-creative, ads-dna, ads-generate, ads-google, ads-landing, ads-linkedin, ads-meta, ads-microsoft, ads-photoshoot, ads-plan, ads-tiktok, ads-youtube
+### Advertising (21)
+ads, ads-amazon, ads-apple, ads-attribution, ads-audit, ads-budget, ads-competitor, ads-create, ads-creative, ads-dna, ads-generate, ads-google, ads-landing, ads-linkedin, ads-meta, ads-microsoft, ads-photoshoot, ads-plan, ads-server-side-tracking, ads-tiktok, ads-youtube
 
-### Media Production (3)
-krea-ai (64+ model, LoRA, 22K upscale), kie-ai (ucuz API gateway), pixa (MCP-native)
+### Media Production (4)
+krea-ai (64+ model, LoRA, 22K upscale), kie-ai (ucuz API gateway), pixa (MCP-native), wavespeed (15 model, maliyet optimizasyonu)
 
 ### SEO (1)
 seo-expert (icerik pipeline + vaka analizi)
@@ -47,12 +47,12 @@ AI Reklam Ajansi/
 ├── CLAUDE.md                          <- Master orchestrator
 ├── cmo-dashboard.html                 <- CMO Dashboard UI
 ├── gsc_api_server.py                  <- Flask API (GSC + OmniSocials proxy)
+├── .env.template                      <- Secret referans sablonu
+├── secrets.env                        <- Canli API keyler (GITIGNORED)
 ├── supabase-setup.sql                 <- Supabase tablo kurulumu
 ├── supabase-geo-setup.sql             <- GEO tablolari
 ├── start-cmo-dashboard.bat            <- Dashboard baslatici
-├── CMO-DASHBOARD-PLAN.md              <- Dashboard plani
 ├── yayinla.ps1                        <- OmniSocials yayin scripti
-├── HATA-LOG-2026-05-14.md             <- Dashboard hata logu
 ├── .agents/
 │   ├── product-marketing-context.md   <- Marka bilgisi (Botfusions)
 │   ├── MANIFEST.md                    <- Skill envanteri (68+ skill)
@@ -60,45 +60,47 @@ AI Reklam Ajansi/
 │   ├── HATALAR.md                     <- Bilinen hatalar ve cozumler
 │   ├── OKARA-GAP-ANALIZ.md            <- Okara gap analizi
 │   ├── OMNISOCIALS.md                 <- OmniSocials entegrasyonu
-│   ├── YAYIN-STRATEJISI.md            <- Yayin stratejisi
 │   └── skills/
 │       ├── marketing/ (45+ skill)
-│       ├── advertising/ (18+ skill)
-│       ├── media/ (3 skill)
+│       ├── advertising/ (25+ skill)
+│       ├── media/ (4 skill)
 │       ├── seo/ (1 skill)
 │       └── video/ (1 skill)
-├── .claude/
-│   ├── commands/ (22 komut)           <- SEO Machine komutlari
-│   └── agents/ (11 agent)            <- SEO agent'lari
+├── hafiza/                            <- Obsidian wiki (Dual-Brain)
+│   ├── entities/                      <- Botfusions, GeoNexa, Lighthouse...
+│   ├── concepts/                      <- GEO, AEO, MCP, RAG, n8n
+│   ├── decisions/                     <- Fiyat, strateji karar kayitlari
+│   ├── rakip-arsivi/                  <- Rakip snapshot'lari
+│   └── trend-log/                     <- Haftalik trend ozetleri
+├── medya-gelistirme/                  <- 6 modul icerik pipeline
+│   ├── SISTEM-KONTEKST.md             <- Pipeline kontekst dosyasi
+│   ├── supabase-pipeline-setup.sql    <- content_packages tablosu
+│   ├── 01-veri-toplama/               <- Rakip analiz, trend scrape
+│   ├── 02-strateji/                   <- Hook secimi, CTA, kanal karari
+│   ├── 03-icerik-motoru/              <- Script, carousel, 6 kanal adaptasyon
+│   ├── 04-gorsel-uretim/              <- PNG statik, platform boyutlari
+│   ├── 05-yayin/                      <- OmniSocials scheduling + onay kapisi
+│   └── 06-analytics-loop/            <- Performans raporu + feedback
 ├── context/                           <- Botfusions pazarlama verileri
 │   ├── brand-voice.md
 │   ├── features.md
 │   ├── target-keywords.md
 │   ├── competitor-analysis.md
 │   ├── seo-guidelines.md
-│   └── cro-best-practices.md
+│   └── NotebookLLM/
 ├── 01-reklam-kopyalari/
 │   ├── geo-reklam-kopyalari.md
-│   ├── excel-linkedin-postlari.md
-│   └── competitor-karsilastirmalar/   <- 3 HTML karsilastirma sayfasi
+│   └── competitor-karsilastirmalar/
 ├── 02-gorseller/
-│   ├── geo-gorseller/                 <- 3 format (1:1, 16:9, 9:16)
-│   ├── maskotlar/                     <- 4 maskot gorseli
-│   └── brand-identity-poster.png      <- Marka kimlik posteri
-├── 03-videolar/
+│   ├── botfusions-logo-*.png          <- 3 logo (icon, monogram, wordmark)
+│   ├── geo-gorseller/                 <- 2 format (1:1, 9:16)
+│   └── maskotlar/                     <- 6 maskot (C1-C6)
 ├── 04-araclar/
 │   ├── google_ads_mcp/                <- Google Ads MCP server
 │   ├── seo-machine-modules/           <- Python SEO modulleri
-│   ├── hyperframes/                   <- HeyGen HyperFrames (aktif video araci)
-│   │   ├── geo-reklam-20s/            <- GEO 20s reklam projesi (HTML + GSAP)
-│   │   │   ├── index.html             <- Ana kompozisyon
-│   │   │   ├── assets/                <- Maskot PNG + muzik
-│   │   │   ├── lib/                   <- Lokal GSAP
-│   │   │   └── output/                <- Rendered MP4
-│   │   └── (repo)                     <- HyperFrames kaynak kodu + dokuman
-│   ├── _arsiv-remotion-kaynak/        <- [ARSIV] Eski Remotion video sistemi
-│   ├── serpiq/                        <- SERPiq SEO audit araci
-│   └── serpiq-output/                 <- SERPiq raporlari
+│   ├── hyperframes/                   <- HeyGen HyperFrames (aktif video)
+│   ├── _arsiv-remotion-kaynak/        <- [ARSIV] Eski Remotion
+│   └── serpiq/                        <- SERPiq SEO audit araci
 ├── 05-dashboard/
 │   └── index.html                     <- Dark mode CMO dashboard
 ├── 05-gsc-nocodb/                     <- GSC pipeline
@@ -119,24 +121,29 @@ Herhangi bir LLM bu 4 dosyayi okuyarak baslayabilir:
 |-----|-------|-------|
 | Google Ads MCP | Aktif | Customer 3646875139, GAQL sorgulari, dashboard dinamik |
 | OmniSocials API | Aktif | 6 kanal (IG, FB, YT, TikTok, Pinterest, X) |
-| Flask Proxy (8765) | Aktif | GSC + Ads + GA4 + PageSpeed proxy |
+| Flask Proxy (8765) | Aktif | GSC + Ads + GA4 + PageSpeed + Pipeline proxy |
 | GSC (Search Console) | Bagli | OAuth refresh token ile |
-| GA4 | Bagli | Property 531252912, OAuth refresh token (cenk@botfusions.com) |
-| PageSpeed API | Aktif | Flask proxy `/api/pagespeed` — CORS cozuldu |
-| Supabase | SQL Hazir | Tablolar Studio'da calistirilacak |
+| GA4 | Bagli | Property 531252912, OAuth refresh token |
+| PageSpeed API | Aktif | Flask proxy `/api/pagespeed` |
+| Supabase | Aktif | social_posts, media_library, geo_scans + content_packages |
 | Google Sheets | Aktif | Gorsel pipeline |
-| Krea.ai | Planli | krea-ai |
-| Kie.ai | Mevcut pipeline | kie-ai |
-| Pixa.com | MCP bagli | pixa |
+| WaveSpeed AI | Planli | 15 secilmis model, maliyet kontrol |
+| Krea.ai | Planli | Gorsel uretim |
+| Kie.ai | Planli | Gorsel uretim |
+| Pixa.com | MCP bagli | Gorsel uretim |
+
+**Guvenlik:** Tum API key'ler `secrets.env` dosyasinda (gitignored). Kodda sifir hardcoded secret.
 
 ## Aktif Kampanya: GEO Hizmet
 
 - **Landing:** botfusions.com/geo-hizmet
-- **Google Ads:** Customer 3646875139
-- **Gorseller:** 3 format hazir (1:1, 16:9, 9:16)
-- **Video:** GEO 20s reklam (HyperFrames, 1080x1920, 9:16, MP4)
-- **Bekleyen:** Donusum takibi (GTM manual kurulum), Supabase tablolari (SQL hazir, Studio'da calistirilacak)
-- **Multi-tenant:** Okara gap analizi + SaaS plani (`.agents/OKARA-GAP-ANALIZ.md`)
+- **Google Ads:** Customer 3646875139 (Skor: 30/100, optimizasyon bekliyor)
+- **Gorseller:** 2 format (1:1 kare, 9:16 dikey) + 6 maskot + 3 logo
+- **Video:** GEO 20s reklam (HyperFrames, 1080x1920, MP4)
+- **Sosyal Medya:** 6 platform aktif (OmniSocials API)
+- **Pipeline:** `medya-gelistirme/` 6 modul hazir (Supabase SQL + Flask endpoint'leri)
+- **Bekleyen:** Donusum takibi (GTM), medya pipeline Faz 1 implementasyonu
+- **GitHub:** https://github.com/botfusions/aireklam
 
 ## Onemli Baglantilar
 
@@ -251,7 +258,36 @@ Herhangi bir LLM bu 4 dosyayi okuyarak baslayabilir:
 
 ---
 
-*Son Guncelleme: 22 Mayis 2026 (Oturum 6) | Botfusions AI Reklam Ajansi*
+*Son Guncelleme: 23 Mayis 2026 (Oturum 7) | Botfusions AI Reklam Ajansi*
+
+---
+
+### 23 Mayis 2026 — Oturum 7
+
+**1. Guvenlik Denetimi ve Duzeltmeler**
+- **Hardcoded secret temizligi:** 15+ dosyadan canli API anahtarlari kaldirildi
+  - `gsc_api_server.py` — OMNI_KEY, SUPA_KEY → `os.getenv()` + `secrets.env`
+  - `05-gsc-nocodb/get_gsc_token.py` — Google OAuth CLIENT_ID/SECRET → `os.getenv()`
+  - `get-ga4-token.py` — ayni duzeltme
+  - `04-araclar/seo-machine-modules/modules/google_search_console.py` — ayni duzeltme
+  - 3 PowerShell scripti (`yayinla.ps1`, `geo-yayinla.ps1`, `yayinla-geo-post.ps1`) — API key → `$env:`
+  - 8 dokuman dosyasindaki API key'ler `{{PLACEHOLDER}}` ile maskelendi
+- **CORS:** `*` wildcard → sabit localhost origin listesi
+- **Auth:** POST endpoint'lere `X-CMO-Key` middleware eklendi
+- **SSRF:** `/api/geo/scan` endpoint'ine URL validation (scheme + private IP block + hostname blocklist)
+- **Secrets yonetimi:** `secrets.env` (gitignored) + `.env.template` (referans sablonu)
+
+**2. GitHub Push (Push Protection)**
+- Repo: https://github.com/botfusions/aireklam
+- Commit gecmisi temizlendi (orphan commit) — sifir hardcoded secret
+- `.gitignore` guncellendi: tum gorseller haric tutuldu, maskotlar/logo/GEO icin istisna
+- Toplam 3 commit: ana proje + hafiza/pipeline/skill'ler + maskotlar/logo
+
+**3. Tam Proje Yuklemesi**
+- `hafiza/` — Obsidian wiki (5 entity, 5 kavram, 3 karar, rakip arsivi)
+- `medya-gelistirme/` — 6 modul pipeline + Supabase SQL setup
+- Yeni skill'ler: ads-amazon, ads-attribution, ads-server-side-tracking, image, video, wavespeed
+- Maskotlar: 6 adet (C1-C6), 3 logo, 2 GEO infografik
 
 ---
 
