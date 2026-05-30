@@ -93,7 +93,7 @@ AI Reklam Ajansi/
 │   └── competitor-karsilastirmalar/
 ├── 02-gorseller/
 │   ├── botfusions-logo-*.png          <- 3 logo (icon, monogram, wordmark)
-│   ├── geo-gorseller/                 <- 2 format (1:1, 9:16)
+│   ├── geo-gorseller/                 <- GEO infografikler (1:1, 2:3, GEO vs SEO)
 │   └── maskotlar/                     <- 6 maskot (C1-C6)
 ├── 04-araclar/
 │   ├── google_ads_mcp/                <- Google Ads MCP server
@@ -104,7 +104,10 @@ AI Reklam Ajansi/
 ├── 05-dashboard/
 │   └── index.html                     <- Dark mode CMO dashboard
 ├── 05-gsc-nocodb/                     <- GSC pipeline
-└── Marketing V2/                      <- SEO raporlari
+└── hafiza/
+    ├── archive/                       <- GEO Landing Audit, SEOv2 metodoloji
+    ├── performans-tarihi/             <- Google Ads haftalik raporlar
+    └── rakip-arsivi/                  <- Rakip snapshot'lari
 ```
 
 ## Yeni LLM Baslangic Protokolu
@@ -138,8 +141,8 @@ Herhangi bir LLM bu 4 dosyayi okuyarak baslayabilir:
 
 - **Landing:** botfusions.com/geo-hizmet
 - **Google Ads:** Customer 3646875139 (Skor: 30/100, optimizasyon bekliyor)
-- **Gorseller:** 2 format (1:1 kare, 9:16 dikey) + 6 maskot + 3 logo
-- **Video:** GEO 20s reklam (HyperFrames, 1080x1920, MP4)
+- **Gorseller:** 5 infografik format + 6 maskot + 3 logo (geo-gorseller/ klasoru)
+- **Video:** GEO 20s reklam + **GEO vs SEO 45s** (HyperFrames, 1080x1920, MP4)
 - **Sosyal Medya:** 6 platform aktif (OmniSocials API)
 - **Pipeline:** `medya-gelistirme/` 6 modul hazir (Supabase SQL + Flask endpoint'leri)
 - **Bekleyen:** Donusum takibi (GTM), medya pipeline Faz 1 implementasyonu
@@ -258,7 +261,36 @@ Herhangi bir LLM bu 4 dosyayi okuyarak baslayabilir:
 
 ---
 
-*Son Guncelleme: 23 Mayis 2026 (Oturum 7) | Botfusions AI Reklam Ajansi*
+*Son Guncelleme: 31 Mayis 2026 (Oturum 9) | Botfusions AI Reklam Ajansi*
+
+---
+
+### 31 Mayis 2026 — Oturum 9
+
+**1. Proje Temizligi**
+- Silinen: `HATA-LOG`, `KOD-INCELEME-RAPORU`, `obsidian-api-key-ekle.ps1`, `geo-rivals-report.md` (duplikat), `claude_desktop_config_guncellendi.json`
+- Tasinan: `Marketing V2/` raporlari → `hafiza/performans-tarihi/` + `hafiza/archive/`
+- Tasinan: `geo-rivals-report-final.md` → `hafiza/rakip-arsivi/`
+- Silinen: `Claude ADS/` (kaynak kopya — skill'ler `.agents/skills/advertising/`'de)
+- Tasinan: `out/` gorselleri → `02-gorseller/geo-gorseller/`, metin → `01-reklam-kopyalari/`, video → `03-videolar/`
+- Temizlenen: root `__pycache__/`
+
+**2. GEO vs SEO 45sn Video (HyperFrames)**
+- `04-araclar/hyperframes/geo-seo-45s/` — 9 sahne, tam GSAP timeline
+- GSAP sahne cikis hard-kill duzeltmleri eklendi (`tl.set opacity:0` + `visibility:hidden`)
+- Render: `geo-seo-45s_2026-05-30_02-31-53.mp4` (5.1 MB, 42.2s, 30fps, H.264)
+- Arac: `npx hyperframes@0.6.63 render` (6 worker, Chrome GPU)
+
+**3. GEO vs SEO Infografik**
+- `04-araclar/hyperframes/geo-seo-infografik/index.html` — karsilastirma tablosu, istatistikler
+- Playwright + Chrome ile PNG screenshot alindi (HyperFrames `window.__hf` timeout'unu bypass eder)
+- `geo-seo-infografik-1x1.png` (1080x1080) + `geo-seo-infografik-2x3.png` (1000x1500)
+
+**4. OmniSocials Yayin — 6 Platform**
+- Script: `yayinla-geo-seo-fark.ps1`
+- Reel (IG+FB+YT+TikTok): `#16112516` | Post (IG+FB+X): `#29125722` | Pinterest: `#81909071`
+- **Pinterest fix:** `pinterest_board_id` top-level calismıyor → `"pinterest": {"board_id": "..."}` nested format gerekiyor
+- `OMNISOCIALS.md` yayin gecmisi + board_id formati guncellendi
 
 ---
 
