@@ -157,7 +157,7 @@ $body = "$env:TEMP\pinterest.json"
   "accounts": ["881407_pinterest"],
   "media_ids": ["$PIN_ID"],
   "type": "post",
-  "pinterest_board_id": "1091067515915706441"
+  "pinterest": { "board_id": "1091067515915706441" }
 }
 "@ | Out-File $body -Encoding utf8
 
