@@ -226,10 +226,11 @@ Yeni içerik için şunu değiştirmek yeterli:
 
 ## Başarılı Yayın Geçmişi
 
-| Tarih | İçerik | Video ID | Görsel ID | Platformlar |
-|-------|--------|----------|-----------|-------------|
-| 14 Mayıs 2026 | Atıf Ekonomisi / GEO | 1881 | — | IG ✅ FB ✅ YT ✅ TikTok ✅ X ✅ |
-| 15 Mayıs 2026 | GEO Varlık Optimizasyonu | 2214 | — | IG ✅ FB ✅ YT ✅ TikTok ✅ X ✅ Pinterest ✅ |
+| Tarih | İçerik | Post ID | Görsel ID | Platformlar | Script |
+|-------|--------|---------|-----------|-------------|--------|
+| 14 Mayıs 2026 | Atıf Ekonomisi / GEO | 1881 | — | IG ✅ FB ✅ YT ✅ TikTok ✅ X ✅ | — |
+| 15 Mayıs 2026 | GEO Varlık Optimizasyonu | 2214 | — | IG ✅ FB ✅ YT ✅ TikTok ✅ X ✅ Pinterest ✅ | `yayinla-geo-post.ps1` |
+| 31 Mayıs 2026 | GEO vs SEO Farkı — 45sn Video | Reel: `16112516` · Post: `29125722` · Pin: `81909071` | 39916 (1x1) · 39918 (2x3) | IG ✅ FB ✅ YT ✅ TikTok ✅ X ✅ Pinterest ✅ | `yayinla-geo-seo-fark.ps1` |
 
 ---
 
