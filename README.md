@@ -299,11 +299,30 @@ Herhangi bir LLM bu 4 dosyayi okuyarak baslayabilir:
 - **OmniSocials API notu:** create-and-publish **201** doner (200 degil), yanit `data.id` + `status: posting`
 - secrets.env'deki SUPABASE_ANON_KEY eski/gecersiz — gecerli anahtar `05-gsc-nocodb/.env`'de (Flask bu sirayla yukluyor)
 
-**5. Sonraki Adimlar**
-- [ ] Botfusions Web Netlify deploy (gtag fix canliya alinsin)
-- [ ] Canlida test: geo-hizmet formu doldur → Google Ads'te donusum kaydi dogrula
-- [ ] Kalan 4 paketi plan gunlerinde yayinla (komutlar yukarida)
-- [ ] Donusum dogrulandiktan sonra Google Ads'i dar kapsamli yeniden ac
+**5. Botfusions Web — Netlify Deploy (10 Haz, ayni oturum)**
+- Site dogrulandi: GitHub `botfusions/botfusions_web_v2` + Netlify `botfusions` projesi → botfusions.com
+- gtag fix commit edildi: `6a86b37` → `git push origin main` → Netlify otomatik build
+- **Canli dogrulama:** AW-18013035508 gtag kodu botfusions.com'da tespit edildi (push'tan ~4 dk sonra)
+- Donusum zinciri tamam: Form submit → window.gtag → Google Ads "GEO Hizmet - Form Gonderimi"
+- NOT: `public/agentic/*` dosyalarinda onceki oturumdan kalma commit'lenmemis degisiklikler var (dokunulmadi)
+
+**6. Bugunun Degisiklik Ozeti (10 Haziran 2026)**
+
+| Alan | Degisiklik | Konum / Commit |
+|------|-----------|----------------|
+| Donusum takibi | window.gtag koprusu eklendi, deploy edildi, canli | `botfusions_web_v2@6a86b37` |
+| Flask API | Duplikat endpoint silindi + Ads gRPC→REST | `aireklam@74e2822` |
+| Pipeline auth | 4 scripte X-CMO-Key header | `aireklam@74e2822` |
+| Dogrulama araci | donusum-dogrula.py (REST) | `aireklam@74e2822` |
+| Icerik | 8 paket yazildi + onaylandi (W24) | Supabase content_packages #1-8 |
+| Gorseller | 7 yeni kart + silinen gorseller kurtarildi | `aireklam@98ce25d` |
+| Yayin | 1. dalga: #2,#3,#4,#6 canli (X haric) | `aireklam@98ce25d` |
+
+**7. Sonraki Adimlar**
+- [ ] Canlida test: geo-hizmet formu doldur → `python 04-araclar/donusum-dogrula.py` ile dogrula (kayit 3-6 saat gecikebilir)
+- [ ] Kalan paketler: Per 11 Haz `--paket 1,5` · Cum 12 Haz `--paket 7` · Cmt 13 Haz `--paket 8`
+- [ ] Donusum dogrulandiktan sonra Google Ads'i dar kapsamli yeniden ac (yalniz GEO intent keyword'leri)
+- [ ] `D:\Botfusions Web` agentic/* commit'lenmemis degisiklikleri gozden gecir
 
 ---
 
