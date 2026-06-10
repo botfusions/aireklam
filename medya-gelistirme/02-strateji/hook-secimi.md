@@ -1,11 +1,11 @@
-# Hook Secimi — 2026-W20
+# Hook Secimi — 2026-W24
 
-Olusturulma: 2026-05-17
+Olusturulma: 2026-06-10
 
 ## Secilen Hook'lar
 
 ### Pazartesi — geo (number)
-**Hook:** $500 Tanisma Paketi — global rakip $1.499'dan basliyor
+**Hook:** Turkiye'de GEO bilen ajans sayisi: 5'ten az. Biz biriyiz.
 **Kanit:** %527 organik trafik artisi
 **Platformlar:** instagram, linkedin
 **Format:** carousel
@@ -20,7 +20,7 @@ Olusturulma: 2026-05-17
 **Hook:** Claude SDK ile kendi AI agentinizi kurmak ne kadar surer? Yanit: 2 hafta.
 **Kanit:** 7/24 calisan otonom AI agent
 **Platformlar:** linkedin, x
-**Format:** post
+**Format:** carousel
 
 ### Carsamba — geo (social_proof)
 **Hook:** Dunya capinda GEO trendi: 2026'da aramalarin %40'i AI'dan gelecek
@@ -32,13 +32,13 @@ Olusturulma: 2026-05-17
 **Hook:** Musteri hizmetleri maliyetini %80 dusurun — AI chatbot ile
 **Kanit:** %80 musteri hizmetleri maliyet dususu
 **Platformlar:** instagram, facebook
-**Format:** post
+**Format:** reel
 
 ### Cuma — geo (pain_point)
-**Hook:** SEO butceniz bosa gidiyor cunku AI aramalarda yoksunuz.
+**Hook:** Musteriniz ChatGPT'ye soruyor. Rakibiniz cikiyor. Siz cikmiyorsunuz.
 **Kanit:** %527 organik trafik artisi
 **Platformlar:** instagram, linkedin
-**Format:** carousel
+**Format:** reel
 
 ### Cuma — agentic (social_proof)
 **Hook:** Botfusions: Claude SDK + MCP ile otonom is akislari kuruyor
@@ -47,7 +47,7 @@ Olusturulma: 2026-05-17
 **Format:** post
 
 ### Cumartesi — geo (curiosity)
-**Hook:** SEO'nun yeri degisti: artik sayfalar degil, AI'lar siraliyor.
+**Hook:** Google trafiginiz dusuyor mu? Sorun sizde degil, arama degisti.
 **Kanit:** %527 organik trafik artisi
 **Platformlar:** instagram, linkedin
-**Format:** carousel
+**Format:** reel

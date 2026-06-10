@@ -823,19 +823,55 @@ _GOOGLE_ADS_CLIENT = None
 _GOOGLE_ADS_CID = os.getenv("GOOGLE_ADS_CUSTOMER_ID", "3646875139")
 
 
-def _get_ads_client():
-    """Google Ads client'ı lazy yükle."""
-    global _GOOGLE_ADS_CLIENT
-    if _GOOGLE_ADS_CLIENT is None:
-        try:
-            from google.ads.googleads.client import GoogleAdsClient
-            yaml_path = str(ROOT / "04-araclar" / "google_ads_mcp" / "google-ads.yaml")
-            _GOOGLE_ADS_CLIENT = GoogleAdsClient.load_from_storage(yaml_path)
-            log.info("Google Ads client bağlandı")
-        except Exception as e:
-            log.error(f"Google Ads client hatası: {e}")
-            raise
-    return _GOOGLE_ADS_CLIENT
+# gRPC/BoringSSL Windows'ta sertifika dogrulayamiyor (CERTIFICATE_VERIFY_FAILED) —
+# bu yuzden tum Google Ads sorgulari REST API uzerinden calisir (bkz. google_ads_mcp/tools/api.py)
+_ADS_YAML_PATH = str(ROOT / "04-araclar" / "google_ads_mcp" / "google-ads.yaml")
+_ADS_REST_TOKEN = None
+_ADS_REST_TOKEN_EXP = 0.0
+
+
+def _ads_rest_search(query):
+    """GAQL sorgusunu Google Ads REST API ile calistir, ham JSON satirlari dondur."""
+    global _ADS_REST_TOKEN, _ADS_REST_TOKEN_EXP
+    import time as _time
+    import yaml as _yaml
+    with open(_ADS_YAML_PATH, encoding="utf-8") as f:
+        cfg = _yaml.safe_load(f)
+    if not _ADS_REST_TOKEN or _time.time() > _ADS_REST_TOKEN_EXP:
+        from google.oauth2.credentials import Credentials as _OAuthCreds
+        from google.auth.transport.requests import Request as _AuthReq
+        creds = _OAuthCreds(
+            token=None,
+            refresh_token=cfg["refresh_token"],
+            client_id=cfg["client_id"],
+            client_secret=cfg["client_secret"],
+            token_uri="https://oauth2.googleapis.com/token",
+        )
+        creds.refresh(_AuthReq())
+        _ADS_REST_TOKEN = creds.token
+        _ADS_REST_TOKEN_EXP = _time.time() + 3000
+    headers = {
+        "Authorization": f"Bearer {_ADS_REST_TOKEN}",
+        "developer-token": cfg["developer_token"],
+        "login-customer-id": str(cfg.get("login_customer_id", _GOOGLE_ADS_CID)),
+        "Content-Type": "application/json",
+    }
+    url = f"https://googleads.googleapis.com/v24/customers/{_GOOGLE_ADS_CID}/googleAds:searchStream"
+    r = req_lib.post(url, headers=headers, json={"query": query}, timeout=60)
+    if r.status_code != 200:
+        raise RuntimeError(f"Ads REST API {r.status_code}: {r.text[:300]}")
+    rows = []
+    for batch in r.json():
+        rows.extend(batch.get("results", []))
+    return rows
+
+
+def _num(x):
+    """REST JSON'da int64/money alanlari string gelir — guvenli sayiya cevir."""
+    try:
+        return float(x or 0)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 @app.route("/api/google-ads/summary")
@@ -844,8 +880,6 @@ def google_ads_summary():
     try:
         from datetime import timedelta
         days = int(request.args.get("days", "30"))
-        client = _get_ads_client()
-        service = client.get_service("GoogleAdsService")
         end = datetime.now().strftime("%Y-%m-%d")
         start = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
 
@@ -862,26 +896,30 @@ def google_ads_summary():
         """
         campaigns = []
         totals = {"spend": 0.0, "clicks": 0, "impressions": 0, "conversions": 0.0, "ctr_sum": 0.0, "ctr_count": 0}
-        for row in service.search(customer_id=_GOOGLE_ADS_CID, query=q):
-            cost = row.metrics.cost_micros / 1e6
+        for row in _ads_rest_search(q):
+            c, m = row.get("campaign", {}), row.get("metrics", {})
+            cost = _num(m.get("costMicros")) / 1e6
+            clicks = int(_num(m.get("clicks")))
+            imps = int(_num(m.get("impressions")))
+            ctr = _num(m.get("ctr"))
             camp = {
-                "name": row.campaign.name,
-                "status": row.campaign.status.name,
-                "type": row.campaign.advertising_channel_type.name,
+                "name": c.get("name"),
+                "status": c.get("status"),
+                "type": c.get("advertisingChannelType"),
                 "spend": round(cost, 2),
-                "clicks": row.metrics.clicks,
-                "impressions": row.metrics.impressions,
-                "ctr": round(row.metrics.ctr * 100, 2),
-                "cpc": round(row.metrics.average_cpc / 1e6, 2),
-                "conversions": round(row.metrics.conversions, 0),
+                "clicks": clicks,
+                "impressions": imps,
+                "ctr": round(ctr * 100, 2),
+                "cpc": round(_num(m.get("averageCpc")) / 1e6, 2),
+                "conversions": round(_num(m.get("conversions")), 0),
             }
             campaigns.append(camp)
             totals["spend"] += cost
-            totals["clicks"] += row.metrics.clicks
-            totals["impressions"] += row.metrics.impressions
-            totals["conversions"] += row.metrics.conversions
-            if row.metrics.impressions > 0:
-                totals["ctr_sum"] += row.metrics.ctr * 100
+            totals["clicks"] += clicks
+            totals["impressions"] += imps
+            totals["conversions"] += _num(m.get("conversions"))
+            if imps > 0:
+                totals["ctr_sum"] += ctr * 100
                 totals["ctr_count"] += 1
 
         totals["spend"] = round(totals["spend"], 2)
@@ -900,17 +938,17 @@ def google_ads_summary():
             LIMIT 15
         """
         keywords = []
-        for row in service.search(customer_id=_GOOGLE_ADS_CID, query=q_kw):
-            kw_cost = row.metrics.cost_micros / 1e6
+        for row in _ads_rest_search(q_kw):
+            kw, m = row.get("adGroupCriterion", {}).get("keyword", {}), row.get("metrics", {})
             keywords.append({
-                "keyword": row.ad_group_criterion.keyword.text,
-                "match_type": row.ad_group_criterion.keyword.match_type.name,
-                "spend": round(kw_cost, 2),
-                "clicks": row.metrics.clicks,
-                "impressions": row.metrics.impressions,
-                "ctr": round(row.metrics.ctr * 100, 2),
-                "cpc": round(row.metrics.average_cpc / 1e6, 2),
-                "conversions": round(row.metrics.conversions, 0),
+                "keyword": kw.get("text"),
+                "match_type": kw.get("matchType"),
+                "spend": round(_num(m.get("costMicros")) / 1e6, 2),
+                "clicks": int(_num(m.get("clicks"))),
+                "impressions": int(_num(m.get("impressions"))),
+                "ctr": round(_num(m.get("ctr")) * 100, 2),
+                "cpc": round(_num(m.get("averageCpc")) / 1e6, 2),
+                "conversions": round(_num(m.get("conversions")), 0),
             })
 
         # Günlük trend (son 30 gün)
@@ -920,21 +958,14 @@ def google_ads_summary():
             WHERE segments.date BETWEEN '{start}' AND '{end}'
             ORDER BY segments.date
         """
-        daily = []
         daily_map = {}
-        for row in service.search(customer_id=_GOOGLE_ADS_CID, query=q_daily):
-            d = row.segments.date
-            if d in daily_map:
-                daily_map[d]["spend"] += row.metrics.cost_micros / 1e6
-                daily_map[d]["clicks"] += row.metrics.clicks
-                daily_map[d]["impressions"] += row.metrics.impressions
-            else:
-                daily_map[d] = {
-                    "date": d,
-                    "spend": round(row.metrics.cost_micros / 1e6, 2),
-                    "clicks": row.metrics.clicks,
-                    "impressions": row.metrics.impressions,
-                }
+        for row in _ads_rest_search(q_daily):
+            m = row.get("metrics", {})
+            d = row.get("segments", {}).get("date")
+            entry = daily_map.setdefault(d, {"date": d, "spend": 0.0, "clicks": 0, "impressions": 0})
+            entry["spend"] = round(entry["spend"] + _num(m.get("costMicros")) / 1e6, 2)
+            entry["clicks"] += int(_num(m.get("clicks")))
+            entry["impressions"] += int(_num(m.get("impressions")))
         daily = sorted(daily_map.values(), key=lambda x: x["date"])
 
         return jsonify({
@@ -954,11 +985,8 @@ def google_ads_summary():
 def google_ads_health():
     """Google Ads bağlantı kontrolü."""
     try:
-        client = _get_ads_client()
-        service = client.get_service("GoogleAdsService")
-        q = "SELECT campaign.name FROM campaign LIMIT 1"
-        list(service.search(customer_id=_GOOGLE_ADS_CID, query=q))
-        return jsonify({"ok": True, "connected": True, "customer_id": _GOOGLE_ADS_CID})
+        _ads_rest_search("SELECT campaign.name FROM campaign LIMIT 1")
+        return jsonify({"ok": True, "connected": True, "customer_id": _GOOGLE_ADS_CID, "transport": "rest"})
     except Exception as e:
         return jsonify({"ok": True, "connected": False, "error": str(e)})
 
@@ -1232,260 +1260,6 @@ def pagespeed():
         return jsonify(r.json())
     except Exception as e:
         log.error(f"PageSpeed proxy hatasi: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-# ══════════════════════════════════════════════════════
-#  MEDYA GELIŞTİRME PIPELINE ENDPOINTS
-# ══════════════════════════════════════════════════════
-
-_PIPELINE_TABLE = "content_packages"
-
-def _supabase_update(table, pk, data):
-    """Supabase tablosunda tek kayit guncelle."""
-    headers = {
-        "Authorization": f"Bearer {SUPA_KEY}",
-        "apikey": SUPA_KEY,
-        "Content-Type": "application/json",
-        "Prefer": "return=minimal"
-    }
-    r = req_lib.patch(
-        f"{SUPA_URL}/rest/v1/{table}?id=eq.{pk}",
-        headers=headers, json=data, timeout=10
-    )
-    r.raise_for_status()
-    return {"ok": True}
-
-def _pipeline_log(package_id, action, detail=None):
-    """Pipeline log kaydi ekle."""
-    try:
-        supabase_insert("pipeline_logs", {
-            "package_id": package_id,
-            "action": action,
-            "detail": detail or {}
-        })
-    except Exception:
-        pass
-
-
-@app.route("/api/pipeline/packages", methods=["GET", "POST", "OPTIONS"])
-def pipeline_packages():
-    """Paket listesi (GET) veya yeni paket olustur (POST)."""
-    if request.method == "OPTIONS":
-        return jsonify({"ok": True})
-
-    if request.method == "GET":
-        status_filter = request.args.get("status")
-        niche = request.args.get("niche")
-        limit = request.args.get("limit", "50")
-        params = {"order": "created_at.desc", "limit": limit}
-        if status_filter:
-            params["status"] = f"eq.{status_filter}"
-        if niche:
-            params["niche"] = f"eq.{niche}"
-        try:
-            data = supabase_get(_PIPELINE_TABLE, params)
-            return jsonify({"packages": data})
-        except Exception as e:
-            return jsonify({"packages": [], "error": str(e)}), 500
-
-    # POST — yeni paket
-    body = request.get_json(force=True)
-    required = ["niche", "hook_type", "hook_text", "caption_default"]
-    for field in required:
-        if not body.get(field):
-            return jsonify({"error": f"'{field}' zorunlu"}), 400
-
-    pkg = {
-        "niche": body["niche"],
-        "hook_type": body["hook_type"],
-        "hook_text": body["hook_text"],
-        "caption_default": body["caption_default"],
-        "status": "draft",
-    }
-    for opt in ["caption_x", "caption_linkedin", "caption_pinterest",
-                "caption_instagram", "caption_tiktok", "caption_facebook",
-                "script_video", "visual_brief", "platforms", "post_type",
-                "strategy_reason", "campaign"]:
-        if body.get(opt) is not None:
-            pkg[opt] = body[opt]
-
-    try:
-        headers = {
-            "Authorization": f"Bearer {SUPA_KEY}",
-            "apikey": SUPA_KEY,
-            "Content-Type": "application/json",
-            "Prefer": "return=representation"
-        }
-        r = req_lib.post(
-            f"{SUPA_URL}/rest/v1/{_PIPELINE_TABLE}",
-            headers=headers, json=pkg, timeout=10
-        )
-        r.raise_for_status()
-        created = r.json()
-        if created and len(created) > 0:
-            _pipeline_log(created[0].get("id"), "created")
-        return jsonify({"ok": True, "package": created[0] if created else pkg}), 201
-    except Exception as e:
-        log.error(f"Pipeline paket olusturma hatasi: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/pipeline/packages/<int:pkg_id>", methods=["GET"])
-def pipeline_get_package(pkg_id):
-    """Tek paket detay."""
-    try:
-        data = supabase_get(_PIPELINE_TABLE, {"id": f"eq.{pkg_id}"})
-        if not data:
-            return jsonify({"error": "Paket bulunamadi"}), 404
-        return jsonify({"package": data[0]})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/pipeline/packages/<int:pkg_id>/approve", methods=["POST", "OPTIONS"])
-def pipeline_approve_content(pkg_id):
-    """Icerigi onayla → content_approved."""
-    if request.method == "OPTIONS":
-        return jsonify({"ok": True})
-    try:
-        _supabase_update(_PIPELINE_TABLE, pkg_id, {
-            "status": "content_approved",
-            "approved_by": request.get_json(force=True).get("approved_by", "cmo"),
-            "approved_at": datetime.utcnow().isoformat()
-        })
-        _pipeline_log(pkg_id, "content_approved")
-        return jsonify({"ok": True, "status": "content_approved"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/pipeline/packages/<int:pkg_id>/reject", methods=["POST", "OPTIONS"])
-def pipeline_reject_content(pkg_id):
-    """Icerigi reddet."""
-    if request.method == "OPTIONS":
-        return jsonify({"ok": True})
-    body = request.get_json(force=True)
-    try:
-        _supabase_update(_PIPELINE_TABLE, pkg_id, {
-            "status": "draft",
-            "rejected_reason": body.get("reason", "")
-        })
-        _pipeline_log(pkg_id, "rejected", {"reason": body.get("reason", "")})
-        return jsonify({"ok": True, "status": "draft"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/pipeline/packages/<int:pkg_id>/approve-visual", methods=["POST", "OPTIONS"])
-def pipeline_approve_visual(pkg_id):
-    """Gorseli onayla → visual_approved."""
-    if request.method == "OPTIONS":
-        return jsonify({"ok": True})
-    try:
-        _supabase_update(_PIPELINE_TABLE, pkg_id, {"status": "visual_approved"})
-        _pipeline_log(pkg_id, "visual_approved")
-        return jsonify({"ok": True, "status": "visual_approved"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/pipeline/packages/<int:pkg_id>/publish", methods=["POST", "OPTIONS"])
-def pipeline_publish(pkg_id):
-    """Paketi yayinla — omni_post() kullanir."""
-    if request.method == "OPTIONS":
-        return jsonify({"ok": True})
-
-    try:
-        data = supabase_get(_PIPELINE_TABLE, {"id": f"eq.{pkg_id}"})
-        if not data:
-            return jsonify({"error": "Paket bulunamadi"}), 404
-        pkg = data[0]
-        if pkg["status"] not in ("visual_approved", "content_approved"):
-            return jsonify({"error": f"Durum uygun degil: {pkg['status']}"}), 400
-
-        platforms = pkg.get("platforms") or []
-        if not platforms:
-            return jsonify({"error": "Platform belirtilmemis"}), 400
-
-        results = []
-        errors = []
-        for account_id in platforms:
-            try:
-                caption = pkg.get("caption_default", "")
-                if "_instagram" in account_id and pkg.get("caption_instagram"):
-                    caption = pkg["caption_instagram"]
-                elif "_x" in account_id and pkg.get("caption_x"):
-                    caption = pkg["caption_x"]
-                elif "_pinterest" in account_id and pkg.get("caption_pinterest"):
-                    caption = pkg["caption_pinterest"]
-                elif "_tiktok" in account_id and pkg.get("caption_tiktok"):
-                    caption = pkg["caption_tiktok"]
-                elif "_facebook" in account_id and pkg.get("caption_facebook"):
-                    caption = pkg["caption_facebook"]
-                elif "_linkedin" in account_id and pkg.get("caption_linkedin"):
-                    caption = pkg["caption_linkedin"]
-
-                payload = {
-                    "accountId": account_id,
-                    "postType": pkg.get("post_type", "post"),
-                    "content": caption,
-                }
-                resp = omni_post(payload)
-                post_id = resp.get("post", {}).get("id", resp.get("id"))
-                results.append({"account": account_id, "post_id": post_id})
-            except Exception as ex:
-                errors.append({"account": account_id, "error": str(ex)})
-
-        published_ids = [r["post_id"] for r in results if r["post_id"]]
-        new_status = "published" if not errors else "failed"
-        _supabase_update(_PIPELINE_TABLE, pkg_id, {
-            "status": new_status,
-            "published_post_ids": published_ids,
-            "published_at": datetime.utcnow().isoformat() if new_status == "published" else None
-        })
-        _pipeline_log(pkg_id, new_status, {"results": results, "errors": errors})
-
-        # social_posts tablosuna da kaydet
-        if published_ids:
-            for r in results:
-                try:
-                    supabase_insert("social_posts", {
-                        "omnisocials_post_id": r["post_id"],
-                        "caption": pkg.get("caption_default", ""),
-                        "platforms": [r["account"]],
-                        "post_type": pkg.get("post_type", "post"),
-                        "status": "published",
-                        "campaign": pkg.get("campaign", ""),
-                    })
-                except Exception:
-                    pass
-
-        return jsonify({
-            "ok": new_status == "published",
-            "status": new_status,
-            "results": results,
-            "errors": errors
-        })
-    except Exception as e:
-        log.error(f"Pipeline yayin hatasi: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/pipeline/stats", methods=["GET"])
-def pipeline_stats():
-    """Pipeline istatistikleri."""
-    try:
-        all_pkgs = supabase_get(_PIPELINE_TABLE, {
-            "select": "status",
-            "limit": "1000"
-        })
-        counts = {}
-        for pkg in all_pkgs:
-            s = pkg.get("status", "unknown")
-            counts[s] = counts.get(s, 0) + 1
-        return jsonify({"total": len(all_pkgs), "by_status": counts})
-    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 

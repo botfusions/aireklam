@@ -17,6 +17,22 @@ from pathlib import Path
 import requests
 
 API = "http://127.0.0.1:8765"
+ROOT = Path(__file__).resolve().parent.parent.parent
+
+
+def _read_cmo_key() -> str:
+    """secrets.env'den CMO_API_KEY oku — POST endpoint'ler icin zorunlu."""
+    secrets_path = ROOT / "secrets.env"
+    if not secrets_path.exists():
+        return ""
+    for line in secrets_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.startswith("CMO_API_KEY="):
+            return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return ""
+
+
+CMO_KEY = _read_cmo_key()
 
 
 def fetch_pending(status="visual_approved"):
@@ -55,7 +71,7 @@ def publish_package(pkg, dry_run=False):
         r = requests.post(
             f"{API}/api/pipeline/packages/{pkg_id}/publish",
             json={},
-            headers={"Content-Type": "application/json"},
+            headers={"Content-Type": "application/json", "X-CMO-Key": CMO_KEY},
             timeout=30,
         )
         r.raise_for_status()

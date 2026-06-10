@@ -261,7 +261,38 @@ Herhangi bir LLM bu 4 dosyayi okuyarak baslayabilir:
 
 ---
 
-*Son Guncelleme: 31 Mayis 2026 (Oturum 9) | Botfusions AI Reklam Ajansi*
+*Son Guncelleme: 10 Haziran 2026 (Oturum 10) | Botfusions AI Reklam Ajansi*
+
+---
+
+### 10 Haziran 2026 — Oturum 10
+
+**1. KRITIK BULGU — Donusum Takibi Olu Koddu**
+- Google Ads REST sorgusu: 2 conversion action ENABLED (AD_CALL + "GEO Hizmet - Form Gonderimi") ama 0 kayit
+- Kok neden: `D:\Botfusions Web\index.html` yalnizca GTM yukluyor, `window.gtag` HIC tanimlanmamis
+- `LeadForm.tsx` icindeki `gtag('event','conversion', send_to: AW-18013035508/...)` cagrisi `typeof gtag === "function"` kontrolune takilip sessizce atlaniyordu
+- **$2.540 harcamada 0 donusumun teknik aciklamasi bu**
+- Fix: `index.html`'e gtag.js loader + `window.gtag` koprusu eklendi (AW-18013035508) — **Netlify deploy bekliyor**
+- Dogrulama araci: `04-araclar/donusum-dogrula.py` (REST tabanli, tekrar calistirilabilir)
+
+**2. gsc_api_server.py Tamiri**
+- Duplikat pipeline endpoint blogu (253 satir) silindi — sunucu `AssertionError: pipeline_packages` ile hic baslamiyordu
+- Google Ads endpoint'leri gRPC'den REST'e tasindi (`_ads_rest_search()`) — Windows BoringSSL sorunu kalici cozuldu
+- `/api/google-ads/health` artik `"transport": "rest"` ile `connected: true` donuyor
+- Baslatma: `$env:PYTHONUTF8="1"; python gsc_api_server.py` (cp1254 banner hatasi onlenir)
+
+**3. Medya Pipeline Faz 1 — UCTAN UCA CALISIYOR**
+- Modul 01 (`gunluk_agent.py`): 4/4 OK — ads performans + trend + rakip snapshot + gunluk ozet yazildi
+- Modul 02 (`strateji_olustur.py --send`): 2026-W24 haftalik plan, 8/8 paket Supabase'e `draft` kaydedildi
+- Modul 03 (`icerik_uret.py`, `haftalik_paket_uret.py`): dry-run dogrulandi
+- **Fix:** 4 pipeline scriptine `X-CMO-Key` auth header eklendi (secrets.env'den okunuyor) — 401 hatasi cozuldu
+- Pipeline durumu: 8 draft paket onay bekliyor (geo:4, chatbot:2, agentic:2)
+
+**4. Sonraki Adimlar**
+- [ ] Botfusions Web Netlify deploy (gtag fix canliya alinsin)
+- [ ] Canlida test: geo-hizmet formu doldur → Google Ads'te donusum kaydi dogrula
+- [ ] 8 draft paketi onayla → gorsel uret → yayinla (Faz 2)
+- [ ] Donusum dogrulandiktan sonra Google Ads'i dar kapsamli yeniden ac
 
 ---
 

@@ -21,6 +21,21 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 API = "http://localhost:8765"
 HAZIFA_DIR = ROOT / "hafiza"
 
+
+def _read_cmo_key() -> str:
+    """secrets.env'den CMO_API_KEY oku — POST endpoint'ler icin zorunlu."""
+    secrets_path = ROOT / "secrets.env"
+    if not secrets_path.exists():
+        return ""
+    for line in secrets_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.startswith("CMO_API_KEY="):
+            return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return ""
+
+
+CMO_KEY = _read_cmo_key()
+
 # ── Niche tanimlari (SISTEM-KONTEKST.md ile uyumlu) ─────────
 NICHES = {
     "geo": {
@@ -324,7 +339,7 @@ def send_packages_to_api(plan: dict) -> list:
             r = req_lib.post(
                 f"{API}/api/pipeline/packages",
                 json=package,
-                headers={"Content-Type": "application/json"},
+                headers={"Content-Type": "application/json", "X-CMO-Key": CMO_KEY},
                 timeout=10,
             )
             r.raise_for_status()

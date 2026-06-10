@@ -22,6 +22,21 @@ API = "http://localhost:8765"
 HAZIFA_DIR = ROOT / "hafiza"
 ICERIK_ARSIV = HAZIFA_DIR / "icerik-arsivi"
 
+
+def _read_cmo_key() -> str:
+    """secrets.env'den CMO_API_KEY oku — POST endpoint'ler icin zorunlu."""
+    secrets_path = ROOT / "secrets.env"
+    if not secrets_path.exists():
+        return ""
+    for line in secrets_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.startswith("CMO_API_KEY="):
+            return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return ""
+
+
+CMO_KEY = _read_cmo_key()
+
 # ── Platform karakter limitleri ──────────────────────
 # Kaynak: .agents/OMNISOCIALS.md + SISTEM-KONTEKST.md
 # X Premium hesap = 25000 karakter (standart X = 280)
@@ -94,7 +109,7 @@ NICHES = {
                 "Gece 3'te gelen musterinize kim cevap veriyor? Chatbot'unuz.",
             ],
             "curiosity": [
-                "E-ticarette her 100 zfxiyerin 70'i soru soruyor. Kaci cevap aliyor?",
+                "E-ticarette her 100 ziyaretcinin 70'i soru soruyor. Kaci cevap aliyor?",
             ],
             "social_proof": [
                 "Aylık 500-2.000 USD retainer ile 7/24 musteri destegi",
@@ -165,7 +180,7 @@ def save_to_pipeline(package: dict) -> dict:
         r = req_lib.post(
             f"{API}/api/pipeline/packages",
             json=package,
-            headers={"Content-Type": "application/json"},
+            headers={"Content-Type": "application/json", "X-CMO-Key": CMO_KEY},
             timeout=10,
         )
         r.raise_for_status()

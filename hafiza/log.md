@@ -45,3 +45,4 @@
 
 **Aciklama:** Musteri #1 siralama screenshot'u vaka calismasi olarak wiki'ye kaydedildi. 4 capraz-referans olustu (botfusions-geo-landing, geo, lighthouse-fark-stratejisi, rakip-listesi).
 2026-05-17 22:54 | gunluk-agent | ads-performans + trend + ozet → tamamlandi (ads=HATA, posts=0)
+2026-06-10 14:38 | gunluk-agent | ads-performans + trend + ozet → tamamlandi (ads=OK, posts=3)
