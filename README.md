@@ -288,10 +288,21 @@ Herhangi bir LLM bu 4 dosyayi okuyarak baslayabilir:
 - **Fix:** 4 pipeline scriptine `X-CMO-Key` auth header eklendi (secrets.env'den okunuyor) — 401 hatasi cozuldu
 - Pipeline durumu: 8 draft paket onay bekliyor (geo:4, chatbot:2, agentic:2)
 
-**4. Sonraki Adimlar**
+**4. W24 Icerik Paketi Yayini (ayni oturum, devam)**
+- 8 paket onaylandi (kullanici onayi: "X haric hepsinde yayinla")
+- 7 yeni statik kart uretildi: `02-gorseller/w24-gorseller/` (HTML sablon + Playwright, 1080x1080)
+- Silinen gorseller git'ten geri yuklendi (`git restore 02-gorseller`)
+- **1. dalga yayinlandi (10 Haz):** #4 GEO trend, #2 chatbot, #3 agentic (IG+FB+Pinterest), #6 GEO reel (IG+FB+YT+TikTok)
+  - Post ID'leri: 45929182/69466889, 87501708/76707035, 94752889/38000310, reel 42333212
+- **Kalan dalga (komut hazir):** Per 11 Haz `--paket 1,5` · Cum 12 Haz `--paket 7` · Cmt 13 Haz `--paket 8`
+  - Komut: `python medya-gelistirme/05-yayin/yayinla_w24.py --paket N`
+- **OmniSocials API notu:** create-and-publish **201** doner (200 degil), yanit `data.id` + `status: posting`
+- secrets.env'deki SUPABASE_ANON_KEY eski/gecersiz — gecerli anahtar `05-gsc-nocodb/.env`'de (Flask bu sirayla yukluyor)
+
+**5. Sonraki Adimlar**
 - [ ] Botfusions Web Netlify deploy (gtag fix canliya alinsin)
 - [ ] Canlida test: geo-hizmet formu doldur → Google Ads'te donusum kaydi dogrula
-- [ ] 8 draft paketi onayla → gorsel uret → yayinla (Faz 2)
+- [ ] Kalan 4 paketi plan gunlerinde yayinla (komutlar yukarida)
 - [ ] Donusum dogrulandiktan sonra Google Ads'i dar kapsamli yeniden ac
 
 ---
