@@ -60,10 +60,13 @@
 | Ne istendi | Skill |
 |-----------|-------|
 | Reklam kopyası | `marketing/ad-creative` |
-| Kampanya stratejisi | `marketing/paid-ads` |
+| Kampanya stratejisi | `marketing/ads` |
 | GEO / AI görünürlük | `marketing/ai-seo` |
-| Sosyal medya içerik | `marketing/social-content` |
+| Sosyal medya içerik | `marketing/social` |
 | Türkçe metin / blog | `marketing/copywriting` |
+| Pazarlama planı (AARRR) | `marketing/marketing-plan` |
+| B2B lead listesi | `marketing/prospecting` |
+| SMS pazarlama | `marketing/sms` |
 | Google Ads denetim | `advertising/ads-google` |
 | Meta reklam | `advertising/ads-meta` |
 | Tüm platform denetim | `advertising/ads-audit` |
@@ -71,7 +74,7 @@
 | **Sosyal medyaya yayınla** | `advertising/social-publisher` |
 | PDF rapor | `advertising/ads-report` |
 | SEO makale | `seo/seo-expert` |
-| Video üret | `video/remotion` |
+| Video üret | `video/hyperframes` |
 
 **Tam liste:** `.agents/MANIFEST.md` · **Skill klasörü:** `.agents/skills/<kategori>/<skill>/SKILL.md`
 
@@ -95,8 +98,26 @@
 | İhtiyaç | Araç | Komut |
 |---------|------|-------|
 | Video / animasyon | HyperFrames | `npx hyperframes render index.html -o cikti.mp4` |
+| Preview (tarayıcı) | HyperFrames Studio | `npx hyperframes preview` |
+| Yapı kontrolü | HyperFrames Lint | `npx hyperframes lint` |
 | Statik görsel | canvas-design skill | — |
-| Çıktı klasörü | `04-araclar/remotion-kaynak/out/` | — |
+| Çıktı klasörü | `04-araclar/hyperframes/<proje>/output/` | — |
+
+**HyperFrames Proje Dizini:** `04-araclar/hyperframes/`
+**Brand Spec:** `04-araclar/hyperframes/botfusions-design.md` → her projede `DESIGN.md` olarak kopyalanır
+**Frame Spec:** `04-araclar/hyperframes/frame.md` → sahne ritmi, ölçek, hareket kuralları
+**Skills kurulumu (bir kez):** `npx skills add heygen-com/hyperframes`
+
+### Yeni Video Projesi Başlatma (PowerShell)
+
+```powershell
+cd "04-araclar\hyperframes"
+npx hyperframes init proje-adi
+cd proje-adi
+Copy-Item ..\botfusions-design.md .\DESIGN.md
+Copy-Item ..\frame.md .\frame.md
+npx hyperframes preview
+```
 
 ---
 

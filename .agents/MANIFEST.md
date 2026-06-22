@@ -1,8 +1,8 @@
 # Botfusions AI Reklam Ajansi — Skill Manifest
 
-> **Son Guncelleme:** Mayis 2026
-> **Toplam Skill:** 75
-> **Yapi Surumu:** 2.1.0
+> **Son Guncelleme:** Haziran 2026
+> **Toplam Skill:** 78
+> **Yapi Surumu:** 2.3.0
 
 ---
 
@@ -27,65 +27,69 @@ Bu dosyayi okuyan herhangi bir LLM su adimlari izlemelidir:
 
 ## Skill Kategorileri
 
-### 1. Marketing (45 skill)
+### 1. Marketing (48 skill) — v2.3.0
 **Konum:** `.agents/skills/marketing/`
 **Amac:** Pazarlama stratejisi, icerik, donusum optimizasyonu, CMO fonksiyonlari
+> ⚠️ v2.0.0'dan itibaren skill isimleri değişti. Eski isimler (paid-ads, social-content vb.) artık geçersiz.
 
 | Skill | Aciklama | API Gereksinimi |
 |-------|----------|----------------|
-| ab-test-setup | A/B testi planlama ve uygulama | - |
+| ab-testing | A/B testi planlama ve uygulama | - |
 | ad-creative | Google/Meta/Instagram reklam kopyasi | - |
+| ads | Ucretli reklam kampanya stratejisi (eski: paid-ads) | Google Ads MCP |
 | ai-seo | GEO/AEO gorunurluk, LLMO optimizasyonu | Web Search |
-| analytics-tracking | GA4, GTM, donusum takibi kurulumu | GA4, GTM |
+| analytics | GA4, GTM, donusum takibi kurulumu (eski: analytics-tracking) | GA4, GTM |
+| aso | App Store Optimization denetimi (eski: aso-audit) | - |
 | attribution-modeling | Pazarlama atif modelleme, kanal ROI olcumu | GA4 |
 | churn-prevention | Kayip onleme ve elde tutma stratejileri | - |
+| co-marketing | Ortak marka kampanyasi ve is birligi stratejisi | - |
 | cold-email | B2B sicak e-posta dizileri | - |
-| competitor-alternatives | Rakip karsilastirma sayfalari | Web Search |
+| community-marketing | Topluluk insa, community-led growth, ambassador | - |
+| competitors | Rakip karsilastirma ve istihbarat (eski: competitor-alternatives) | Web Search |
 | competitor-audit | Rakip reklam kreatif denetimi | - |
+| competitor-profiling | Derinlemesine rakip istihbarati (7 katman) | Web Search |
 | content-strategy | Icerik stratejisi ve planlama | - |
 | context-analyzer | URL'den context dosyasi olusturma | Web Search |
 | copy-editing | Metin duzeltme ve guclendirme | - |
 | copywriting | Pazarlama metni yazimi (Hook-Agitate-Solution-CTA) | - |
+| cro | Landing page + form donusum optimizasyonu (eski: page-cro + form-cro) | - |
 | customer-journey | Musteri yolculugu haritalama | - |
 | customer-research | Musteri arastirmasi ve persona olusturma | - |
-| email-sequence | E-posta dizileri ve drip kampanyalar | - |
-| form-cro | Form optimizasyonu (lead capture, contact) | - |
-| free-tool-strategy | Ucretsiz arac stratejisi (lead gen) | - |
+| directory-submissions | Yerel SEO citation insa, dizin listeleme | - |
+| emails | E-posta dizileri ve drip kampanyalar (eski: email-sequence) | - |
+| free-tools | Ucretsiz arac stratejisi / lead gen (eski: free-tool-strategy) | - |
+| image | AI görsel üretimi (Flux, Nano Banana, Ideogram 3.0, Midjourney v7, ChatGPT Images 2.0) | - |
 | influencer-marketing | Influencer/KOL stratejisi ve ROI olcum | - |
-| launch-strategy | Urun lansmani ve GTM plani | - |
+| launch | Urun lansmani ve GTM plani (eski: launch-strategy) | - |
 | lead-magnets | Lead magnet olusturma (ebook, checklist) | - |
+| linkedin-organic | Organik LinkedIn icerik stratejisi ve buyume | - |
 | marketing-automation | Tekrar eden isleri otomatik hale getirme | n8n/Make |
 | marketing-dashboard | Gunluk/haftalik performans dashboard | GA4, Google Ads |
-| marketing-ideas | Pazarlama fikri ve buyume taktikleri | - |
+| marketing-ideas | Pazarlama fikri ve buyume taktikleri (139 fikir) | - |
+| marketing-plan | AARRR yapıli kapsamli pazarlama plani (YENİ v2.3.0) | - |
 | marketing-psychology | Psikolojik pazarlama prensipleri | - |
 | newsletter | E-posta bulletin ve gonderim yonetimi | - |
-| onboarding-cro | Kayit sonrasi onboarding optimizasyonu | - |
-| page-cro | Landing page ve sayfa donusum optimizasyonu | - |
-| paid-ads | Ucretli reklam kampanya stratejisi | Google Ads MCP |
-| paywall-upgrade-cro | Paywall ve upgrade ekranlari | - |
-| popup-cro | Popup ve modal optimizasyonu | - |
+| onboarding | Kayit sonrasi onboarding optimizasyonu (eski: onboarding-cro) | - |
+| paywalls | Paywall ve upgrade ekranlari (eski: paywall-upgrade-cro) | - |
+| popups | Popup ve modal optimizasyonu (eski: popup-cro) | - |
 | pr-communications | Halkla iliskiler ve kriz iletisimi | - |
-| pricing-strategy | Fiyatlandirma stratejisi | - |
-| product-marketing-context | Urun pazarlama baglam dokumani | - |
+| public-relations | Kazanilmis medya, basin pitchi, gazeteci outreach, PR strateji (YENİ v2.4.0) | Web Search |
+| pricing | Fiyatlandirma stratejisi (eski: pricing-strategy) | - |
+| product-marketing | Urun pazarlama baglam dokumani (eski: product-marketing-context) | - |
 | programmatic-seo | Olcekli SEO sayfa uretimi | - |
-| referral-program | Referans ve ortaklik programlari | - |
+| prospecting | B2B/SaaS nitelikli lead listesi olusturma (YENİ v2.2.0) | - |
+| referrals | Referans ve ortaklik programlari (eski: referral-program) | - |
 | revops | Gelir operasyonlari ve lead lifecycle | - |
 | sales-enablement | Satis materyalleri ve destek | - |
-| schema-markup | JSON-LD ve yapisal veri | - |
+| schema | JSON-LD ve yapisal veri (eski: schema-markup) | - |
 | seo-audit | SEO denetimi ve teknik analiz | Web Search |
-| signup-flow-cro | Kayit akisi optimizasyonu | - |
+| signup | Kayit akisi optimizasyonu (eski: signup-flow-cro) | - |
 | site-architecture | Site yapisi ve URL mimarisi | - |
-| social-content | Sosyal medya icerigi ve planlama | - |
+| sms | SMS/MMS pazarlama akislari, uyum (TCPA/GDPR) (YENİ v2.1.0) | - |
+| social | Sosyal medya icerigi ve planlama (eski: social-content) | - |
 | social-listening | Sosyal medya dinleme ve marka izleme | - |
+| video | AI video uretimi (Veo 3, Sora 2, Kling, HeyGen) | - |
 | video-marketing | Video pazarlama stratejisi ve planlama | - |
-| image | AI görsel üretimi ve optimizasyonu (Flux, Gemini Nano Banana, Ideogram 3.0, Midjourney v7, ChatGPT Images 2.0) | - |
-| video | AI video üretimi ve programatik video (Veo 3, Sora 2, Runway Gen-4, Kling, HeyGen avatar) | - |
-| aso-audit | App Store Optimization denetimi (iOS/Android) | - |
-| co-marketing | Ortak marka kampanyasi ve is birligi stratejisi | - |
-| community-marketing | Topluluk insa, community-led growth, ambassador | - |
-| competitor-profiling | Derinlemesine rakip istihbarati (7 katman) | Web Search |
-| directory-submissions | Yerel SEO citation insa, dizin listeleme | - |
-| linkedin-organic | Organik LinkedIn icerik stratejisi ve buyume | - |
 | youtube-organic | YouTube kanal stratejisi, video SEO, lead gen | - |
 
 ---
@@ -211,3 +215,4 @@ Bu dosyayi okuyan herhangi bir LLM su adimlari izlemelidir:
 | 1.1.0 | Nisan 2026 | Media kategorisi eklendi (krea-ai, kie-ai, pixa) → 58 skill |
 | 2.0.0 | Nisan 2026 | CMO bosluk skill'leri + context-analyzer eklendi → 68 skill. Context dosyalari Botfusions verileriyle dolduruldu. |
 | 2.1.0 | Mayis 2026 | 7 yeni skill eklendi: aso-audit, co-marketing, community-marketing, competitor-profiling, directory-submissions, linkedin-organic, youtube-organic → 75 skill. coreyhaines31 + kostja94 repolarindan guncelleme. |
+| 2.4.0 | Haziran 2026 | coreyhaines31/marketingskills senkronizasyonu: 20 skill v2.0.0'a guncellendi (ad-creative, churn-prevention, co-marketing, cold-email, community-marketing, competitor-profiling, content-strategy, copy-editing, copywriting, customer-research, directory-submissions, lead-magnets, marketing-ideas, marketing-psychology, programmatic-seo, revops, sales-enablement, seo-audit, site-architecture, social v2.1.0). 2 yeni skill eklendi: marketing-plan, public-relations → 81 skill. |
