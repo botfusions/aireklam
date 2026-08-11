@@ -28,7 +28,7 @@ if (-not $API_KEY) {
 }
 
 $VIDEO_SRC   = Join-Path $ROOT "04-araclar\_arsiv-remotion-kaynak\out\geo-seo-45s.mp4"
-$CANVA_URL   = "https://export-download.canva.com/aVWPU/DAHKxraVWPU/-1/0/0001-1738893894501843068.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH5AO7UJ26%2F20260525%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260525T200021Z&X-Amz-Expires=79281&X-Amz-Signature=8fbb756c52123c13ba4ad3efe0dc711fd1b746d7e15822d0bcfa4fe96f3105a6&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Tue%2C%2026%20May%202026%2018%3A01%3A42%20GMT"
+$CANVA_URL = $env:CANVA_EXPORT_URL  # Canva signed export URL (AKIA dahil credential barindirir) - secrets.env'den yuklenir
 $IMAGE_LOCAL = "$env:TEMP\geo_seo_gorsel.png"
 
 $CAPTION_DEFAULT = "SEO yapiyorsun. Peki AI da var misin? Musterilerin artik satin almadan once ChatGPT ye soruyor: Bu sektorde en guvenilir firma hangisi? Ve sen o listede yok musun? Botfusions ile 90 gunde %527 organik trafik artisi yasayan musterimiz gibi -- hem Google da hem ChatGPT de ust siralara cikabilirsin. GEO + SEO = Cift Kanal Gorunurluk. Ucretsiz analiz: botfusions.com/geo-hizmet #GEO #SEO #AIMarketing #Botfusions #ChatGPT"
